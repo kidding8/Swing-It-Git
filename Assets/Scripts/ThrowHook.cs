@@ -15,6 +15,7 @@ public class ThrowHook : MonoBehaviour
     private SpawnHookManager SM;
     public float forceRopeGrab = 1f;
     public float forceRopeLeave = 1f;
+    public float torqueToAdd = 1f;
     private RopeScript ropeScript;
     /* private float lastClickTime = 0;
      public float catchTime = .25f;*/
@@ -23,8 +24,9 @@ public class ThrowHook : MonoBehaviour
     private float timerJump;
     private float timerNextJump = 0.5f;
     public ParticleSystem smokeParticle;
-    
+    private float previousVelocityX;
     private bool isPressed = false;
+    public bool isAttachedToHook = false;
     //private Transform lastHookAttached;
     // Use this for initialization
     void Start()
@@ -41,7 +43,7 @@ public class ThrowHook : MonoBehaviour
         timerHook += Time.deltaTime;
         timerJump += Time.deltaTime;
 
-        if(rb.velocity.x > 11)
+        /*if(rb.velocity.x > 11)
         {
             EM.speeding = true;
         }
@@ -49,8 +51,28 @@ public class ThrowHook : MonoBehaviour
         {
             EM.speeding = false;
         }
+        */
 
-
+        if (isAttachedToHook && isPressed)
+        {
+            /* if(rb.velocity.x < previousVelocityX)
+             {
+                 Vector3 vel = rb.velocity;
+                 vel.x = previousVelocityX;
+                 rb.velocity = vel;
+             }*/
+            if (rb.velocity.magnitude < 16) { 
+            Vector3 vel = rb.velocity;
+            vel.x *= 1.03f;
+            vel.y *= 1.01f;
+            rb.velocity = vel;
+        }
+            //rb.velocity = rb.velocity * 2f * (Time.deltaTime * 60);
+        }
+            previousVelocityX = rb.velocity.x;
+        
+        
+        Debug.DrawRay(transform.position, rb.velocity);
 
 //#if UNITY_EDITOR
 
@@ -139,7 +161,8 @@ public class ThrowHook : MonoBehaviour
             ropeScript.UnhookRope();
             DisableRope();
             EM.CreateCameraShake(0.05f);
-            rb.AddForce(new Vector3(0.3f, 1f, 0) * forceRopeLeave, ForceMode2D.Impulse);
+            rb.AddForce(new Vector3(0.3f, 1f, 0) * forceRopeLeave, ForceMode2D.Force);
+            rb.AddTorque(torqueToAdd);
 
             /* Vector2 velocityVector = rb.velocity;
 
@@ -173,11 +196,19 @@ public class ThrowHook : MonoBehaviour
 
                 EM.CreateCameraShake(0.05f);
 
-                Vector3 dir = transform.position - (Vector3) destiny;
-                //Debug.DrawLine(transform.position, direction);
-                //rb.AddForceAtPosition(-direction * forceRopeLeave * 10, transform.position);
-                rb.AddForce(dir * forceRopeLeave, ForceMode2D.Force);
+                Vector3 dir = rb.velocity - destiny;
+               
 
+
+                Vector3 rightRay = new Vector3(1f, 0.5f, 0f);
+                Debug.DrawRay(transform.position, -dir);
+
+                //rb.AddForceAtPosition(-direction * forceRopeLeave * 10, transform.position);
+                //Vector3 dir = rb.velocity;
+                //rb.velocity = velocity * 1.2f;
+                
+                rb.AddForce(rightRay * forceRopeGrab, ForceMode2D.Force);
+                
             }
             else
             {

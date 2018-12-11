@@ -62,12 +62,23 @@ public class RopeScript : MonoBehaviour
         if (isAttachedToPlayer)
         {
             transform.position = Vector2.MoveTowards(transform.position, destiny, speed);
-            if((Vector2)transform.position == destiny && !particlesDone)
+            if((Vector2)transform.position == destiny)
             {
-                particlesDone = true;
-                EM.CreateHookGrabParticle(destiny);
-                GM.AddCombo();
-                
+                if (!particlesDone)
+                {
+                    particlesDone = true;
+                    EM.CreateHookGrabParticle(destiny);
+                    GM.AddCombo();
+                }
+
+                player.GetComponent<ThrowHook>().isAttachedToHook = true;
+
+
+
+            }
+            else
+            {
+                player.GetComponent<ThrowHook>().isAttachedToHook = false;
             }
         } else if ((Vector2)transform.position != destiny && !alreadyJumped)
         {

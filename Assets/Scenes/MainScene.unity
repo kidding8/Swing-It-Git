@@ -2410,8 +2410,9 @@ MonoBehaviour:
   hook: {fileID: 432272298}
   hookToInstantiate: {fileID: 1404701874796426, guid: 0082b9bed9fbedb40a1ce0e7b34729a5,
     type: 2}
-  forceRopeGrab: 50
-  forceRopeLeave: 45
+  forceRopeGrab: 2
+  forceRopeLeave: 10
+  torqueToAdd: 1
   smokeParticle: {fileID: 1087480207}
 --- !u!50 &685057415
 Rigidbody2D:
@@ -2424,7 +2425,7 @@ Rigidbody2D:
   m_Simulated: 1
   m_UseFullKinematicContacts: 0
   m_UseAutoMass: 0
-  m_Mass: 10
+  m_Mass: 1
   m_LinearDrag: 0
   m_AngularDrag: 0
   m_GravityScale: 1
@@ -3068,7 +3069,7 @@ Transform:
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 818592610}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 14.1, y: -20.5, z: 0}
+  m_LocalPosition: {x: -9.8, y: -20.4, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
@@ -3112,7 +3113,7 @@ MonoBehaviour:
   MissionIngameMenu: {fileID: 0}
   comboTimeToDie: 2
   invincible: 1
-  destroyRope: 1
+  destroyRope: 0
 --- !u!4 &839662962
 Transform:
   m_ObjectHideFlags: 0
@@ -10131,6 +10132,7 @@ MonoBehaviour:
     type: 2}
   forceRopeGrab: 50
   forceRopeLeave: 45
+  torqueToAdd: 1
   smokeParticle: {fileID: 1087480207}
 --- !u!1 &1594282530
 GameObject:
