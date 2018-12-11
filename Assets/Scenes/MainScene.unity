@@ -2414,6 +2414,7 @@ MonoBehaviour:
   forceRopeLeave: 10
   torqueToAdd: 1
   smokeParticle: {fileID: 1087480207}
+  isAttachedToHook: 0
 --- !u!50 &685057415
 Rigidbody2D:
   serializedVersion: 4
@@ -10134,6 +10135,7 @@ MonoBehaviour:
   forceRopeLeave: 45
   torqueToAdd: 1
   smokeParticle: {fileID: 1087480207}
+  isAttachedToHook: 0
 --- !u!1 &1594282530
 GameObject:
   m_ObjectHideFlags: 0
@@ -11146,7 +11148,7 @@ MonoBehaviour:
   timeBetweenMissiles: 4
   spawnPoint: {fileID: 1594282531}
   xOffset: {x: 5, y: 13}
-  yOffset: {x: -5, y: 5}
+  yOffset: {x: -15, y: 15}
   coinObject: {fileID: 0}
   radiusToGrab: 250
   hookIndicator: {fileID: 2086458420}
