@@ -91,7 +91,6 @@ public class EffectsManager : MonoBehaviour {
 
     public void GenerateText(string text, Transform otherTransform)
     {
-        Debug.Log("Generated text");
         GameObject newTransform = CloseCallTxtPooler.GetPooledObject();
         PopupText popup = newTransform.GetComponentInChildren<PopupText>();
         popup.SetText(text);

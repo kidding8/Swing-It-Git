@@ -201,7 +201,7 @@ public class ThrowHook : MonoBehaviour
 
 
                 Vector3 rightRay = new Vector3(1f, 0.5f, 0f);
-                Debug.DrawRay(transform.position, -dir);
+                //Debug.DrawRay(transform.position, -dir);
 
                 //rb.AddForceAtPosition(-direction * forceRopeLeave * 10, transform.position);
                 //Vector3 dir = rb.velocity;
@@ -246,9 +246,9 @@ public class ThrowHook : MonoBehaviour
     {
         ropeScript.UnhookRope();
         DisableRope();
-        Transform closest = SM.GetClosestHook();
-        transform.position = new Vector3(closest.position.x, closest.position.y, transform.position.z);
-        rb.velocity = new Vector2(0.1f, 1f) * 10f;
+        GameObject closest = SM.GetClosestHookWithoutLimit();
+        transform.position = new Vector3(closest.transform.position.x, closest.transform.position.y, transform.position.z);
+        rb.velocity = new Vector2(1f, 1f) * 10f;
     }
 
     void OnGUI()
@@ -260,7 +260,7 @@ public class ThrowHook : MonoBehaviour
 
     private void OnTriggerEnter2D(Collider2D other)
     {
-        if (other.CompareTag("Enemy"))
+        if (other.CompareTag("Enemy") || other.CompareTag("Hook"))
         {
             // other.gameObject.SetActive(false);
             GM.OnDeath();

@@ -68,12 +68,13 @@ public class SpawnHookManager : MonoBehaviour
             CreateHook();
         }
 
-        currentFarthestHook = GetFarthestHook();
+        GameObject hookTemp = GetFarthestHook();
+        
 
-        if (currentFarthestHook != null)
+        if (hookTemp != null)
         {
             hookIndicator.SetActive(true);
-            hookIndicator.transform.position = currentFarthestHook.transform.position;
+            hookIndicator.transform.position = hookTemp.transform.position;
             /*SpriteRenderer sRenderer = currentFarthestHook.GetComponent<SpriteRenderer>();
             sRenderer.sprite = aux.GetAvailableHookSprite();*/
         }
@@ -81,9 +82,20 @@ public class SpawnHookManager : MonoBehaviour
         {
             /*SpriteRenderer sRenderer = currentFarthestHook.GetComponent<SpriteRenderer>();
             sRenderer.sprite = aux.GetUnavailableHookSprite();*/
-            hookIndicator.SetActive(false);
+            hookTemp = GetClosestHook();
+            if(hookTemp != null)
+            {
+                hookIndicator.SetActive(true);
+                hookIndicator.transform.position = hookTemp.transform.position;
+            }
+            else
+            {
+                hookIndicator.SetActive(false);
+            }
+            
+            
         }
-
+        currentFarthestHook = hookTemp;
     }
 
     private float GetRandomHookX()
@@ -204,9 +216,28 @@ public class SpawnHookManager : MonoBehaviour
 
     }
 
-    public Transform GetClosestHook()
+    public GameObject GetClosestHook()
     {
-        Transform bestTarget = null;
+        GameObject bestTarget = null;
+        float closestDistanceSqr = Mathf.Infinity;
+        Vector3 currentPosition = player.transform.position;
+        foreach (GameObject potentialTarget in hooksList)
+        {
+            Vector3 directionToTarget = potentialTarget.transform.position - currentPosition;
+            float dSqrToTarget = directionToTarget.sqrMagnitude;
+            if (dSqrToTarget < closestDistanceSqr && dSqrToTarget < radiusToGrab)
+            {
+                closestDistanceSqr = dSqrToTarget;
+                bestTarget = potentialTarget;
+            }
+        }
+
+        return bestTarget;
+    }
+
+    public GameObject GetClosestHookWithoutLimit()
+    {
+        GameObject bestTarget = null;
         float closestDistanceSqr = Mathf.Infinity;
         Vector3 currentPosition = player.transform.position;
         foreach (GameObject potentialTarget in hooksList)
@@ -216,12 +247,13 @@ public class SpawnHookManager : MonoBehaviour
             if (dSqrToTarget < closestDistanceSqr)
             {
                 closestDistanceSqr = dSqrToTarget;
-                bestTarget = potentialTarget.transform;
+                bestTarget = potentialTarget;
             }
         }
 
         return bestTarget;
     }
+
 
     float AngleDir(Vector3 fwd, Vector3 targetDir, Vector3 up)
     {

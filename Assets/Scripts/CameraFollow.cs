@@ -16,6 +16,7 @@ public class CameraFollow : MonoBehaviour
 
     private Transform target;
     public float offsetY = 10;
+    public float offsetX = 10f;
     private Camera cam;
     private AuxManager aux;
     private Rigidbody2D playerRb;
@@ -39,8 +40,8 @@ public class CameraFollow : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-
-        Vector3 newTarget = new Vector3(target.position.x + offsetY, target.position.y, target.position.z);
+   
+        Vector3 newTarget = new Vector3(target.position.x + offsetX, target.position.y, target.position.z);
         /*if (!GM.isContinueMenu)
         {*/
 
