@@ -24,7 +24,7 @@ GameObject:
   - component: {fileID: 114856205511635986}
   - component: {fileID: 61393721913070234}
   - component: {fileID: 114954212487174562}
-  m_Layer: 0
+  m_Layer: 11
   m_Name: SquareGroundEnemy
   m_TagString: Untagged
   m_Icon: {fileID: 0}

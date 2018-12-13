@@ -6,7 +6,7 @@ public class FallBackWall : MonoBehaviour {
     private AuxManager aux;
     private GameObject player;
     public float offset = 45f;
-
+    public float speed = 2f;
 	// Use this for initialization
 	void Start () {
         aux = AuxManager.instance;
@@ -18,6 +18,9 @@ public class FallBackWall : MonoBehaviour {
         float pos = player.transform.position.x - offset;
 	    if(pos > transform.position.x)
             transform.position = new Vector3(pos, transform.position.y, transform.position.z);
-        
+        else
+        {
+            transform.Translate(Vector3.right * speed * Time.deltaTime);
+        }
 	}
 }

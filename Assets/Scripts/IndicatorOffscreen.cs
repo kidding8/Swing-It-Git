@@ -34,8 +34,9 @@ public class IndicatorOffscreen : MonoBehaviour {
         newPos = mainCamera.WorldToViewportPoint(newPos);
 
         if (newPos.x > 1 || newPos.y > 1 || newPos.x < 0 || newPos.y < 0)
+        {
             m_outOfScreen = true;
-        else
+        }else
             m_outOfScreen = false;
         if (newPos.z < 0)
         {
@@ -47,10 +48,12 @@ public class IndicatorOffscreen : MonoBehaviour {
         newPos = mainCamera.ViewportToScreenPoint(newPos);
         newPos.x = Mathf.Clamp(newPos.x, m_edgeBuffer, Screen.width - m_edgeBuffer);
         newPos.y = Mathf.Clamp(newPos.y, m_edgeBuffer, Screen.height - m_edgeBuffer);
-        m_icon.transform.position = newPos;
+        
         //Operations if the object is out of the screen
         if (m_outOfScreen)
         {
+            m_icon = GetNewIcon();
+            m_icon.transform.position = newPos;
             m_icon.gameObject.SetActive(true);
             //Show the target off screen icon
             //m_iconImage.sprite = m_targetIconOffScreen;
@@ -84,4 +87,16 @@ public class IndicatorOffscreen : MonoBehaviour {
         returnVector /= max;
         return returnVector;
     }
+
+    private RectTransform GetNewIcon()
+    {
+        if (m_icon.gameObject.activeInHierarchy)
+        {
+            return m_icon;
+        }
+        else
+        {
+            return aux.GetIndicatorPool().GetPooledObject().GetComponent<RectTransform>();
+        }
+    } 
 }

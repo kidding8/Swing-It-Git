@@ -213,6 +213,8 @@ public class ThrowHook : MonoBehaviour
             else
             {
                 ropeActive = false;
+
+
                 Debug.Log("NO ROPE NEARBY");
             }
         }

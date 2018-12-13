@@ -17,7 +17,11 @@ public class SpawnHookManager : MonoBehaviour
     public Transform spawnMissileTop;
     public Transform spawnMissileDown;
 
+    public ObjectPooler guidedMissiles;
+    public float timeBetweenGuidedMissiles = 8f;
+
     public bool shootMissiles = true;
+    public bool shootGuidedMissiles = true;
     public float timeBetweenMissiles = 2f;
 
     public Transform spawnPoint;
@@ -57,6 +61,10 @@ public class SpawnHookManager : MonoBehaviour
         if (shootMissiles)
         {
             StartCoroutine(EnemySidesGenerator());
+        }
+        if (shootGuidedMissiles)
+        {
+            StartCoroutine(GuidedMissiles());
         }
     }
 
@@ -159,10 +167,21 @@ public class SpawnHookManager : MonoBehaviour
 
     IEnumerator EnemySidesGenerator()
     {
-        float delay = timeBetweenMissiles;
-        yield return new WaitForSeconds(delay);
-        SpawnMissile();
-        StartCoroutine(EnemySidesGenerator());
+        while (true)
+        {
+            yield return new WaitForSeconds(timeBetweenMissiles);
+            SpawnMissile();
+        }
+        
+        //StartCoroutine(EnemySidesGenerator());
+    }
+    IEnumerator GuidedMissiles()
+    {
+        while (true)
+        {
+            yield return new WaitForSeconds(timeBetweenMissiles);
+            SpawnGuidedMissile();
+        }
     }
 
     private void SpawnMissile()
@@ -175,6 +194,18 @@ public class SpawnHookManager : MonoBehaviour
         newMissile.transform.rotation = Quaternion.identity;
         newMissile.transform.position = newPos;
     }
+
+    private void SpawnGuidedMissile()
+    {
+        GameObject newMissile = guidedMissiles.GetPooledObject();
+        newMissile.SetActive(true);
+        //newMissile.transform.rotation = Quaternion.Euler(0, 0, -90);
+        Vector3 screenPosition = Camera.main.ScreenToWorldPoint(new Vector3(Random.Range(0, Screen.width), Random.Range(0, Screen.height), aux.GetCamera().farClipPlane / 2));
+        //newPos = new Vector3(GetRandomMissileX(), GetRandomMissileY(), transform.position.z);
+        newMissile.transform.rotation = Quaternion.identity;
+        newMissile.transform.position = screenPosition;
+    }
+
 
     void CreateCoin()
     {
