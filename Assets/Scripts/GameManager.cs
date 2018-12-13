@@ -22,7 +22,9 @@ public class GameManager : MonoBehaviour
 
     [Space(10)]
     [Header("Public Objects")]
-    
+    public ObjectPooler heartPool;
+    public GameObject heartPanel;
+    public int maxLifes = 3;
     private GameObject player;
 
     [Space(10)]
@@ -48,7 +50,7 @@ public class GameManager : MonoBehaviour
     int coins = 0;
     int coinsGained = 0;
     int score = 0;
-
+    int lifes = 3;
 
     Coroutine myCoroutine;
     private SpawnHookManager SHM;
@@ -146,7 +148,49 @@ public class GameManager : MonoBehaviour
 
     }
 
+    private void PopulateHearts()
+    {
+        for (int i = 0; i < maxLifes; i++)
+        {
+            AddHeartImage();
+        }
+        lifes = maxLifes;
+    }
 
+    private void AddHeartImage()
+    {
+        GameObject life = heartPool.GetPooledObject();
+        life.SetActive(true);
+        life.transform.SetParent(heartPanel.transform);
+    }
+
+    private void RemoveHeartImage()
+    {
+        int total = heartPanel.transform.childCount;
+        Transform obj = heartPanel.transform.GetChild(total - 1);
+        obj.gameObject.SetActive(false);
+    }
+    public void AddLife()
+    {
+        if(lifes < maxLifes)
+        {
+            lifes++;
+            AddHeartImage();
+        }
+    }
+
+    public void RemoveLife()
+    {
+        if(lifes <= 0)
+        {
+            OnDeath();
+        }
+        else
+        {
+            lifes--;
+            RemoveHeartImage();
+        }
+    }
 
     public void StartNormalGame()
     {
@@ -154,6 +198,7 @@ public class GameManager : MonoBehaviour
         Time.timeScale = 1f;
         SHM.StartGame();
         ShowPlayer();
+        PopulateHearts();
         HideMainMenu();
         UpdateComboText();
     }

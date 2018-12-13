@@ -255,9 +255,9 @@ public class ThrowHook : MonoBehaviour
 
     void OnGUI()
     {
-        GUI.Label(new Rect(10, 10, 100, 20), "Magnitude: " + (int)rb.velocity.magnitude);
-        GUI.Label(new Rect(10, 30, 100, 20), "velocity X: " + (int)rb.velocity.x);
-        GUI.Label(new Rect(10, 50, 100, 20), "velocity Y: " + (int)rb.velocity.y);
+        GUI.Label(new Rect(10, 110, 100, 20), "Magnitude: " + (int)rb.velocity.magnitude);
+        GUI.Label(new Rect(10, 130, 100, 20), "velocity X: " + (int)rb.velocity.x);
+        GUI.Label(new Rect(10, 150, 100, 20), "velocity Y: " + (int)rb.velocity.y);
     }
 
     private void OnTriggerEnter2D(Collider2D other)
@@ -265,7 +265,7 @@ public class ThrowHook : MonoBehaviour
         if (other.CompareTag("Enemy") || other.CompareTag("Hook"))
         {
             // other.gameObject.SetActive(false);
-            GM.OnDeath();
+            GM.RemoveLife();
         }
     }
 
