@@ -166,29 +166,52 @@ public class GameManager : MonoBehaviour
 
     private void RemoveHeartImage()
     {
-        int total = heartPanel.transform.childCount;
-        Transform obj = heartPanel.transform.GetChild(total - 1);
+        //int total = heartPanel.transform.childCount;
+        List<Transform> list = new List<Transform>();
+        for (int i = 0; i < heartPanel.transform.childCount; i++)
+        {
+            Transform t = heartPanel.transform.GetChild(i);
+            if (t.gameObject.activeInHierarchy)
+            {
+                list.Add(t);
+            }
+        }
+        GameObject obj = list[list.Count - 1].gameObject;
         obj.gameObject.SetActive(false);
     }
+
     public void AddLife()
     {
-        if(lifes < maxLifes)
+
+        if(lifes+1 <= maxLifes)
         {
+            
             lifes++;
+            Debug.Log("Added life: " + lifes);
             AddHeartImage();
         }
     }
 
     public void RemoveLife()
     {
-        if(lifes <= 0)
+        if (invincible)
         {
+            Debug.Log("Invicible noob");
+            return;
+        }
+
+        if (lifes <= 1)
+        {
+            Debug.Log("DEAD");
             OnDeath();
         }
         else
         {
+            
             lifes--;
+            Debug.Log("Removed life: " + lifes);
             RemoveHeartImage();
+            StartCoroutine(InvicibleTimer(invinsibleTime));
         }
     }
 
