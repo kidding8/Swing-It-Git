@@ -23,7 +23,7 @@ GameObject:
   - component: {fileID: 58271065567690068}
   - component: {fileID: 114547853931951684}
   - component: {fileID: 114087974052740520}
-  m_Layer: 0
+  m_Layer: 12
   m_Name: CircleGrabber
   m_TagString: Hook
   m_Icon: {fileID: 0}

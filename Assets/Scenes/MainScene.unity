@@ -1488,8 +1488,8 @@ MonoBehaviour:
   unavailableHook: {fileID: 21300000, guid: 260361ad6a87f994cb151f08ffc46568, type: 3}
   layerMaskOtherObjectsAround:
     serializedVersion: 2
-    m_Bits: 1536
-  radiusOtherObjectsAround: 5
+    m_Bits: 5120
+  radiusOtherObjectsAround: 10
 --- !u!1 &478462813
 GameObject:
   m_ObjectHideFlags: 0

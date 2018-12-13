@@ -61,12 +61,20 @@ public class ThrowHook : MonoBehaviour
                  vel.x = previousVelocityX;
                  rb.velocity = vel;
              }*/
-            if (rb.velocity.magnitude < 16) { 
+            //if (rb.velocity.magnitude < 16) { 
             Vector3 vel = rb.velocity;
-            vel.x *= 1.03f;
-            vel.y *= 1.01f;
+            if(vel.x > 0)
+            vel.x += 10 * Time.deltaTime;
+            else
+            vel.x -= 10 * Time.deltaTime;
+
+
+            if (vel.y > 0)
+                vel.y += 10 * Time.deltaTime;
+            else
+                vel.y -= 10 * Time.deltaTime;
             rb.velocity = vel;
-        }
+        //}
             //rb.velocity = rb.velocity * 2f * (Time.deltaTime * 60);
         }
             previousVelocityX = rb.velocity.x;
