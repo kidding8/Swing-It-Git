@@ -32,6 +32,12 @@ public class ThrowHook : MonoBehaviour
     public float maxVelocity = -30f;
     //private Transform lastHookAttached;
     // Use this for initialization
+
+    float flips = 0;
+    float deltaRotation = 0;
+    float currentRotation = 0;
+    int backFlips = 0;
+    int frontFlips = 0;
     void Start()
     {
         GM = GameManager.instance;
@@ -77,11 +83,31 @@ public class ThrowHook : MonoBehaviour
             else
                 vel.y -= 10 * Time.deltaTime;
             rb.velocity = vel;
-        //}
+
+            backFlips = 0;
+            frontFlips = 0;
+            //}
             //rb.velocity = rb.velocity * 2f * (Time.deltaTime * 60);
-        }else if(rb.velocity.y < 0 && useFallMultiplier)
+        }
+        else if(rb.velocity.y < 0 && useFallMultiplier)
         {
             rb.velocity += Vector2.up * Physics2D.gravity * (fallMultiplier - 1) * Time.deltaTime;
+        }
+        else
+        {
+            deltaRotation = (currentRotation - transform.eulerAngles.z);
+            currentRotation = transform.eulerAngles.z;
+            if (deltaRotation >= 300)
+            {
+                deltaRotation -= 360;
+                frontFlips++;
+            }
+
+            if (deltaRotation <= -300)
+            {
+                deltaRotation += 360;
+                backFlips++;
+            }
         }
 
         if(rb.velocity.y < maxVelocity)
@@ -90,13 +116,31 @@ public class ThrowHook : MonoBehaviour
             vel.y = maxVelocity;
             rb.velocity = vel;
         }
+        
+        
+            
+        //flipscount += (deltaRotation);
 
-//#if UNITY_EDITOR
+        //flips = flipscount / 360;
+
+
+
+        //#if UNITY_EDITOR
 
 
         if (Input.GetMouseButtonDown(0) && GM.isPlaying() && timerHook > timerNextHook)
         {
             Hook();
+            if(backFlips > 0)
+            {
+                EM.GenerateText("Backflip x" + backFlips, transform);
+            } else if(frontFlips > 0)
+            {
+                EM.GenerateText("Frontflip x" + frontFlips, transform);
+            }
+            backFlips = 0;
+            frontFlips = 0;
+            
         }
         else if (Input.GetMouseButtonUp(0) && isPressed)
         {
