@@ -33,11 +33,18 @@ public class ThrowHook : MonoBehaviour
     //private Transform lastHookAttached;
     // Use this for initialization
 
-    float flips = 0;
+    /*float flips = 0;
     float deltaRotation = 0;
-    float currentRotation = 0;
+    float currentRotation = 0;*/
     int backFlips = 0;
     int frontFlips = 0;
+
+    private float rotMin = -360f;
+    private float rotMax = 360f;
+
+
+    private float maxMagnitude = 0;
+    private bool alreadyMaxedMagnitude = false;
     void Start()
     {
         GM = GameManager.instance;
@@ -61,7 +68,7 @@ public class ThrowHook : MonoBehaviour
             EM.speeding = false;
         }
         */
-
+        
         if (isAttachedToHook && isPressed)
         {
             /* if(rb.velocity.x < previousVelocityX)
@@ -86,6 +93,7 @@ public class ThrowHook : MonoBehaviour
 
             backFlips = 0;
             frontFlips = 0;
+            
             //}
             //rb.velocity = rb.velocity * 2f * (Time.deltaTime * 60);
         }
@@ -95,18 +103,41 @@ public class ThrowHook : MonoBehaviour
         }
         else
         {
-            deltaRotation = (currentRotation - transform.eulerAngles.z);
-            currentRotation = transform.eulerAngles.z;
-            if (deltaRotation >= 300)
-            {
-                deltaRotation -= 360;
-                frontFlips++;
-            }
+            /* deltaRotation = (currentRotation - transform.eulerAngles.z);
+             currentRotation = transform.eulerAngles.z;
+             if (deltaRotation >= 340)
+             {
+                 deltaRotation -= 360;
+                 frontFlips++;
+             }
 
-            if (deltaRotation <= -300)
+             if (deltaRotation <= -340)
+             {
+                 deltaRotation += 360;
+                 backFlips++;
+             }*/
+
+
+            /*if(rb.velocity.magnitude > 30 && !alreadyMaxedMagnitude)
             {
-                deltaRotation += 360;
+                maxMagnitude = rb.velocity.magnitude;
+            }
+            else if(!alreadyMaxedMagnitude && maxMagnitude != 0)
+            {
+                alreadyMaxedMagnitude = true;
+                EM.GenerateText("Max Velocity", transform);
+            }*/
+            
+
+            if (rb.rotation > rotMax)
+            {
+                frontFlips++;
+                SetRotationMinMax();
+            }
+            if (rb.rotation < rotMin)
+            {
                 backFlips++;
+                SetRotationMinMax();
             }
         }
 
@@ -117,6 +148,8 @@ public class ThrowHook : MonoBehaviour
             rb.velocity = vel;
         }
         
+
+
         
             
         //flipscount += (deltaRotation);
@@ -138,9 +171,12 @@ public class ThrowHook : MonoBehaviour
             {
                 EM.GenerateText("Frontflip x" + frontFlips, transform);
             }
-            backFlips = 0;
-            frontFlips = 0;
-            
+            SetRotationMinMax();
+            alreadyMaxedMagnitude = false;
+            /* deltaRotation = 0;
+             backFlips = 0;
+             frontFlips = 0;*/
+
         }
         else if (Input.GetMouseButtonUp(0) && isPressed)
         {
@@ -195,6 +231,12 @@ public class ThrowHook : MonoBehaviour
 
 //#endif
 
+    }
+
+    void SetRotationMinMax()
+    {
+        rotMin = rb.rotation - 360f;
+        rotMax = rb.rotation + 360f;
     }
 
     public void Jump()

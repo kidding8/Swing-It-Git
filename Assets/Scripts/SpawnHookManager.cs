@@ -10,7 +10,7 @@ public class SpawnHookManager : MonoBehaviour
     private AuxManager aux;
     private GameManager GM;
 
-    public ObjectPooler hookPool;
+    public ObjectPooler[] hookPool;
     private List<GameObject> hooksList;
 
     public ObjectPooler missiles;
@@ -125,6 +125,11 @@ public class SpawnHookManager : MonoBehaviour
     {
         return spawnMissileTop.position.x;
     }
+
+    private int GetRandomHookPrefab()
+    {
+        return Random.Range(0, hookPool.Length);
+    }
     public void RemoveHookList(GameObject hook)
     {
         hooksList.Remove(hook);
@@ -132,7 +137,7 @@ public class SpawnHookManager : MonoBehaviour
 
     void CreateHook()
     {
-        GameObject hook = hookPool.GetPooledObject();
+        GameObject hook = hookPool[GetRandomHookPrefab()].GetPooledObject();
         hook.SetActive(true);
         Vector3 newPos = new Vector3(transform.position.x + GetRandomHookX(), transform.position.y + GetRandomHookY(), transform.position.z);
         int safetyNet = 0;
@@ -156,7 +161,7 @@ public class SpawnHookManager : MonoBehaviour
 
     void CreateFirstHook()
     {
-        GameObject hook = hookPool.GetPooledObject();
+        GameObject hook = hookPool[0].GetPooledObject();
         hook.SetActive(true);
         Vector3 newPos = new Vector3(transform.position.x, transform.position.y + GetRandomHookY(), transform.position.z);
         hook.transform.position = newPos;

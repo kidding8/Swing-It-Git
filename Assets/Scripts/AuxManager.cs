@@ -16,6 +16,7 @@ public class AuxManager : MonoBehaviour {
     public ObjectPooler indicatorPool;
     public ObjectPooler singleCoinPool;
     public ObjectPooler[] coinPool;
+    public ObjectPooler boxPool;
     public Sprite[] backgroundSprites;
     public Material shadowMaterial;
     public Color shadowColor;
@@ -71,6 +72,11 @@ public class AuxManager : MonoBehaviour {
     public ObjectPooler GetNodePool()
     {
         return nodePool;
+    }
+
+    public ObjectPooler GetBoxPool()
+    {
+        return boxPool;
     }
 
     public ObjectPooler GetIndicatorPool()
