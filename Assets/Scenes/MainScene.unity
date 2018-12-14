@@ -2413,6 +2413,9 @@ MonoBehaviour:
   torqueToAdd: 1
   smokeParticle: {fileID: 1087480207}
   isAttachedToHook: 0
+  fallMultiplier: 1.5
+  useFallMultiplier: 1
+  maxVelocity: -30
 --- !u!50 &685057415
 Rigidbody2D:
   serializedVersion: 4
@@ -10245,6 +10248,9 @@ MonoBehaviour:
   torqueToAdd: 1
   smokeParticle: {fileID: 1087480207}
   isAttachedToHook: 0
+  fallMultiplier: 2.5
+  useFallMultiplier: 1
+  maxVelocity: -30
 --- !u!1 &1594282530
 GameObject:
   m_ObjectHideFlags: 0
@@ -10403,6 +10409,7 @@ GameObject:
   - component: {fileID: 1699162013}
   - component: {fileID: 1699162012}
   - component: {fileID: 1699162015}
+  - component: {fileID: 1699162016}
   m_Layer: 0
   m_Name: Wall
   m_TagString: Enemy
@@ -10507,6 +10514,31 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   offset: 55
   speed: 2
+--- !u!61 &1699162016
+BoxCollider2D:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 1699162011}
+  m_Enabled: 1
+  m_Density: 1
+  m_Material: {fileID: 0}
+  m_IsTrigger: 0
+  m_UsedByEffector: 0
+  m_UsedByComposite: 0
+  m_Offset: {x: 0, y: 0}
+  m_SpriteTilingProperty:
+    border: {x: 0, y: 0, z: 0, w: 0}
+    pivot: {x: 0.5, y: 0.5}
+    oldSize: {x: 1, y: 1}
+    newSize: {x: 1, y: 1}
+    adaptiveTilingThreshold: 0.5
+    drawMode: 0
+    adaptiveTiling: 0
+  m_AutoTiling: 0
+  serializedVersion: 2
+  m_Size: {x: 1, y: 1}
+  m_EdgeRadius: 0
 --- !u!1 &1702966815
 GameObject:
   m_ObjectHideFlags: 0
@@ -11441,8 +11473,8 @@ MonoBehaviour:
   spawnMissileDown: {fileID: 817315387}
   guidedMissiles: {fileID: 997656255}
   timeBetweenGuidedMissiles: 15
-  shootMissiles: 1
-  shootGuidedMissiles: 1
+  shootMissiles: 0
+  shootGuidedMissiles: 0
   timeBetweenMissiles: 8
   spawnPoint: {fileID: 1594282531}
   xOffset: {x: 5, y: 15}

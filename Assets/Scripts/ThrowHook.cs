@@ -27,6 +27,9 @@ public class ThrowHook : MonoBehaviour
     private float previousVelocityX;
     private bool isPressed = false;
     public bool isAttachedToHook = false;
+    public float fallMultiplier = 2.5f;
+    public bool useFallMultiplier = true;
+    public float maxVelocity = -30f;
     //private Transform lastHookAttached;
     // Use this for initialization
     void Start()
@@ -76,11 +79,17 @@ public class ThrowHook : MonoBehaviour
             rb.velocity = vel;
         //}
             //rb.velocity = rb.velocity * 2f * (Time.deltaTime * 60);
+        }else if(rb.velocity.y < 0 && useFallMultiplier)
+        {
+            rb.velocity += Vector2.up * Physics2D.gravity * (fallMultiplier - 1) * Time.deltaTime;
         }
-            previousVelocityX = rb.velocity.x;
-        
-        
-        Debug.DrawRay(transform.position, rb.velocity);
+
+        if(rb.velocity.y < maxVelocity)
+        {
+            Vector3 vel = rb.velocity;
+            vel.y = maxVelocity;
+            rb.velocity = vel;
+        }
 
 //#if UNITY_EDITOR
 
