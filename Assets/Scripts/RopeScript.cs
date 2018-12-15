@@ -38,6 +38,7 @@ public class RopeScript : MonoBehaviour
     private bool destroyRope = false;
     private bool alreadyJumped = false;
     private bool particlesDone = false;
+    private ThrowHook playerThrowHook;
     // Use this for initialization
     void Start()
     {
@@ -46,6 +47,7 @@ public class RopeScript : MonoBehaviour
         EM = EffectsManager.instance;
         cam = aux.GetCamera();
         player = aux.GetPlayer();
+        playerThrowHook = player.GetComponent<ThrowHook>();
         lastNode = transform.gameObject;
         nodePool = aux.GetNodePool();
         nodeList = new List<GameObject>();
@@ -71,20 +73,20 @@ public class RopeScript : MonoBehaviour
                     GM.AddCombo();
                 }
 
-                player.GetComponent<ThrowHook>().isAttachedToHook = true;
+                playerThrowHook.isAttachedToHook = true;
 
 
 
             }
             else
             {
-                player.GetComponent<ThrowHook>().isAttachedToHook = false;
+                playerThrowHook.isAttachedToHook = false;
             }
         } else if ((Vector2)transform.position != destiny && !alreadyJumped)
         {
             GetComponent<Rigidbody2D>().isKinematic = false;
             GM.RemoveCombo();
-            player.GetComponent<ThrowHook>().Jump();
+            playerThrowHook.Jump();
             alreadyJumped = true;
         }
             
@@ -103,8 +105,8 @@ public class RopeScript : MonoBehaviour
            /* while (Vector2.Distance(player.transform.position, lastNode.transform.position) > distance)
             {
                 CreateNode();
-
             }*/
+
             count = 0;
             if (!destroyRope) {
                 HingeJoint2D hingeLastNode = lastNode.GetComponent<HingeJoint2D>();
@@ -122,14 +124,10 @@ public class RopeScript : MonoBehaviour
             {
                 if (isAttachedToPlayer)
                 {
-                    AuxManager.instance.GetPlayer().GetComponent<ThrowHook>().DisableRope();
+                    playerThrowHook.DisableRope();
                 }
                 UnhookRope();
-                //AuxManager.instance.GetPlayer().GetComponent<ThrowHook>().DisableRope();
-                /* HingeJoint2D hingeLastNode = lastNode.GetComponent<HingeJoint2D>();
-                 hingeLastNode.enabled = false;
-                 //AuxManager.instance.GetPlayer().GetComponent<ThrowHook>().DisableRope();
-                 destroyRope = false;*/
+
             }
         }
         //CreateCollider();
@@ -143,6 +141,7 @@ public class RopeScript : MonoBehaviour
         if (isAttachedToPlayer)
         {
             GM.RemoveCombo();
+            playerThrowHook.DisableRope();
         }
             
         bottomNodeList.Clear();
@@ -169,8 +168,6 @@ public class RopeScript : MonoBehaviour
             nodeLineRenderer.startWidth = 0.1f;
             nodeLineRenderer.material.color = Color.green;
         }
-
-        //lastNode.GetComponent<HingeJoint2D>().enabled = false;
         destroyRope = true;
         drawRope = false;
         isAlreadyCut = true;
@@ -184,7 +181,6 @@ public class RopeScript : MonoBehaviour
         screenPos = cam.WorldToScreenPoint(transform.position);
         if (screenPos.x < -disToDestroyX)
         {
-            //SpawnManager.instance.RemovePlatformList(gameObject);
             DisableRope();
         }
     }
@@ -248,20 +244,10 @@ public class RopeScript : MonoBehaviour
 
     void CreateNode()
     {
-        count++;
         Vector2 pos2Create = player.transform.position - lastNode.transform.position;
         pos2Create.Normalize();
         pos2Create *= distance;
         pos2Create += (Vector2)lastNode.transform.position;
-
-        /* if (count <= 10)
-         {
-             player.transform.position = Vector3.MoveTowards(player.transform.position, pos2Create, speed / 5);
-         }
-         else
-         {*/
-
-        //GameObject node = (GameObject)Instantiate(nodePrefab, pos2Create, Quaternion.identity);
 
         GameObject node = nodePool.GetPooledObject();
         node.transform.position = pos2Create;
@@ -282,14 +268,10 @@ public class RopeScript : MonoBehaviour
     }
     public void UnhookRope()
     {
-
-        destroyRope = true;
-        
+        destroyRope = true; 
         lastNode.GetComponent<HingeJoint2D>().enabled = false;
         isAttachedToPlayer = false;
         isDone = true;
-        
-
     }
 
     public void DisableRope()
@@ -318,6 +300,12 @@ public class RopeScript : MonoBehaviour
 
     }
 
-
+    private void OnTriggerEnter2D(Collider2D other)
+    {
+        if (other.CompareTag("Enemy"))
+        {
+            other.gameObject.SetActive(false);
+        }
+    }
 
 }

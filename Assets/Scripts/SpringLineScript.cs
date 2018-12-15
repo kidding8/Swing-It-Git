@@ -8,7 +8,7 @@ public class SpringLineScript : MonoBehaviour
     private Transform target;
     private Rigidbody2D targetRb;
     private Rigidbody2D boxRb;
-    private LineRenderer line;
+   // private LineRenderer line;
     private SpringJoint2D spring;
     private GameObject box;
     private bool isStarted = false;
@@ -17,15 +17,16 @@ public class SpringLineScript : MonoBehaviour
         aux = AuxManager.instance;
         target = transform.GetChild(0);
         targetRb = target.GetComponent<Rigidbody2D>();
-        line = GetComponent<LineRenderer>();
+        //line = GetComponent<LineRenderer>();
         spring = GetComponent<SpringJoint2D>();
-        SetNewLine();
-        isStarted = true;
+        //SetNewLine();
+        //isStarted = true;
     }
 
     // Update is called once per frame
     void Update()
     {
+
         /*if (spring.attachedRigidbody != boxRb)
             line.SetPosition(1, box.transform.position);
         else
@@ -37,16 +38,27 @@ public class SpringLineScript : MonoBehaviour
         }*/
     }
 
-    private void SetNewLine()
+    public void SetNewLine()
     {
-        box = aux.GetBoxPool().GetPooledObject();
-        /* line.positionCount = 2;
-         line.SetPosition(0, transform.position);*/
-        box.SetActive(true);
-        targetRb.isKinematic = true;
-        boxRb = box.GetComponent<Rigidbody2D>();
-        box.transform.position = target.position;
-        spring.connectedBody = boxRb;
+        /*if (isStarted)
+        {*/
+           box = aux.GetBoxPool().GetPooledObject();
+            /*line.positionCount = 2;
+            line.SetPosition(0, transform.position);*/
+            box.SetActive(true);
+            //targetRb.isKinematic = true;
+            boxRb = box.GetComponent<Rigidbody2D>();
+            box.transform.position = new Vector3(transform.position.x, transform.position.y -3, transform.position.z);
+            //newBox.transform.parent = transform;
+            /*if(spring == null)
+            {
+                spring = gameObject.AddComponent<SpringJoint2D>();
+                Debug.Log("Added");
+            }*/
+
+            spring.connectedBody = boxRb;
+            //spring.connectedAnchor = newBox.transform.position;
+        //}
     }
 
     private void RemoveNewLine()
@@ -58,7 +70,13 @@ public class SpringLineScript : MonoBehaviour
 
     private void OnEnable()
     {
-        if(isStarted)
-        SetNewLine();
+
+        //Debug.Log("Started new thing");
+        if (isStarted)
+        {
+            //Debug.Log("ENABLED");
+            SetNewLine();
+        }
+            
     }
 }

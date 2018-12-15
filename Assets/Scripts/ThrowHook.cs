@@ -30,6 +30,7 @@ public class ThrowHook : MonoBehaviour
     public float fallMultiplier = 2.5f;
     public bool useFallMultiplier = true;
     public float maxVelocity = -30f;
+    private Vector2 destinyHook;
     //private Transform lastHookAttached;
     // Use this for initialization
 
@@ -89,11 +90,19 @@ public class ThrowHook : MonoBehaviour
                 vel.y += 10 * Time.deltaTime;
             else
                 vel.y -= 10 * Time.deltaTime;
-            rb.velocity = vel;
-
+            
             backFlips = 0;
             frontFlips = 0;
-            
+
+            rb.velocity = vel;
+
+            //Debug.Log(Vector3.Distance(transform.position, currrentHook.transform.position));
+            /*if(Vector3.Distance(transform.position, destinyHook) < 0.5f)
+            {
+                vel *= -1;
+                Debug.Log("Fucked");
+                rb.velocity = vel;
+            }*/
             //}
             //rb.velocity = rb.velocity * 2f * (Time.deltaTime * 60);
         }
@@ -103,20 +112,6 @@ public class ThrowHook : MonoBehaviour
         }
         else
         {
-            /* deltaRotation = (currentRotation - transform.eulerAngles.z);
-             currentRotation = transform.eulerAngles.z;
-             if (deltaRotation >= 340)
-             {
-                 deltaRotation -= 360;
-                 frontFlips++;
-             }
-
-             if (deltaRotation <= -340)
-             {
-                 deltaRotation += 360;
-                 backFlips++;
-             }*/
-
 
             /*if(rb.velocity.magnitude > 30 && !alreadyMaxedMagnitude)
             {
@@ -147,16 +142,7 @@ public class ThrowHook : MonoBehaviour
             vel.y = maxVelocity;
             rb.velocity = vel;
         }
-        
-
-
-        
-            
-        //flipscount += (deltaRotation);
-
-        //flips = flipscount / 360;
-
-
+       
 
         //#if UNITY_EDITOR
 
@@ -286,7 +272,7 @@ public class ThrowHook : MonoBehaviour
 
             if (closestHook != null)
             {
-                Vector2 destiny = closestHook.transform.position;
+                destinyHook = closestHook.transform.position;
 
                 currrentHook = (GameObject)Instantiate(hookToInstantiate, transform.position, Quaternion.identity);
                 /*currrentHook = hook.GetPooledObject();
@@ -294,12 +280,12 @@ public class ThrowHook : MonoBehaviour
                 currrentHook.transform.rotation = Quaternion.identity;
                 currrentHook.SetActive(true);*/
                 ropeScript = currrentHook.GetComponent<RopeScript>();
-                ropeScript.destiny = destiny;
+                ropeScript.destiny = destinyHook;
                 ropeActive = true;
 
                 EM.CreateCameraShake(0.05f);
 
-                Vector3 dir = rb.velocity - destiny;
+                //Vector3 dir = rb.velocity - destiny;
                
 
 
@@ -375,6 +361,7 @@ public class ThrowHook : MonoBehaviour
     public void DisableRope()
     {
         ropeActive = false;
+        isAttachedToHook = false;
         currrentHook = null;
     }
 

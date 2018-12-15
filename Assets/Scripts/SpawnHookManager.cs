@@ -137,7 +137,12 @@ public class SpawnHookManager : MonoBehaviour
 
     void CreateHook()
     {
-        GameObject hook = hookPool[GetRandomHookPrefab()].GetPooledObject();
+        int rand = GetRandomHookPrefab();
+        GameObject hook = hookPool[rand].GetPooledObject();
+        /*if(rand == 1)
+        {
+            hook.GetComponent<SpringLineScript>().SetNewLine();
+        }*/
         hook.SetActive(true);
         Vector3 newPos = new Vector3(transform.position.x + GetRandomHookX(), transform.position.y + GetRandomHookY(), transform.position.z);
         int safetyNet = 0;
@@ -150,6 +155,7 @@ public class SpawnHookManager : MonoBehaviour
             if (safetyNet > 10)
             {
                 Debug.Log("EXDECEUUUU");
+
                 break;
             }
         }
@@ -178,7 +184,6 @@ public class SpawnHookManager : MonoBehaviour
             SpawnMissile();
         }
         
-        //StartCoroutine(EnemySidesGenerator());
     }
     IEnumerator GuidedMissiles()
     {
