@@ -205,15 +205,33 @@ public class SpawnHookManager : MonoBehaviour
         newMissile.transform.position = newPos;
     }
 
+    private Vector3 RandomGuidedMissilePos()
+    {
+        int rand = Random.Range(0, 2);
+        bool top = rand == 0 ? true : false;
+        Vector3 topLeft = aux.GetUpperLeftCorner();
+        Vector3 topRight = aux.GetUpperRightCorner();
+        Vector3 downRight = aux.GetLowerRightCorner();
+        /*if (top)
+        {*/
+          return new Vector3(Random.Range(topLeft.x + 10, topRight.x), topRight.y + 7);
+        /*}
+        else
+        {
+          return new Vector3(topRight.x + 3, Random.Range(topRight.y, downRight.y + 10));
+        }*/
+
+    }
+
     private void SpawnGuidedMissile()
     {
         GameObject newMissile = guidedMissiles.GetPooledObject();
         newMissile.SetActive(true);
         //newMissile.transform.rotation = Quaternion.Euler(0, 0, -90);
-        Vector3 screenPosition = Camera.main.ScreenToWorldPoint(new Vector3(Random.Range(0, Screen.width), Random.Range(0, Screen.height), aux.GetCamera().farClipPlane / 2));
-        //newPos = new Vector3(GetRandomMissileX(), GetRandomMissileY(), transform.position.z);
+
+        Vector3 newPos = RandomGuidedMissilePos();
         newMissile.transform.rotation = Quaternion.identity;
-        newMissile.transform.position = screenPosition;
+        newMissile.transform.position = newPos;
     }
 
 

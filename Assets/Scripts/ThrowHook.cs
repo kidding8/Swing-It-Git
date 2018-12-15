@@ -301,8 +301,14 @@ public class ThrowHook : MonoBehaviour
             }
             else
             {
-                ropeActive = false;
+                //ropeActive = false;
 
+                currrentHook = (GameObject)Instantiate(hookToInstantiate, transform.position, Quaternion.identity);
+                Vector3 downPos = new Vector3(transform.position.x ,transform.position.y-15, 0);
+                ropeScript = currrentHook.GetComponent<RopeScript>();
+                ropeScript.destiny = downPos;
+                ropeScript.noTarget = true;
+                ropeActive = true;
 
                 Debug.Log("NO ROPE NEARBY");
             }

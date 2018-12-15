@@ -39,6 +39,7 @@ public class RopeScript : MonoBehaviour
     private bool alreadyJumped = false;
     private bool particlesDone = false;
     private ThrowHook playerThrowHook;
+    public bool noTarget;
     // Use this for initialization
     void Start()
     {
@@ -66,6 +67,14 @@ public class RopeScript : MonoBehaviour
             transform.position = Vector2.MoveTowards(transform.position, destiny, speed);
             if((Vector2)transform.position == destiny)
             {
+                if (noTarget)
+                {
+                    UnhookRope();
+                    GetComponent<Rigidbody2D>().isKinematic = false;
+                    playerThrowHook.Jump();
+                    alreadyJumped = true;
+                }
+
                 if (!particlesDone)
                 {
                     particlesDone = true;
@@ -302,7 +311,7 @@ public class RopeScript : MonoBehaviour
 
     private void OnTriggerEnter2D(Collider2D other)
     {
-        if (other.CompareTag("Enemy"))
+        if (other.CompareTag("Enemy") && isAttachedToPlayer)
         {
             other.gameObject.SetActive(false);
         }

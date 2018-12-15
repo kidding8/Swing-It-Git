@@ -12092,7 +12092,7 @@ MonoBehaviour:
   guidedMissiles: {fileID: 997656255}
   timeBetweenGuidedMissiles: 15
   shootMissiles: 0
-  shootGuidedMissiles: 0
+  shootGuidedMissiles: 1
   timeBetweenMissiles: 8
   spawnPoint: {fileID: 1594282531}
   xOffset: {x: 5, y: 15}
