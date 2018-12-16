@@ -31,6 +31,11 @@ public class ThrowHook : MonoBehaviour
     public bool useFallMultiplier = true;
     public float maxVelocity = -30f;
     private Vector2 destinyHook;
+    private Vector3 directionHook;
+    private float currentAngle = 0;
+    private float startedAngle = 0;
+    private int currentSpins = 0;
+    private bool alreadyAngled = false;
     //private Transform lastHookAttached;
     // Use this for initialization
 
@@ -96,6 +101,30 @@ public class ThrowHook : MonoBehaviour
 
             rb.velocity = vel;
 
+            //var curFwd = Vector3.right;
+            // measure the angle rotated since last frame:
+            //var ang = Vector3.Angle(curFwd, directionHook);
+            var angulo = CalculateAngle(transform.position, destinyHook);
+            if (!alreadyAngled)
+            {
+                startedAngle = angulo;
+                alreadyAngled = true;
+            }
+            currentAngle = angulo;
+            //Debug.Log("Angle: " + angulo);
+            /*var direction = Quaternion.AngleAxis(angulo, Vector3.up) * Vector3.right * 10;
+            Debug.DrawRay(transform.position, direction);
+           // Debug.Log("Calcu")
+            if (ang > 0.01)
+            { // if rotated a significant angle...
+              // fix angle sign...
+                if (Vector3.Cross(curFwd, directionHook).x < 0) ang = -ang;
+                if(ang > 160)
+                currentAngle += 1; // accumulate in curAngleX...
+
+                directionHook = destinyHook - (Vector2)transform.position;
+                directionHook.Normalize(); // and update lastFwd
+            }*/
             //Debug.Log(Vector3.Distance(transform.position, currrentHook.transform.position));
             /*if(Vector3.Distance(transform.position, destinyHook) < 0.5f)
             {
@@ -112,6 +141,11 @@ public class ThrowHook : MonoBehaviour
         }
         else
         {
+            
+            currentAngle = 0;
+            startedAngle = 0;
+            alreadyAngled = false;
+            currentSpins = 0;
 
             /*if(rb.velocity.magnitude > 30 && !alreadyMaxedMagnitude)
             {
@@ -122,7 +156,7 @@ public class ThrowHook : MonoBehaviour
                 alreadyMaxedMagnitude = true;
                 EM.GenerateText("Max Velocity", transform);
             }*/
-            
+
 
             if (rb.rotation > rotMax)
             {
@@ -136,7 +170,16 @@ public class ThrowHook : MonoBehaviour
             }
         }
 
-        if(rb.velocity.y < maxVelocity)
+        
+        if(currentAngle >= startedAngle - 10 && currentAngle <= startedAngle + 10)
+        {
+            currentSpins++;
+            Debug.Log("HOLY FUCKING SHITTTT : " + currentSpins);
+        }
+        
+
+
+        if (rb.velocity.y < maxVelocity)
         {
             Vector3 vel = rb.velocity;
             vel.y = maxVelocity;
@@ -225,6 +268,11 @@ public class ThrowHook : MonoBehaviour
         rotMax = rb.rotation + 360f;
     }
 
+    public static float CalculateAngle(Vector3 from, Vector3 to)
+    {
+        return Quaternion.FromToRotation(Vector3.up, to - from).eulerAngles.z;
+    }
+
     public void Jump()
     {
         timerJump = 0;
@@ -286,8 +334,9 @@ public class ThrowHook : MonoBehaviour
                 EM.CreateCameraShake(0.05f);
 
                 //Vector3 dir = rb.velocity - destiny;
-               
 
+                directionHook = destinyHook - (Vector2)transform.position;
+                directionHook.Normalize();
 
                 Vector3 rightRay = new Vector3(1f, 0.5f, 0f);
                 //Debug.DrawRay(transform.position, -dir);
@@ -369,6 +418,7 @@ public class ThrowHook : MonoBehaviour
         ropeActive = false;
         isAttachedToHook = false;
         currrentHook = null;
+        alreadyAngled = false;
     }
 
     IEnumerator Jump(float waitSeconds, Vector2 newVelocity, Vector2 oldVelocity)
