@@ -196,7 +196,7 @@ public class GameManager : MonoBehaviour
     {
         if (invincible)
         {
-            Debug.Log("Invicible noob");
+           
             return;
         }
 

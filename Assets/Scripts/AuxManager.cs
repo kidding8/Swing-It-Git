@@ -158,4 +158,22 @@ public class AuxManager : MonoBehaviour {
         }
         return false;
     }
+
+    public void DestroyInRadius(Vector3 pos, float radius)
+    {
+        Collider2D[] colliders = Physics2D.OverlapCircleAll(pos, radius);
+        
+        foreach (Collider2D col in colliders)
+        {
+            if (col.tag == "Enemy")
+            {
+                col.gameObject.SetActive(false);
+            }
+            else if(col.tag == "Hook")
+            {
+                SpawnHookManager.instance.RemoveHookList(col.gameObject);
+                col.gameObject.SetActive(false);
+            }
+        }
+    }
 }

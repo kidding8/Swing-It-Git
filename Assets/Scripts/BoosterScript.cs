@@ -4,21 +4,30 @@ using UnityEngine;
 
 public class BoosterScript : MonoBehaviour {
 
-    public float Boost = 10f;
+    public float boost = 10f;
+    private AuxManager aux;
+    public float radiusToDestroy = 300f;
     private EffectsManager EM;
-    private bool isTriggerd = false;
+
     private void Start()
     {
+        aux = AuxManager.instance;
         EM = EffectsManager.instance;
     }
 
     private void OnTriggerEnter2D(Collider2D other)
     {
-        if (other.CompareTag("Player") && isTriggerd)
+        if (other.CompareTag("Player"))
         {
             Rigidbody2D rb = other.GetComponent<Rigidbody2D>();
             Vector2 velocity = rb.velocity;
-            rb.velocity = new Vector2(velocity.x, Boost);
+            if(velocity.x <= 4)
+            {
+                velocity.x = 5;
+            }
+            velocity.y = boost;
+            rb.velocity = velocity;
+            aux.DestroyInRadius(transform.position, radiusToDestroy);
             onDeath();
         }
         else if (other.CompareTag("Wall"))

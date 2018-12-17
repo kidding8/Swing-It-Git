@@ -4,19 +4,19 @@ using UnityEngine;
 
 public class SpawnBottomManager : MonoBehaviour {
 
-    [System.Serializable]
+    /*[System.Serializable]
     public struct Obstacle
     {
         public int index;
         public ObjectPooler ObstaclePool;
-    }
+    }*/
 
     private SpawnBottomManager instance;
     private AuxManager aux;
     private GameManager GM;
    
     //public ObjectPooler grassPool;
-    public List<Obstacle> obstaclesList;
+    public List<ObjectPooler> obstaclesList;
 
     public Transform spawnPoint;
     public Vector2 xOffset;
@@ -101,9 +101,9 @@ public class SpawnBottomManager : MonoBehaviour {
     void CreateObstacle()
     {
         int obsIndex = GetObstacle();
-        GameObject obstacle = obstaclesList[obsIndex].ObstaclePool.GetPooledObject();
+        GameObject obstacle = obstaclesList[obsIndex].GetPooledObject();
         obstacle.SetActive(true);
-        InCaseExtra(obstaclesList[obsIndex].index, obstacle);
+        //InCaseExtra(obstaclesList[obsIndex].index, obstacle);
         Vector3 newPos = new Vector3(transform.position.x + GetRandomHookX(), transform.position.y + GetRandomHookY(), transform.position.z);
         int safetyNet = 0;
         while (aux.IsOtherObjectsAround(newPos))

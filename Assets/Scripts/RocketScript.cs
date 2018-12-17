@@ -12,7 +12,7 @@ public class RocketScript : MonoBehaviour
     public float maxDistance = 30f;
     public float rocketSpeed = 10f;
     private ThrowHook throwHook;
-    
+    public float destroyRadius = 10f;
     // Start is called before the first frame update
     void Start()
     {
@@ -30,12 +30,10 @@ public class RocketScript : MonoBehaviour
             transform.Translate(Vector3.right * Time.deltaTime * rocketSpeed);
             player.transform.position = transform.position + Vector3.up;
             throwHook.isInvicible = true;
+            throwHook.DisableRope();
             if(Vector3.Distance(initialPos, transform.position) > maxDistance)
             {
-                activateRocket = false;
-                throwHook.isInvicible = false;
-                throwHook.Jump();
-                OnDeath();
+                ReachedDistination();
             }
         }
     }
@@ -44,6 +42,7 @@ public class RocketScript : MonoBehaviour
     {
         if (other.CompareTag("Player"))
         {
+            initialPos = transform.position;
             activateRocket = true;
         }
         else if(other.CompareTag("Wall"))
@@ -52,9 +51,19 @@ public class RocketScript : MonoBehaviour
         }
     }
 
-    private void OnEnable()
+    /*private void OnEnable()
     {
-        initialPos = transform.position;
+        //initialPos = transform.position;
+        activateRocket = false;
+    }*/
+
+    private void ReachedDistination()
+    {
+        activateRocket = false;
+        throwHook.isInvicible = false;
+        throwHook.Jump();
+        OnDeath();
+        aux.DestroyInRadius(transform.position, destroyRadius);
     }
 
     private void OnDeath()

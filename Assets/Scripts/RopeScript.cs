@@ -285,7 +285,8 @@ public class RopeScript : MonoBehaviour
     public void UnhookRope()
     {
         destroyRope = true; 
-        lastNode.GetComponent<HingeJoint2D>().enabled = false;
+        if(lastNode != null)
+         lastNode.GetComponent<HingeJoint2D>().enabled = false;
         isAttachedToPlayer = false;
         isDone = true;
     }

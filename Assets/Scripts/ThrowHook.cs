@@ -32,6 +32,9 @@ public class ThrowHook : MonoBehaviour
     private Vector3 directionHook;
     public bool isInvicible = false;
 
+    public float distanceToGround = 3f;
+    public LayerMask whatIsGround;
+
     int backFlips = 0;
     int frontFlips = 0;
 
@@ -179,9 +182,20 @@ public class ThrowHook : MonoBehaviour
         //#endif
         */
         #endregion
+
+        //Debug.DrawRay(transform.position, -Vector2.up * distanceToGround);
+        if (CheckIfGrounded())
+        {
+            Debug.Log("grounded");
+            
+        }
+
     }
 
-    
+    private bool CheckIfGrounded()
+    {
+        return Physics2D.Raycast(transform.position, -Vector2.up, distanceToGround, whatIsGround);
+    }
 
     public void Jump()
     {
@@ -205,7 +219,7 @@ public class ThrowHook : MonoBehaviour
         isPressed = false;
         if (ropeActive)
         {
-            ropeScript.UnhookRope();
+            //ropeScript.UnhookRope();
             DisableRope();
             EM.CreateCameraShake(0.05f);
             rb.AddForce(new Vector3(0.3f, 1f, 0) * forceRopeLeave, ForceMode2D.Force);
@@ -279,7 +293,7 @@ public class ThrowHook : MonoBehaviour
     }
     public void OnContinue()
     {
-        ropeScript.UnhookRope();
+        //ropeScript.UnhookRope();
         DisableRope();
         GameObject closest = SM.GetClosestHookWithoutLimit();
         transform.position = new Vector3(closest.transform.position.x, closest.transform.position.y, transform.position.z);
@@ -296,15 +310,20 @@ public class ThrowHook : MonoBehaviour
     private void OnTriggerEnter2D(Collider2D other)
     {
         
-        if (other.CompareTag("Enemy") || other.CompareTag("Hook") || other.CompareTag("Wall") && !isInvicible)
+        if (other.CompareTag("Enemy") || other.CompareTag("Hook") || other.CompareTag("Wall"))
         {
             // other.gameObject.SetActive(false);
-            GM.RemoveLife();
+            if (!isInvicible)
+            {
+                GM.RemoveLife();
+            }
+            
         }
     }
 
     public void DisableRope()
     {
+        ropeScript.UnhookRope();
         ropeActive = false;
         isAttachedToHook = false;
         currrentHook = null;
