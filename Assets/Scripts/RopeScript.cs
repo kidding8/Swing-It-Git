@@ -8,7 +8,7 @@ public class RopeScript : MonoBehaviour
     private GameManager GM;
     private AuxManager aux;
     private EffectsManager EM;
-    public Vector2 destiny;
+    private Vector2 destiny = Vector2.zero;
     public float speed = 1f;
     public float distance = 2f;
     public float disToDestroyX = 300f;
@@ -30,7 +30,7 @@ public class RopeScript : MonoBehaviour
     private int count = 0;
     private bool isAlreadyCut = false;
     private bool drawRope = true;
-    private bool isAttachedToPlayer = true;
+    private bool isAttachedToPlayer = false;
     private LineRenderer nodeLineRenderer;
     private Vector3 screenPos;
     private Camera cam;
@@ -39,7 +39,7 @@ public class RopeScript : MonoBehaviour
     private bool alreadyJumped = false;
     private bool particlesDone = false;
     private ThrowHook playerThrowHook;
-    public bool noTarget;
+    private bool noTarget;
     // Use this for initialization
     void Start()
     {
@@ -129,18 +129,25 @@ public class RopeScript : MonoBehaviour
         else
         {
             
-            if (destroyRope)
+            /*if (destroyRope)
             {
                 if (isAttachedToPlayer)
                 {
                     playerThrowHook.DisableRope();
                 }
-                UnhookRope();
+                
 
-            }
+            }*/
         }
         //CreateCollider();
 
+    }
+
+    public void AddRope(Vector3 destiny, bool noTarget)
+    {
+        isAttachedToPlayer = true;
+        this.noTarget = noTarget;
+        this.destiny = destiny;
     }
 
     public void DestroyRope(GameObject node)
@@ -177,10 +184,10 @@ public class RopeScript : MonoBehaviour
             nodeLineRenderer.startWidth = 0.1f;
             nodeLineRenderer.material.color = Color.green;
         }
-        destroyRope = true;
+        //destroyRope = true;
         drawRope = false;
         isAlreadyCut = true;
-        
+        UnhookRope();
     }
 
     private void LateUpdate()
@@ -285,14 +292,8 @@ public class RopeScript : MonoBehaviour
 
     public void DisableRope()
     {
-        // Debug.Log("Disabled");
-        //lastNode.GetComponent<HingeJoint2D>().enabled = true;
-        //lastNode.GetComponent<SpriteRenderer>().color = Color.green;
-        //destiny = Vector2.zero;
-        //
         for (int i = 1; i < nodeList.Count; i++)
         {
-            //nodeList[i].GetComponent<SpriteRenderer>().color = Color.green;
             nodeList[i].gameObject.SetActive(false);
             nodeList[i].transform.parent = aux.GetSpawnTransform();
 

@@ -6,7 +6,7 @@ public class BoosterScript : MonoBehaviour {
 
     public float Boost = 10f;
     private EffectsManager EM;
-
+    private bool isTriggerd = false;
     private void Start()
     {
         EM = EffectsManager.instance;
@@ -14,14 +14,23 @@ public class BoosterScript : MonoBehaviour {
 
     private void OnTriggerEnter2D(Collider2D other)
     {
-        if (other.CompareTag("Player"))
+        if (other.CompareTag("Player") && isTriggerd)
         {
             Rigidbody2D rb = other.GetComponent<Rigidbody2D>();
             Vector2 velocity = rb.velocity;
-            EM.SetCoinPickUpParticles(transform.position);
-            EM.CreateDisappearingCircle(transform.position);
             rb.velocity = new Vector2(velocity.x, Boost);
-            gameObject.SetActive(false);
+            onDeath();
         }
+        else if (other.CompareTag("Wall"))
+        {
+            onDeath();
+        }
+    }
+
+    private void onDeath()
+    {
+        EM.SetCoinPickUpParticles(transform.position);
+        EM.CreateDisappearingCircle(transform.position);
+        gameObject.SetActive(false);
     }
 }

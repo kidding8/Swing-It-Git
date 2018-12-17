@@ -12,7 +12,6 @@ GameObject:
   - component: {fileID: 212290597243674944}
   - component: {fileID: 58692746712959426}
   - component: {fileID: 114585807990774298}
-  - component: {fileID: 6603782353523693932}
   m_Layer: 0
   m_Name: CircleBoost
   m_TagString: Untagged
@@ -111,19 +110,3 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   Boost: 10
---- !u!114 &6603782353523693932
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1978151084044502}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 1303e9385642267419fefa8cb45b6c2e, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  destroyX: 1
-  destroyY: 0
-  isHook: 0
-  widthThreshold: {x: -300, y: 0}

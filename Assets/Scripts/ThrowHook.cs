@@ -24,33 +24,20 @@ public class ThrowHook : MonoBehaviour
     private float timerJump;
     private float timerNextJump = 0.5f;
     public ParticleSystem smokeParticle;
-    private float previousVelocityX;
     private bool isPressed = false;
     public bool isAttachedToHook = false;
     public float fallMultiplier = 2.5f;
     public bool useFallMultiplier = true;
     public float maxVelocity = -30f;
-    private Vector2 destinyHook;
     private Vector3 directionHook;
-    private float currentAngle = 0;
-    private float startedAngle = 0;
-    private int currentSpins = 0;
-    private bool alreadyAngled = false;
-    //private Transform lastHookAttached;
-    // Use this for initialization
+    public bool isInvicible = false;
 
-    /*float flips = 0;
-    float deltaRotation = 0;
-    float currentRotation = 0;*/
     int backFlips = 0;
     int frontFlips = 0;
 
     private float rotMin = -360f;
     private float rotMax = 360f;
 
-
-    private float maxMagnitude = 0;
-    private bool alreadyMaxedMagnitude = false;
     void Start()
     {
         GM = GameManager.instance;
@@ -74,89 +61,36 @@ public class ThrowHook : MonoBehaviour
             EM.speeding = false;
         }
         */
-        
+
         if (isAttachedToHook && isPressed)
         {
-            /* if(rb.velocity.x < previousVelocityX)
-             {
-                 Vector3 vel = rb.velocity;
-                 vel.x = previousVelocityX;
-                 rb.velocity = vel;
-             }*/
-            //if (rb.velocity.magnitude < 16) { 
+           
             Vector3 vel = rb.velocity;
-            if(vel.x > 0)
-            vel.x += 10 * Time.deltaTime;
+            if (vel.x > 0)
+                vel.x += 10 * Time.deltaTime;
             else
-            vel.x -= 10 * Time.deltaTime;
+                vel.x -= 10 * Time.deltaTime;
 
 
             if (vel.y > 0)
                 vel.y += 10 * Time.deltaTime;
             else
                 vel.y -= 10 * Time.deltaTime;
-            
+
             backFlips = 0;
             frontFlips = 0;
 
             rb.velocity = vel;
 
-            //var curFwd = Vector3.right;
-            // measure the angle rotated since last frame:
-            //var ang = Vector3.Angle(curFwd, directionHook);
-            var angulo = CalculateAngle(transform.position, destinyHook);
-            if (!alreadyAngled)
-            {
-                startedAngle = angulo;
-                alreadyAngled = true;
-            }
-            currentAngle = angulo;
-            //Debug.Log("Angle: " + angulo);
-            /*var direction = Quaternion.AngleAxis(angulo, Vector3.up) * Vector3.right * 10;
-            Debug.DrawRay(transform.position, direction);
-           // Debug.Log("Calcu")
-            if (ang > 0.01)
-            { // if rotated a significant angle...
-              // fix angle sign...
-                if (Vector3.Cross(curFwd, directionHook).x < 0) ang = -ang;
-                if(ang > 160)
-                currentAngle += 1; // accumulate in curAngleX...
+            // var angulo = CalculateAngle(transform.position, destinyHook);
 
-                directionHook = destinyHook - (Vector2)transform.position;
-                directionHook.Normalize(); // and update lastFwd
-            }*/
-            //Debug.Log(Vector3.Distance(transform.position, currrentHook.transform.position));
-            /*if(Vector3.Distance(transform.position, destinyHook) < 0.5f)
-            {
-                vel *= -1;
-                Debug.Log("Fucked");
-                rb.velocity = vel;
-            }*/
-            //}
-            //rb.velocity = rb.velocity * 2f * (Time.deltaTime * 60);
         }
-        else if(rb.velocity.y < 0 && useFallMultiplier)
+        else if (rb.velocity.y < 0 && useFallMultiplier)
         {
             rb.velocity += Vector2.up * Physics2D.gravity * (fallMultiplier - 1) * Time.deltaTime;
         }
         else
         {
-            
-            currentAngle = 0;
-            startedAngle = 0;
-            alreadyAngled = false;
-            currentSpins = 0;
-
-            /*if(rb.velocity.magnitude > 30 && !alreadyMaxedMagnitude)
-            {
-                maxMagnitude = rb.velocity.magnitude;
-            }
-            else if(!alreadyMaxedMagnitude && maxMagnitude != 0)
-            {
-                alreadyMaxedMagnitude = true;
-                EM.GenerateText("Max Velocity", transform);
-            }*/
-
 
             if (rb.rotation > rotMax)
             {
@@ -170,13 +104,13 @@ public class ThrowHook : MonoBehaviour
             }
         }
 
-        
-        if(currentAngle >= startedAngle - 10 && currentAngle <= startedAngle + 10)
+
+        /*if(currentAngle >= startedAngle - 10 && currentAngle <= startedAngle + 10)
         {
             currentSpins++;
             Debug.Log("HOLY FUCKING SHITTTT : " + currentSpins);
-        }
-        
+        }*/
+
 
 
         if (rb.velocity.y < maxVelocity)
@@ -185,7 +119,7 @@ public class ThrowHook : MonoBehaviour
             vel.y = maxVelocity;
             rb.velocity = vel;
         }
-       
+
 
         //#if UNITY_EDITOR
 
@@ -193,85 +127,61 @@ public class ThrowHook : MonoBehaviour
         if (Input.GetMouseButtonDown(0) && GM.isPlaying() && timerHook > timerNextHook)
         {
             Hook();
-            if(backFlips > 0)
+
+            if (backFlips > 0)
             {
                 EM.GenerateText("Backflip x" + backFlips, transform);
-            } else if(frontFlips > 0)
+            }
+            else if (frontFlips > 0)
             {
                 EM.GenerateText("Frontflip x" + frontFlips, transform);
             }
             SetRotationMinMax();
-            alreadyMaxedMagnitude = false;
-            /* deltaRotation = 0;
-             backFlips = 0;
-             frontFlips = 0;*/
 
         }
+
         else if (Input.GetMouseButtonUp(0) && isPressed)
         {
             Unhook();
         }
-
-
-
-        /* if (Input.GetMouseButtonDown(0) && GM.isPlaying() && timerHook > timerNextHook)
-         {
-
-             Hook();
-             //lastClickTime = Time.time;
-         }*/
-
-        
 
         else if (Input.GetMouseButtonDown(1) && GM.isPlaying())
         {
             Jump();
         }
 
-//#elif UNITY_ANDROID
+        #region Android
+        //#elif UNITY_ANDROID
 
         /*foreach (Touch touch in Input.touches)
         {*/
-            
-       /* if (Input.touches.Length > 0)
-        {
-            Touch touch = Input.touches[0];
-            if (touch.position.x < Screen.width / 2 && timerHook > timerNextHook)
-            {
-                if (touch.phase == TouchPhase.Began)
-                {
-                    /*if(isPressed){
-                        Unhook();
-                    }*/
-                    /*Hook();
 
-                }
-                else if (touch.phase == TouchPhase.Ended && isPressed)
-                {
-                    Unhook();
-                }
-            }
-
-            else if (touch.position.x > Screen.width / 2 && timerJump > timerNextJump)
-            {
-                Jump();
-            }
-        }*/
-
-//#endif
+        /* if (Input.touches.Length > 0)
+         {
+             Touch touch = Input.touches[0];
+             if (touch.position.x < Screen.width / 2 && timerHook > timerNextHook)
+             {
+                 if (touch.phase == TouchPhase.Began)
+                 {
+                     /*if(isPressed){
+                         Unhook();
+                     }*/
+        /*Hook();
 
     }
-
-    void SetRotationMinMax()
+    else if (touch.phase == TouchPhase.Ended && isPressed)
     {
-        rotMin = rb.rotation - 360f;
-        rotMax = rb.rotation + 360f;
+        Unhook();
+    }
+}
+
+
+        //#endif
+        */
+        #endregion
     }
 
-    public static float CalculateAngle(Vector3 from, Vector3 to)
-    {
-        return Quaternion.FromToRotation(Vector3.up, to - from).eulerAngles.z;
-    }
+    
 
     public void Jump()
     {
@@ -300,13 +210,6 @@ public class ThrowHook : MonoBehaviour
             EM.CreateCameraShake(0.05f);
             rb.AddForce(new Vector3(0.3f, 1f, 0) * forceRopeLeave, ForceMode2D.Force);
             rb.AddTorque(torqueToAdd);
-
-            /* Vector2 velocityVector = rb.velocity;
-
-             velocityVector.y += 3f;
-             velocityVector.y += 0.5f;
-             rb.velocity = velocityVector;*/
-
         }
     }
 
@@ -320,48 +223,34 @@ public class ThrowHook : MonoBehaviour
 
             if (closestHook != null)
             {
-                destinyHook = closestHook.transform.position;
-
-                currrentHook = (GameObject)Instantiate(hookToInstantiate, transform.position, Quaternion.identity);
-                /*currrentHook = hook.GetPooledObject();
-                currrentHook.transform.position = transform.position;
-                currrentHook.transform.rotation = Quaternion.identity;
-                currrentHook.SetActive(true);*/
-                ropeScript = currrentHook.GetComponent<RopeScript>();
-                ropeScript.destiny = destinyHook;
-                ropeActive = true;
-
+                CreateHook(closestHook.transform.position, false);
                 EM.CreateCameraShake(0.05f);
+                /*directionHook = destinyHook - (Vector2)transform.position;
+                directionHook.Normalize();*/
 
-                //Vector3 dir = rb.velocity - destiny;
+                Vector3 forceDir = new Vector3(1f, 0.5f, 0f);
+                rb.AddForce(forceDir * forceRopeGrab, ForceMode2D.Force);
 
-                directionHook = destinyHook - (Vector2)transform.position;
-                directionHook.Normalize();
-
-                Vector3 rightRay = new Vector3(1f, 0.5f, 0f);
-                //Debug.DrawRay(transform.position, -dir);
-
-                //rb.AddForceAtPosition(-direction * forceRopeLeave * 10, transform.position);
-                //Vector3 dir = rb.velocity;
-                //rb.velocity = velocity * 1.2f;
-                
-                rb.AddForce(rightRay * forceRopeGrab, ForceMode2D.Force);
-                
             }
             else
             {
                 //ropeActive = false;
-
-                currrentHook = (GameObject)Instantiate(hookToInstantiate, transform.position, Quaternion.identity);
-                Vector3 downPos = new Vector3(transform.position.x ,transform.position.y-15, 0);
-                ropeScript = currrentHook.GetComponent<RopeScript>();
-                ropeScript.destiny = downPos;
-                ropeScript.noTarget = true;
-                ropeActive = true;
-
-                Debug.Log("NO ROPE NEARBY");
+                Vector3 downPos = new Vector3(transform.position.x, transform.position.y - 15, 0);
+                CreateHook(downPos, true);
             }
         }
+    }
+
+    private void CreateHook(Vector2 pos, bool noTarget)
+    {
+        currrentHook = (GameObject)Instantiate(hookToInstantiate, transform.position, Quaternion.identity);
+        /*currrentHook = hook.GetPooledObject();
+        currrentHook.transform.position = transform.position;
+        currrentHook.transform.rotation = Quaternion.identity;
+        currrentHook.SetActive(true);*/
+        ropeScript = currrentHook.GetComponent<RopeScript>();
+        ropeScript.AddRope(pos, noTarget);
+        ropeActive = true;
     }
 
     private void SmokeScreen()
@@ -406,7 +295,8 @@ public class ThrowHook : MonoBehaviour
 
     private void OnTriggerEnter2D(Collider2D other)
     {
-        if (other.CompareTag("Enemy") || other.CompareTag("Hook"))
+        
+        if (other.CompareTag("Enemy") || other.CompareTag("Hook") || other.CompareTag("Wall") && !isInvicible)
         {
             // other.gameObject.SetActive(false);
             GM.RemoveLife();
@@ -418,7 +308,6 @@ public class ThrowHook : MonoBehaviour
         ropeActive = false;
         isAttachedToHook = false;
         currrentHook = null;
-        alreadyAngled = false;
     }
 
     IEnumerator Jump(float waitSeconds, Vector2 newVelocity, Vector2 oldVelocity)
@@ -427,6 +316,17 @@ public class ThrowHook : MonoBehaviour
         yield return new WaitForSeconds(waitSeconds);
         rb.velocity = oldVelocity;
         rb.AddForce(new Vector3(1f, 0.1f, 0) * forceRopeLeave * 3, ForceMode2D.Force);
+    }
+   
+    void SetRotationMinMax()
+    {
+        rotMin = rb.rotation - 360f;
+        rotMax = rb.rotation + 360f;
+    }
+
+    public static float CalculateAngle(Vector3 from, Vector3 to)
+    {
+        return Quaternion.FromToRotation(Vector3.up, to - from).eulerAngles.z;
     }
 }
 

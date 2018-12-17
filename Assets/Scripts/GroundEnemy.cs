@@ -35,23 +35,21 @@ public class GroundEnemy : MonoBehaviour {
             Rigidbody2D rb = other.gameObject.GetComponent<Rigidbody2D>();
             Vector2 velocity = rb.velocity;
             rb.velocity = new Vector2(velocity.x, boost);
-            EM.SetCoinPickUpParticles(transform.position);
-            EM.CreateDisappearingCircle(transform.position);
+            onDeath();
             //isLeft = GetRandomBool();
-            gameObject.SetActive(false);
+
+        }
+        else if (other.gameObject.tag == "Wall")
+        {
+            onDeath();
         }
     }
 
-    /*private void OnTriggerEnter2D(Collider2D other)
+    private void onDeath()
     {
-        if (other.CompareTag("Player"))
-        {
-            Rigidbody2D rb = other.gameObject.GetComponent<Rigidbody2D>();
-            Vector2 velocity = rb.velocity;
-            rb.velocity = new Vector2(velocity.x, boost);
-            EM.SetCoinPickUpParticles(transform.position);
-            EM.CreateDisappearingCircle(transform.position);
-            gameObject.SetActive(false);
-        }
-    }*/
+        EM.SetCoinPickUpParticles(transform.position);
+        EM.CreateDisappearingCircle(transform.position);
+        gameObject.SetActive(false);
+    }
+
 }

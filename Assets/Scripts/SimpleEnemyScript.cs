@@ -2,27 +2,23 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class LifeScript : MonoBehaviour {
-    private GameManager GM;
+public class SimpleEnemyScript : MonoBehaviour
+{
     private EffectsManager EM;
-	// Use this for initialization
-	void Start () {
-        GM = GameManager.instance;
+    public bool isHook = false;
+    private void Start()
+    {
         EM = EffectsManager.instance;
-	}
-
+    }
     private void OnTriggerEnter2D(Collider2D other)
     {
-        if (other.CompareTag("Player"))
-        {
-            GM.AddLife();
-            EM.SetCoinPickUpParticles(transform.position);
-            EM.CreateDisappearingCircle(transform.position);
-            gameObject.SetActive(false);
-        }
-        else if(other.CompareTag("Wall"))
+        if (other.CompareTag("Wall"))
         {
             onDeath();
+            if (isHook)
+            {
+                SpawnHookManager.instance.RemoveHookList(this.gameObject);
+            }
         }
     }
 
@@ -32,5 +28,4 @@ public class LifeScript : MonoBehaviour {
         EM.CreateDisappearingCircle(transform.position);
         gameObject.SetActive(false);
     }
-
 }

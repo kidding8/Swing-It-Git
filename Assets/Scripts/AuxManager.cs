@@ -26,7 +26,9 @@ public class AuxManager : MonoBehaviour {
     public LayerMask layerMaskOtherObjectsAround;
     public float radiusOtherObjectsAround = 5f;
 
+    private bool canSpawn = false;
 
+    
     private void Awake()
     {
         if (instance == null)
@@ -38,6 +40,17 @@ public class AuxManager : MonoBehaviour {
             Destroy(gameObject);
         }
     }
+
+    /*private void Update()
+    {
+        if (GameManager.instance.isPlaying())
+            canSpawn = true;
+    }
+
+    public bool CanSpawn()
+    {
+        return canSpawn;
+    }*/
 
     public Transform GetSpawnTransform()
     {

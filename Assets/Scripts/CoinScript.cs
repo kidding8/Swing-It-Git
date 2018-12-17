@@ -19,6 +19,9 @@ public class CoinScript : MonoBehaviour {
             EM.SetCoinPickUpParticles(transform.position);
             EM.CreateDisappearingCircle(transform.position);
             gameObject.SetActive(false);
+        }else if (other.CompareTag("Wall"))
+        {
+            gameObject.SetActive(false);
         }
     }
 }

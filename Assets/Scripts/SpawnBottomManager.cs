@@ -4,15 +4,25 @@ using UnityEngine;
 
 public class SpawnBottomManager : MonoBehaviour {
 
+    [System.Serializable]
+    public struct Obstacle
+    {
+        public int index;
+        public ObjectPooler ObstaclePool;
+    }
+
     private SpawnBottomManager instance;
     private AuxManager aux;
     private GameManager GM;
+   
     //public ObjectPooler grassPool;
-    public List<ObjectPooler> obstaclesList;
+    public List<Obstacle> obstaclesList;
 
     public Transform spawnPoint;
     public Vector2 xOffset;
     public Vector2 yOffset;
+
+    
 
     private void Awake()
     {
@@ -73,11 +83,27 @@ public class SpawnBottomManager : MonoBehaviour {
         //hooksList.Remove(platform);
     }
 
+    private void InCaseExtra(int index, GameObject obj)
+    {
+        switch (index) {
+           /* case 0:
+                Debug.Log("Created");
+                obj.GetComponent<CoinFormation>().CreateCoins();
+                break;
+            case 1:
+                Debug.Log("Created 2");
+                obj.GetComponent<CoinFormation>().CreateCoins();
+                break;*/
+        }
+
+    }
+
     void CreateObstacle()
     {
         int obsIndex = GetObstacle();
-        GameObject obstacle = obstaclesList[obsIndex].GetPooledObject();
+        GameObject obstacle = obstaclesList[obsIndex].ObstaclePool.GetPooledObject();
         obstacle.SetActive(true);
+        InCaseExtra(obstaclesList[obsIndex].index, obstacle);
         Vector3 newPos = new Vector3(transform.position.x + GetRandomHookX(), transform.position.y + GetRandomHookY(), transform.position.z);
         int safetyNet = 0;
         while (aux.IsOtherObjectsAround(newPos))

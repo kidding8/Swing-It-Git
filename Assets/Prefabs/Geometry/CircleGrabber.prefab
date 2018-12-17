@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 4447665611955026}
   - component: {fileID: 212884031781448122}
   - component: {fileID: 58271065567690068}
-  - component: {fileID: 114547853931951684}
+  - component: {fileID: 5596853315038063028}
   - component: {fileID: 114087974052740520}
   m_Layer: 12
   m_Name: CircleGrabber
@@ -98,7 +98,7 @@ CircleCollider2D:
   m_Offset: {x: 0, y: 0}
   serializedVersion: 2
   m_Radius: 0.44
---- !u!114 &114547853931951684
+--- !u!114 &5596853315038063028
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -107,13 +107,10 @@ MonoBehaviour:
   m_GameObject: {fileID: 1963794421727036}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 1303e9385642267419fefa8cb45b6c2e, type: 3}
+  m_Script: {fileID: 11500000, guid: 77bb6b3894ca84842afea655aee2c02e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  destroyX: 1
-  destroyY: 0
   isHook: 1
-  widthThreshold: {x: -300, y: 0}
 --- !u!114 &114087974052740520
 MonoBehaviour:
   m_ObjectHideFlags: 0
