@@ -40,6 +40,7 @@ public class RopeScript : MonoBehaviour
     private bool particlesDone = false;
     private ThrowHook playerThrowHook;
     private bool noTarget;
+    private CameraFollow camFollow;
     // Use this for initialization
     void Start()
     {
@@ -56,6 +57,7 @@ public class RopeScript : MonoBehaviour
         upperNodeList = new List<GameObject>();
         nodeList.Add(transform.gameObject);
         lr = GetComponent<LineRenderer>();
+        camFollow = cam.GetComponent<CameraFollow>();
         //edgeCol = GetComponent<EdgeCollider2D>();
     }
 
@@ -83,13 +85,14 @@ public class RopeScript : MonoBehaviour
                 }
 
                 playerThrowHook.isAttachedToHook = true;
-
-
+                if(!noTarget)
+                    camFollow.AddTarget(transform);
 
             }
             else
             {
                 playerThrowHook.isAttachedToHook = false;
+               
             }
         } else if ((Vector2)transform.position != destiny && !alreadyJumped)
         {
@@ -284,11 +287,13 @@ public class RopeScript : MonoBehaviour
     }
     public void UnhookRope()
     {
+        camFollow.RemoveTarget();
         destroyRope = true; 
         if(lastNode != null)
          lastNode.GetComponent<HingeJoint2D>().enabled = false;
         isAttachedToPlayer = false;
         isDone = true;
+        
     }
 
     public void DisableRope()

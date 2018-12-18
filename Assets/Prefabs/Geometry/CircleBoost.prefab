@@ -110,4 +110,4 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   boost: 30
-  radiusToDestroy: 30
+  radiusToDestroy: 10

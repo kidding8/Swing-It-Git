@@ -111,4 +111,4 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   maxDistance: 100
   rocketSpeed: 60
-  destroyRadius: 30
+  destroyRadius: 10

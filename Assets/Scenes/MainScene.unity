@@ -1991,16 +1991,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 04d60428e99c38748a15a324a12205a2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  dampTime: 0.15
-  limitCameraTop: 30
-  limitCameraBottom: 9
-  offsetY: 1
-  offsetX: 10
-  nearCamZoom: 13
-  farCamZoom: 15
-  normalSpeed: 5
-  maxSpeed: 10
-  timeToZoom: 1
+  offset: {x: 10, y: 0, z: 0}
+  dampTime: 0.2
+  maxZoom: 16
+  minZoom: 8
 --- !u!20 &519420031
 Camera:
   m_ObjectHideFlags: 0
@@ -2698,7 +2692,7 @@ MonoBehaviour:
   torqueToAdd: 1
   smokeParticle: {fileID: 1087480207}
   isAttachedToHook: 0
-  fallMultiplier: 1.5
+  fallMultiplier: 1.7
   useFallMultiplier: 1
   maxVelocity: -30
   isInvicible: 0

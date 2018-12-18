@@ -70,9 +70,9 @@ public class ThrowHook : MonoBehaviour
            
             Vector3 vel = rb.velocity;
             if (vel.x > 0)
-                vel.x += 10 * Time.deltaTime;
+                vel.x += 15 * Time.deltaTime;
             else
-                vel.x -= 10 * Time.deltaTime;
+                vel.x -= 15 * Time.deltaTime;
 
 
             if (vel.y > 0)
@@ -88,7 +88,7 @@ public class ThrowHook : MonoBehaviour
             // var angulo = CalculateAngle(transform.position, destinyHook);
 
         }
-        else if (rb.velocity.y < 0 && useFallMultiplier)
+        else if (useFallMultiplier)
         {
             rb.velocity += Vector2.up * Physics2D.gravity * (fallMultiplier - 1) * Time.deltaTime;
         }
@@ -146,6 +146,7 @@ public class ThrowHook : MonoBehaviour
         else if (Input.GetMouseButtonUp(0) && isPressed)
         {
             Unhook();
+            //AuxManager.instance.GetCamera().GetComponent<CameraFollow>().AddTarget(transform);
         }
 
         else if (Input.GetMouseButtonDown(1) && GM.isPlaying())
@@ -324,6 +325,7 @@ public class ThrowHook : MonoBehaviour
     public void DisableRope()
     {
         ropeScript.UnhookRope();
+        
         ropeActive = false;
         isAttachedToHook = false;
         currrentHook = null;
