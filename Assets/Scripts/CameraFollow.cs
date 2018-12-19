@@ -7,8 +7,8 @@ public class CameraFollow : MonoBehaviour
 
    
 
-   /* public float limitCameraTop = 30f;
-    public float limitCameraBottom = 30f;*/
+    public float limitCameraTop = 30f;
+    public float limitCameraBottom = 30f;
     
     //public Transform target;
     public Vector3 offset;
@@ -17,12 +17,11 @@ public class CameraFollow : MonoBehaviour
     public float minZoom = 8f;
     public float offsetDistance = 4f;
 
-    private List<Transform> targets;
+    //private List<Transform> targets;
     private Transform playerTrans;
     private Transform hookTrans;
     private Rigidbody2D playerRb;
     private Vector3 velocity = Vector3.zero;
-    private float orthoSize;
     private Camera cam;
     private AuxManager aux;
     private Vector3 refVelocity;
@@ -40,9 +39,9 @@ public class CameraFollow : MonoBehaviour
     {
         cam = GetComponent<Camera>();
         aux = AuxManager.instance;
-        orthoSize = cam.orthographicSize;
-        targets = new List<Transform>();
-        targets.Add(aux.GetPlayer().transform);
+       
+        //targets = new List<Transform>();
+       // targets.Add(aux.GetPlayer().transform);
         playerTrans = aux.GetPlayer().transform;
 
         /*target = aux.GetPlayer().transform;*/
@@ -51,7 +50,7 @@ public class CameraFollow : MonoBehaviour
 
     private void LateUpdate()
     {
-        if (targets.Count == 0)
+        if (playerTrans == null)
             return;
         Move();
         Zoom();
@@ -75,9 +74,16 @@ public class CameraFollow : MonoBehaviour
         }
             
         centerPoint.z = transform.position.z;
-        Vector3 newPos = centerPoint + offset;
+        Vector3 newCenter = centerPoint + offset;
 
-        transform.position = Vector3.SmoothDamp(transform.position, newPos, ref refVelocity, dampTime);
+        Vector3 newPos = Vector3.SmoothDamp(transform.position, newCenter, ref refVelocity, dampTime);
+
+        /*var vertExtent = cam.orthographicSize;
+        var horzExtent = vertExtent * Screen.width / Screen.height;*/
+
+        float maxY = limitCameraTop - cam.orthographicSize;
+        float minY = limitCameraBottom + cam.orthographicSize;
+        transform.position = new Vector3(newPos.x, Mathf.Clamp(newPos.y, -minY, maxY), newPos.z);
     }
 
     private float GetGreatestDistance()

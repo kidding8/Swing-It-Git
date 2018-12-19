@@ -2,34 +2,39 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class SimpleEnemyScript : MonoBehaviour
+public class GrabberScript : MonoBehaviour
 {
     private EffectsManager EM;
-    public bool isHook = false;
-    private void Start()
+    private ThrowHook throwHook;
+    // Start is called before the first frame update
+    void Start()
     {
+        throwHook = AuxManager.instance.GetPlayer().GetComponent<ThrowHook>();
         EM = EffectsManager.instance;
     }
+
     private void OnTriggerEnter2D(Collider2D other)
     {
         if (other.CompareTag("Wall"))
         {
-            onDeath();
-        }else if (other.CompareTag("Player") && isHook)
+            OnDeath();
+        }
+        else if (other.CompareTag("Player"))
         {
-            onDeath();
+            OnDeath();
 
         }
     }
 
-    private void onDeath()
+    private void OnDeath()
     {
         EM.SetCoinPickUpParticles(transform.position);
         EM.CreateDisappearingCircle(transform.position);
         gameObject.SetActive(false);
-        if(isHook)
-        {
-            SpawnHookManager.instance.RemoveHookList(this.gameObject);
-        }
+    }
+
+    private void OnExplosive()
+    {
+
     }
 }

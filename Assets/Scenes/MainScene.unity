@@ -1991,10 +1991,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 04d60428e99c38748a15a324a12205a2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  limitCameraTop: 30
+  limitCameraBottom: 30
   offset: {x: 10, y: 0, z: 0}
   dampTime: 0.2
-  maxZoom: 16
-  minZoom: 8
+  maxZoom: 20
+  minZoom: 10
+  offsetDistance: 10
 --- !u!20 &519420031
 Camera:
   m_ObjectHideFlags: 0
@@ -2601,6 +2604,7 @@ GameObject:
   - component: {fileID: 685057418}
   - component: {fileID: 685057416}
   - component: {fileID: 685057417}
+  - component: {fileID: 685057419}
   m_Layer: 8
   m_Name: Player
   m_TagString: Player
@@ -2690,8 +2694,8 @@ MonoBehaviour:
   forceRopeGrab: 2
   forceRopeLeave: 10
   torqueToAdd: 1
+  bounciness: 0
   smokeParticle: {fileID: 1087480207}
-  isAttachedToHook: 0
   fallMultiplier: 1.7
   useFallMultiplier: 1
   maxVelocity: -30
@@ -2746,7 +2750,7 @@ CircleCollider2D:
   m_GameObject: {fileID: 685057411}
   m_Enabled: 1
   m_Density: 1
-  m_Material: {fileID: 0}
+  m_Material: {fileID: 6200000, guid: 9fad3e161010e764ba34a019040f7766, type: 2}
   m_IsTrigger: 0
   m_UsedByEffector: 0
   m_UsedByComposite: 0
@@ -2767,6 +2771,18 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   offset: {x: -0.3, y: -0.3}
   updateEveryFrame: 0
+--- !u!114 &685057419
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 685057411}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9751f4002c8d123469443af9459dac38, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &693122344
 GameObject:
   m_ObjectHideFlags: 0
@@ -10927,8 +10943,8 @@ MonoBehaviour:
   forceRopeGrab: 50
   forceRopeLeave: 45
   torqueToAdd: 1
+  bounciness: 0
   smokeParticle: {fileID: 1087480207}
-  isAttachedToHook: 0
   fallMultiplier: 2.5
   useFallMultiplier: 1
   maxVelocity: -30

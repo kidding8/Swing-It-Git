@@ -7,15 +7,19 @@ public class ThrowHook : MonoBehaviour
 
     private GameManager GM;
     private EffectsManager EM;
+    private PlayerManager PM;
     public ObjectPooler hook;
     public GameObject hookToInstantiate;
+    public float forceRopeGrab = 1f;
+    public float forceRopeLeave = 1f;
+    public float torqueToAdd = 1f;
+    public float bounciness = 0.4f;
+
     private bool ropeActive;
     private GameObject currrentHook;
     private Rigidbody2D rb;
     private SpawnHookManager SM;
-    public float forceRopeGrab = 1f;
-    public float forceRopeLeave = 1f;
-    public float torqueToAdd = 1f;
+    
     private RopeScript ropeScript;
     /* private float lastClickTime = 0;
      public float catchTime = .25f;*/
@@ -25,7 +29,6 @@ public class ThrowHook : MonoBehaviour
     private float timerNextJump = 0.5f;
     public ParticleSystem smokeParticle;
     private bool isPressed = false;
-    public bool isAttachedToHook = false;
     public float fallMultiplier = 2.5f;
     public bool useFallMultiplier = true;
     public float maxVelocity = -30f;
@@ -46,6 +49,7 @@ public class ThrowHook : MonoBehaviour
         GM = GameManager.instance;
         SM = SpawnHookManager.instance;
         EM = EffectsManager.instance;
+        PM = PlayerManager.instance;
         rb = GetComponent<Rigidbody2D>();
     }
 
@@ -65,7 +69,7 @@ public class ThrowHook : MonoBehaviour
         }
         */
 
-        if (isAttachedToHook && isPressed)
+        if (PM.IsHooked() && isPressed)
         {
            
             Vector3 vel = rb.velocity;
@@ -88,13 +92,8 @@ public class ThrowHook : MonoBehaviour
             // var angulo = CalculateAngle(transform.position, destinyHook);
 
         }
-        else if (useFallMultiplier)
-        {
-            rb.velocity += Vector2.up * Physics2D.gravity * (fallMultiplier - 1) * Time.deltaTime;
-        }
         else
         {
-
             if (rb.rotation > rotMax)
             {
                 frontFlips++;
@@ -107,14 +106,34 @@ public class ThrowHook : MonoBehaviour
             }
         }
 
+        if (useFallMultiplier)
+        {
+            rb.velocity += Vector2.up * Physics2D.gravity * (fallMultiplier - 1) * Time.deltaTime;
+        }
 
+        if (CheckIfGrounded())
+        {
+            rb.drag = 0.8f;
+            rb.angularDrag = 0.8f;
+
+            if(rb.velocity.magnitude <= 1f)
+            {
+                GM.OnDeath();
+            }
+
+        }
+        else
+        {
+            rb.drag = 0f;
+            rb.angularDrag = 0f;
+        }
         /*if(currentAngle >= startedAngle - 10 && currentAngle <= startedAngle + 10)
         {
             currentSpins++;
             Debug.Log("HOLY FUCKING SHITTTT : " + currentSpins);
         }*/
 
-
+        
 
         if (rb.velocity.y < maxVelocity)
         {
@@ -129,7 +148,16 @@ public class ThrowHook : MonoBehaviour
 
         if (Input.GetMouseButtonDown(0) && GM.isPlaying() && timerHook > timerNextHook)
         {
-            Hook();
+            if (CheckIfGrounded())
+            {
+                GroundJump();
+            }
+            else
+            {
+                Hook();
+            }
+
+            
 
             if (backFlips > 0)
             {
@@ -187,7 +215,7 @@ public class ThrowHook : MonoBehaviour
         //Debug.DrawRay(transform.position, -Vector2.up * distanceToGround);
         if (CheckIfGrounded())
         {
-            Debug.Log("grounded");
+            //Debug.Log("grounded");
             
         }
 
@@ -211,6 +239,21 @@ public class ThrowHook : MonoBehaviour
             velocityVector.y += 5f;
         }
         //  velocityVector.y += 0.5f;
+        rb.velocity = velocityVector;
+        smokeParticle.gameObject.SetActive(true);
+    }
+
+    private void GroundJump()
+    {
+        Vector2 velocityVector = rb.velocity;
+        if (velocityVector.x < 5f)
+        {
+            velocityVector.x = 10f;
+        }
+
+        velocityVector.y = 15f;
+        //  velocityVector.y += 0.5f;
+        
         rb.velocity = velocityVector;
         smokeParticle.gameObject.SetActive(true);
     }
@@ -243,8 +286,8 @@ public class ThrowHook : MonoBehaviour
                 /*directionHook = destinyHook - (Vector2)transform.position;
                 directionHook.Normalize();*/
 
-                Vector3 forceDir = new Vector3(1f, 0.5f, 0f);
-                rb.AddForce(forceDir * forceRopeGrab, ForceMode2D.Force);
+                /*Vector3 forceDir = new Vector3(1f, 0.5f, 0f);
+                rb.AddForce(forceDir * forceRopeGrab, ForceMode2D.Force);*/
 
             }
             else
@@ -322,12 +365,26 @@ public class ThrowHook : MonoBehaviour
         }
     }
 
+    public void OnCollisionEnter2D(Collision2D other)
+    {
+        if(other.gameObject.tag == "Ground")
+        {
+            
+
+           /* if(rb.velocity.x > 0)
+            {
+                rb.AddForce(new Vector2(-rb.velocity.x, rb.velocity.y * bounciness), ForceMode2D.Impulse);
+            }
+            else if(rb.velocity.x < 0){
+                rb.AddForce(new Vector2(rb.velocity.x, -rb.velocity.y * bounciness), ForceMode2D.Impulse);
+            }*/
+        }
+    }
+
     public void DisableRope()
     {
         ropeScript.UnhookRope();
-        
         ropeActive = false;
-        isAttachedToHook = false;
         currrentHook = null;
     }
 
