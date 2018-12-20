@@ -10,13 +10,14 @@ public class RopeScript : MonoBehaviour
     private EffectsManager EM;
     private PlayerManager PM;
     private Vector2 destiny = Vector2.zero;
+    private GameObject attachedHook;
     public float speed = 1f;
     public float distance = 2f;
     public float disToDestroyX = 300f;
     private ObjectPooler nodePool;
     private GameObject player;
     private GameObject lastNode;
-
+    
 
     private List<GameObject> nodeList;
 
@@ -41,6 +42,7 @@ public class RopeScript : MonoBehaviour
     private ThrowHook playerThrowHook;
     private bool noTarget;
     private CameraFollow camFollow;
+    private Rigidbody2D rb;
 
     void Start()
     {
@@ -59,6 +61,7 @@ public class RopeScript : MonoBehaviour
         nodeList.Add(transform.gameObject);
         lr = GetComponent<LineRenderer>();
         camFollow = cam.GetComponent<CameraFollow>();
+        rb = GetComponent<Rigidbody2D>();
         //edgeCol = GetComponent<EdgeCollider2D>();
     }
 
@@ -112,13 +115,16 @@ public class RopeScript : MonoBehaviour
             lastNode.GetComponent<HingeJoint2D>().connectedBody = player.GetComponent<Rigidbody2D>();
 
             PM.SetNewHook(gameObject);
+            attachedHook.GetComponent<GrabberScript>().AddRope(this);
+
+           while (Vector2.Distance(player.transform.position, lastNode.transform.position) > distance)
+           {
+               CreateNode();
+           }
         }
         else
         {
-            UnhookRope();
-            GetComponent<Rigidbody2D>().isKinematic = false;
-            playerThrowHook.Jump();
-            alreadyJumped = true;
+            LeftHookBeforeDestination();
         }
 
             
@@ -127,10 +133,15 @@ public class RopeScript : MonoBehaviour
 
     private void LeftHookBeforeDestination()
     {
-        GetComponent<Rigidbody2D>().isKinematic = false;
+        rb.isKinematic = false;
         GM.RemoveCombo();
         playerThrowHook.Jump();
         alreadyJumped = true;
+    }
+
+    public void DesattachRopeFromHook()
+    {
+        rb.isKinematic = false;
     }
 
     private void MovingTowardsHook()
@@ -138,17 +149,27 @@ public class RopeScript : MonoBehaviour
         PM.RemoveHook();
     }
 
-    public void AddRope(Vector3 destiny, bool noTarget)
+    public void AddRope(GameObject hook, bool noTarget)
     {
         isAttachedToPlayer = true;
         this.noTarget = noTarget;
+        attachedHook = hook;
+        this.destiny = hook.transform.position;
+    }
+
+    public void AddRope(Vector2 destiny, bool noTarget)
+    {
+        isAttachedToPlayer = true;
+        this.noTarget = noTarget;
+        attachedHook = null;
         this.destiny = destiny;
     }
 
     public void DestroyRope(GameObject node)
     {
-        if (isAlreadyCut || !isDone)
+        if (isAlreadyCut || !isDone || !isAttachedToPlayer)
             return;
+
         if (isAttachedToPlayer)
         {
             GM.RemoveCombo();
@@ -280,14 +301,31 @@ public class RopeScript : MonoBehaviour
 
     public void UnhookRope()
     {
-        if(camFollow != null)
+        if (camFollow != null)
             camFollow.RemoveTarget();
         if (lastNode != null)
             lastNode.GetComponent<HingeJoint2D>().enabled = false;
         isAttachedToPlayer = false;
         isDone = true;
         PM.RemoveHook();
+        /*if(gameObject != null)
+        SetLayerRecursively(0);*/
+
+        /*int count = transform.childCount;
+        int ax = 0;
+        while (ax <= count) { 
+
+            for (int i = 0; i < transform.childCount; i++)
+            {
+                ax++;
+                Transform trans = transform.GetChild(i);
+                if (trans != null)
+                    trans.gameObject.layer = 0;
+            }
+        }*/
     }
+
+
 
     public void DisableRope()
     {
@@ -321,4 +359,13 @@ public class RopeScript : MonoBehaviour
         }
     }
 
+    public void SetLayerRecursively(int layerNumber)
+    {
+
+
+        foreach (Transform trans in gameObject.GetComponentsInChildren<Transform>(true))
+        {
+            trans.gameObject.layer = layerNumber;
+        }
+    }
 }

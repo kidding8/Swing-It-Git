@@ -52,12 +52,67 @@ public class ThrowHook : MonoBehaviour
         PM = PlayerManager.instance;
         rb = GetComponent<Rigidbody2D>();
     }
-
-    // Update is called once per frame
-    void Update()
+    private void Update()
     {
         timerHook += Time.deltaTime;
         timerJump += Time.deltaTime;
+
+        if (Input.GetMouseButtonDown(0) && GM.isPlaying() && timerHook > timerNextHook)
+        {
+            if (CheckIfGrounded())
+            {
+                GroundJump();
+            }
+            else
+            {
+                Hook();
+            }
+
+
+
+            if (backFlips > 0)
+            {
+                EM.GenerateText("Backflip x" + backFlips, transform);
+            }
+            else if (frontFlips > 0)
+            {
+                EM.GenerateText("Frontflip x" + frontFlips, transform);
+            }
+            SetRotationMinMax();
+
+        }
+
+        else if (Input.GetMouseButtonUp(0) && isPressed)
+        {
+            Unhook();
+            //AuxManager.instance.GetCamera().GetComponent<CameraFollow>().AddTarget(transform);
+        }
+
+        else if (Input.GetMouseButtonDown(1) && GM.isPlaying())
+        {
+            Jump();
+        }
+
+        if (CheckIfGrounded())
+        {
+            rb.drag = 0.8f;
+            rb.angularDrag = 0.8f;
+
+            if (rb.velocity.magnitude <= 1f)
+            {
+                GM.OnDeath();
+            }
+        }
+        else
+        {
+            rb.drag = 0f;
+            rb.angularDrag = 0f;
+        }
+    }
+    // Update is called once per frame
+    void FixedUpdate()
+    {
+        
 
         /*if(rb.velocity.x > 11)
         {
@@ -104,36 +159,25 @@ public class ThrowHook : MonoBehaviour
                 backFlips++;
                 SetRotationMinMax();
             }
-        }
 
-        if (useFallMultiplier)
-        {
-            rb.velocity += Vector2.up * Physics2D.gravity * (fallMultiplier - 1) * Time.deltaTime;
-        }
-
-        if (CheckIfGrounded())
-        {
-            rb.drag = 0.8f;
-            rb.angularDrag = 0.8f;
-
-            if(rb.velocity.magnitude <= 1f)
+            if (rb.velocity.y < -20)
             {
-                GM.OnDeath();
+                rb.velocity = new Vector2(rb.velocity.x, -20);
+                Debug.Log("limited falling velocity");
+            }
+            if (useFallMultiplier)
+            {
+                rb.velocity += Vector2.up * Physics2D.gravity * (fallMultiplier - 1) * Time.deltaTime;
             }
 
         }
-        else
-        {
-            rb.drag = 0f;
-            rb.angularDrag = 0f;
-        }
+
+        
         /*if(currentAngle >= startedAngle - 10 && currentAngle <= startedAngle + 10)
         {
             currentSpins++;
             Debug.Log("HOLY FUCKING SHITTTT : " + currentSpins);
         }*/
-
-        
 
         if (rb.velocity.y < maxVelocity)
         {
@@ -142,47 +186,10 @@ public class ThrowHook : MonoBehaviour
             rb.velocity = vel;
         }
 
-
+        #region Android
         //#if UNITY_EDITOR
 
 
-        if (Input.GetMouseButtonDown(0) && GM.isPlaying() && timerHook > timerNextHook)
-        {
-            if (CheckIfGrounded())
-            {
-                GroundJump();
-            }
-            else
-            {
-                Hook();
-            }
-
-            
-
-            if (backFlips > 0)
-            {
-                EM.GenerateText("Backflip x" + backFlips, transform);
-            }
-            else if (frontFlips > 0)
-            {
-                EM.GenerateText("Frontflip x" + frontFlips, transform);
-            }
-            SetRotationMinMax();
-
-        }
-
-        else if (Input.GetMouseButtonUp(0) && isPressed)
-        {
-            Unhook();
-            //AuxManager.instance.GetCamera().GetComponent<CameraFollow>().AddTarget(transform);
-        }
-
-        else if (Input.GetMouseButtonDown(1) && GM.isPlaying())
-        {
-            Jump();
-        }
-
-        #region Android
         //#elif UNITY_ANDROID
 
         /*foreach (Touch touch in Input.touches)
@@ -211,13 +218,6 @@ public class ThrowHook : MonoBehaviour
         //#endif
         */
         #endregion
-
-        //Debug.DrawRay(transform.position, -Vector2.up * distanceToGround);
-        if (CheckIfGrounded())
-        {
-            //Debug.Log("grounded");
-            
-        }
 
     }
 
@@ -281,8 +281,9 @@ public class ThrowHook : MonoBehaviour
 
             if (closestHook != null)
             {
-                CreateHook(closestHook.transform.position, false);
+                CreateHook(closestHook, false);
                 EM.CreateCameraShake(0.05f);
+                
                 /*directionHook = destinyHook - (Vector2)transform.position;
                 directionHook.Normalize();*/
 
@@ -294,12 +295,12 @@ public class ThrowHook : MonoBehaviour
             {
                 //ropeActive = false;
                 Vector3 downPos = new Vector3(transform.position.x, transform.position.y - 15, 0);
-                CreateHook(downPos, true);
+                //CreateHook(downPos, true);
             }
         }
     }
 
-    private void CreateHook(Vector2 pos, bool noTarget)
+    private void CreateHook(GameObject hook, bool noTarget)
     {
         currrentHook = (GameObject)Instantiate(hookToInstantiate, transform.position, Quaternion.identity);
         /*currrentHook = hook.GetPooledObject();
@@ -307,7 +308,7 @@ public class ThrowHook : MonoBehaviour
         currrentHook.transform.rotation = Quaternion.identity;
         currrentHook.SetActive(true);*/
         ropeScript = currrentHook.GetComponent<RopeScript>();
-        ropeScript.AddRope(pos, noTarget);
+        ropeScript.AddRope(hook, noTarget);
         ropeActive = true;
     }
 

@@ -14,6 +14,7 @@ public class NodeScript : MonoBehaviour {
            if(GameManager.instance.destroyRope) {
                 
                 RopeScript ropeScript = GetComponentInParent<RopeScript>();
+                if(ropeScript != null)
                 ropeScript.DestroyRope(this.gameObject);
                // ropeScript.UnhookRope();
             }

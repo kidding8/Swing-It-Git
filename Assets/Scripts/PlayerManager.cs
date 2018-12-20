@@ -22,12 +22,10 @@ public class PlayerManager : MonoBehaviour
         }
     }
 
-    void Start()
+    private void Start()
     {
-
+        rb = GetComponent<Rigidbody2D>();
     }
-
-
     public void SetNewHook(GameObject hook)
     {
         isHooked = true;
@@ -43,6 +41,11 @@ public class PlayerManager : MonoBehaviour
     {
         isHooked = false;
         currentHook = null;
+    }
+
+    public void AddImpulsiveForce(Vector3 dir, float amount)
+    {
+        rb.AddForce(dir * amount, ForceMode2D.Impulse);
     }
 
 }
