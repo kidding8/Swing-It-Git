@@ -68,29 +68,32 @@ public class RopeScript : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if (isAttachedToPlayer)
-        {
-            transform.position = Vector2.MoveTowards(transform.position, destiny, speed);
-            if ((Vector2)transform.position == destiny)
+        
+            if (isAttachedToPlayer && !isDone)
             {
-                GrabbedHook();
+                transform.position = Vector2.MoveTowards(transform.position, destiny, speed);
+                if ((Vector2)transform.position == destiny)
+                {
+                    Debug.Log("Grabbed Hook");
+                    GrabbedHook();
+                }
             }
-        }
-        else if ((Vector2)transform.position != destiny && !alreadyJumped)
-        {
-            LeftHookBeforeDestination();
-        }
-
-
-        if ((Vector2)transform.position != destiny && isAttachedToPlayer)
-        {
-            if (Vector2.Distance(player.transform.position, lastNode.transform.position) > distance)
+            else if ((Vector2)transform.position != destiny && !alreadyJumped)
             {
-                CreateNode();
+                LeftHookBeforeDestination();
             }
 
-            MovingTowardsHook();
-        }
+
+            if ((Vector2)transform.position != destiny && isAttachedToPlayer && !isDone)
+            {
+                if (Vector2.Distance(player.transform.position, lastNode.transform.position) > distance)
+                {
+                    CreateNode();
+                }
+
+                MovingTowardsHook();
+            }
+        
         //CreateCollider();
 
     }
@@ -106,8 +109,15 @@ public class RopeScript : MonoBehaviour
                 GM.AddCombo();
             }
 
-            camFollow.AddTarget(transform);
+           
+
+            /*while (Vector2.Distance(player.transform.position, lastNode.transform.position) > distance)
+            {
+                CreateNode();
+            }*/
             isDone = true;
+
+            camFollow.AddTarget(transform);
 
             HingeJoint2D hingeLastNode = lastNode.GetComponent<HingeJoint2D>();
             hingeLastNode.enabled = true;
@@ -117,14 +127,12 @@ public class RopeScript : MonoBehaviour
             PM.SetNewHook(gameObject);
             attachedHook.GetComponent<GrabberScript>().AddRope(this);
 
-           while (Vector2.Distance(player.transform.position, lastNode.transform.position) > distance)
-           {
-               CreateNode();
-           }
+          
         }
         else
         {
-            LeftHookBeforeDestination();
+            if(!isDone)
+                LeftHookBeforeDestination();
         }
 
             
@@ -141,6 +149,8 @@ public class RopeScript : MonoBehaviour
 
     public void DesattachRopeFromHook()
     {
+        if (isAttachedToPlayer)
+            UnhookRope();
         rb.isKinematic = false;
     }
 
@@ -301,13 +311,14 @@ public class RopeScript : MonoBehaviour
 
     public void UnhookRope()
     {
+        PlayerManager.instance.RemoveHook();
         if (camFollow != null)
             camFollow.RemoveTarget();
         if (lastNode != null)
             lastNode.GetComponent<HingeJoint2D>().enabled = false;
         isAttachedToPlayer = false;
         isDone = true;
-        PM.RemoveHook();
+        
         /*if(gameObject != null)
         SetLayerRecursively(0);*/
 

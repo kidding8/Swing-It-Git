@@ -41,7 +41,10 @@ public class GrabberScript : MonoBehaviour
         foreach(RopeScript rope in attachedRopes)
         {
             if(rope != null)
+            {
                 rope.DesattachRopeFromHook();
+            }
+                
         }
     }
 
