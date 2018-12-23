@@ -1630,6 +1630,7 @@ MonoBehaviour:
   - {fileID: 1281467146}
   - {fileID: 629008914}
   boxPool: {fileID: 2066914596}
+  groundBulletPool: {fileID: 1260209229}
   backgroundSprites:
   - {fileID: 21300000, guid: e915c30cd00811940b1cdb23e5dee261, type: 3}
   - {fileID: 21300000, guid: 82e9bbef5bc792442aa39cd374a8e608, type: 3}
@@ -2599,12 +2600,12 @@ GameObject:
   m_Component:
   - component: {fileID: 685057413}
   - component: {fileID: 685057412}
+  - component: {fileID: 685057419}
   - component: {fileID: 685057414}
   - component: {fileID: 685057415}
   - component: {fileID: 685057418}
   - component: {fileID: 685057416}
   - component: {fileID: 685057417}
-  - component: {fileID: 685057419}
   m_Layer: 8
   m_Name: Player
   m_TagString: Player
@@ -2691,14 +2692,7 @@ MonoBehaviour:
   hook: {fileID: 432272298}
   hookToInstantiate: {fileID: 1404701874796426, guid: 0082b9bed9fbedb40a1ce0e7b34729a5,
     type: 3}
-  forceRopeGrab: 2
-  forceRopeLeave: 10
-  torqueToAdd: 1
-  bounciness: 0
   smokeParticle: {fileID: 1087480207}
-  fallMultiplier: 1.7
-  useFallMultiplier: 1
-  maxVelocity: -30
   isInvicible: 0
   distanceToGround: 3
   whatIsGround:
@@ -2783,6 +2777,28 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9751f4002c8d123469443af9459dac38, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  maxSpeed: 60
+  forceRopeLeave: 10
+  torqueAddedRopeLeave: 1
+  jumpForce: 15
+  fallMultiplier: 1.6
+  useFallMultiplier: 1
+  dragGrounded: 0.8
+  xVelocityMultiplierHooked: 20
+  yVelocityMultiplierHooked: 15
+  maxYVelocity: -30
+  gravityUnhooked: 2
+  gravityHooked: 0.7
+  useGrabberJump: 1
+  grabberJumpForce: 10
+  limitRopeJump: 1
+  maxRopeJumps: 2
+  canSpawnEnemies: 0
+  canShootMissiles: 0
+  canShootGuidedMissiles: 0
+  currentJumps: 0
+  isHooked: 0
+  isTargetable: 1
 --- !u!1 &693122344
 GameObject:
   m_ObjectHideFlags: 0
@@ -3360,6 +3376,8 @@ Transform:
   - {fileID: 1609805336}
   - {fileID: 2066914595}
   - {fileID: 1619567117}
+  - {fileID: 1260209228}
+  - {fileID: 2027950351}
   m_Father: {fileID: 510185629}
   m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -4259,6 +4277,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   floorObstacles:
   - {fileID: 259270405}
+  - {fileID: 2027950352}
   spawnPoint: {fileID: 1594282531}
   xOffset: {x: 3, y: 10}
 --- !u!4 &1044865649
@@ -9657,6 +9676,53 @@ Transform:
   m_Father: {fileID: 441957107}
   m_RootOrder: 3
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &1260209227
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1260209228}
+  - component: {fileID: 1260209229}
+  m_Layer: 0
+  m_Name: CircleBullet
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1260209228
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1260209227}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 814971466}
+  m_RootOrder: 21
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1260209229
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1260209227}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a0c087711cb632e43b0656c6c73ab92a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  pooledObject: {fileID: 1334280164744525895, guid: f3928e3db4abc384db59bf7a89771de9,
+    type: 3}
+  SpawnnedObjectsTransform: {fileID: 2125252527}
+  pooledAmount: 10
 --- !u!1 &1262775817
 GameObject:
   m_ObjectHideFlags: 0
@@ -10940,14 +11006,7 @@ MonoBehaviour:
   hook: {fileID: 432272298}
   hookToInstantiate: {fileID: 1404701874796426, guid: 0082b9bed9fbedb40a1ce0e7b34729a5,
     type: 3}
-  forceRopeGrab: 50
-  forceRopeLeave: 45
-  torqueToAdd: 1
-  bounciness: 0
   smokeParticle: {fileID: 1087480207}
-  fallMultiplier: 2.5
-  useFallMultiplier: 1
-  maxVelocity: -30
   isInvicible: 0
   distanceToGround: 3
   whatIsGround:
@@ -11324,7 +11383,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9f33f9e9f832b894c877d33fb914e03a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  offset: 55
+  offset: 80
   speed: 2
 --- !u!61 &1699162016
 BoxCollider2D:
@@ -12092,6 +12151,7 @@ GameObject:
   - component: {fileID: 1908108791}
   - component: {fileID: 1908108790}
   - component: {fileID: 1908108789}
+  - component: {fileID: 1908108793}
   m_Layer: 13
   m_Name: Ground
   m_TagString: Ground
@@ -12199,6 +12259,32 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 13
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!61 &1908108793
+BoxCollider2D:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1908108788}
+  m_Enabled: 1
+  m_Density: 1
+  m_Material: {fileID: 0}
+  m_IsTrigger: 1
+  m_UsedByEffector: 0
+  m_UsedByComposite: 0
+  m_Offset: {x: 0, y: 0}
+  m_SpriteTilingProperty:
+    border: {x: 0, y: 0, z: 0, w: 0}
+    pivot: {x: 0.5, y: 0.5}
+    oldSize: {x: 1, y: 1}
+    newSize: {x: 1, y: 1}
+    adaptiveTilingThreshold: 0.5
+    drawMode: 0
+    adaptiveTiling: 0
+  m_AutoTiling: 0
+  serializedVersion: 2
+  m_Size: {x: 1, y: 1}
+  m_EdgeRadius: 0
 --- !u!1 &1908340294
 GameObject:
   m_ObjectHideFlags: 0
@@ -12355,7 +12441,7 @@ MonoBehaviour:
   spawnMissileDown: {fileID: 817315387}
   guidedMissiles: {fileID: 997656255}
   timeBetweenGuidedMissiles: 15
-  shootMissiles: 0
+  shootMissiles: 1
   shootGuidedMissiles: 1
   timeBetweenMissiles: 8
   spawnPoint: {fileID: 1594282531}
@@ -12504,6 +12590,53 @@ MonoBehaviour:
     type: 3}
   SpawnnedObjectsTransform: {fileID: 2125252527}
   pooledAmount: 1
+--- !u!1 &2027950350
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 2027950351}
+  - component: {fileID: 2027950352}
+  m_Layer: 0
+  m_Name: SquareGroundShooter
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &2027950351
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2027950350}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 814971466}
+  m_RootOrder: 22
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &2027950352
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2027950350}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a0c087711cb632e43b0656c6c73ab92a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  pooledObject: {fileID: 5082545659373108602, guid: 3a83c3a5f34b90441b7f1c6529df3fcc,
+    type: 3}
+  SpawnnedObjectsTransform: {fileID: 2125252527}
+  pooledAmount: 10
 --- !u!1 &2039799985
 GameObject:
   m_ObjectHideFlags: 0

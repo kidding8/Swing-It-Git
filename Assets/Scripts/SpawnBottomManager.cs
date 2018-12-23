@@ -14,6 +14,7 @@ public class SpawnBottomManager : MonoBehaviour {
     private SpawnBottomManager instance;
     private AuxManager aux;
     private GameManager GM;
+    private PlayerManager PM;
    
     //public ObjectPooler grassPool;
     public List<ObjectPooler> obstaclesList;
@@ -41,6 +42,7 @@ public class SpawnBottomManager : MonoBehaviour {
     void Start()
     {
         GM = GameManager.instance;
+        PM = PlayerManager.instance;
         aux = AuxManager.instance;
         
     }
@@ -48,7 +50,7 @@ public class SpawnBottomManager : MonoBehaviour {
 
     void Update()
     {
-        if (transform.position.x < spawnPoint.position.x && GM.isPlaying())
+        if (transform.position.x < spawnPoint.position.x && GM.isPlaying() && PM.canSpawnEnemies)
         {
             CreateObstacle();
         }
@@ -85,16 +87,16 @@ public class SpawnBottomManager : MonoBehaviour {
 
     private void InCaseExtra(int index, GameObject obj)
     {
-        switch (index) {
-           /* case 0:
+        /*switch (index) {
+            case 0:
                 Debug.Log("Created");
                 obj.GetComponent<CoinFormation>().CreateCoins();
                 break;
             case 1:
                 Debug.Log("Created 2");
                 obj.GetComponent<CoinFormation>().CreateCoins();
-                break;*/
-        }
+                break;
+        }*/
 
     }
 

@@ -9,6 +9,7 @@ public class SpawnHookManager : MonoBehaviour
 
     private AuxManager aux;
     private GameManager GM;
+    private PlayerManager PM;
 
     public ObjectPooler[] hookPool;
     private List<GameObject> hooksList;
@@ -50,6 +51,7 @@ public class SpawnHookManager : MonoBehaviour
     {
         GM = GameManager.instance;
         aux = AuxManager.instance;
+        PM = PlayerManager.instance;
         hooksList = new List<GameObject>();
         player = aux.GetPlayer();
     }
@@ -58,11 +60,11 @@ public class SpawnHookManager : MonoBehaviour
     {
         CreateFirstHook();
 
-        if (shootMissiles)
+        if (PM.canShootMissiles)
         {
             StartCoroutine(EnemySidesGenerator());
         }
-        if (shootGuidedMissiles)
+        if (PM.canShootGuidedMissiles)
         {
             StartCoroutine(GuidedMissiles());
         }

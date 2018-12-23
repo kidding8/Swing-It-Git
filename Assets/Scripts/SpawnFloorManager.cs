@@ -4,9 +4,11 @@ using UnityEngine;
 
 public class SpawnFloorManager : MonoBehaviour {
     public static SpawnFloorManager instance;
-    public ObjectPooler[] floorObstacles;
     private GameManager GM;
     private AuxManager aux;
+    private PlayerManager PM;
+    public ObjectPooler[] floorObstacles;
+    
     public Transform spawnPoint;
     public Vector2 xOffset;
     private void Awake()
@@ -24,6 +26,7 @@ public class SpawnFloorManager : MonoBehaviour {
     }
     // Use this for initialization
     void Start () {
+        PM = PlayerManager.instance;
         GM = GameManager.instance;
         aux = AuxManager.instance;
     }
@@ -35,7 +38,7 @@ public class SpawnFloorManager : MonoBehaviour {
 
     // Update is called once per frame
     void Update () {
-        if (transform.position.x < spawnPoint.position.x && GM.isPlaying())
+        if (transform.position.x < spawnPoint.position.x && GM.isPlaying() && PM.canSpawnEnemies)
         {
             CreateObstacle();
         }

@@ -17,6 +17,7 @@ public class AuxManager : MonoBehaviour {
     public ObjectPooler singleCoinPool;
     public ObjectPooler[] coinPool;
     public ObjectPooler boxPool;
+    public ObjectPooler groundBulletPool;
     public Sprite[] backgroundSprites;
     public Material shadowMaterial;
     public Color shadowColor;
@@ -106,6 +107,12 @@ public class AuxManager : MonoBehaviour {
     {
         return singleCoinPool;
     }
+
+    public ObjectPooler GetGroundBulletPool()
+    {
+        return groundBulletPool;
+    }
+
     public Sprite GetAvailableHookSprite()
     {
         return availableHook;

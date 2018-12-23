@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class MissileScript : MonoBehaviour {
+public class Missile : MonoBehaviour {
 
     private AuxManager aux;
     private EffectsManager EM;

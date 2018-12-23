@@ -3,20 +3,23 @@ using System.Collections.Generic;
 using UnityEngine;
 
 public class GroundEnemy : MonoBehaviour {
+
+    private EffectsManager EM;
     private Rigidbody2D rb;
     public float velocity = 2f;
     public float boost;
-    private EffectsManager EM;
+    
     private bool isLeft = false;
 	// Use this for initialization
 	void Start () {
         rb = GetComponent<Rigidbody2D>();
         EM = EffectsManager.instance;
+        
     }
 	
 	// Update is called once per frame
 	void FixedUpdate () {
-        rb.velocity = new Vector2(isLeft ? -velocity : velocity, rb.velocity.y);
+        rb.velocity = new Vector2((isLeft ? -velocity : velocity), rb.velocity.y);
 	}
 
     bool GetRandomBool()

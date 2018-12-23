@@ -6,6 +6,7 @@ public class RocketScript : MonoBehaviour
 {
     private AuxManager aux;
     private EffectsManager EM;
+    private PlayerManager PM;
     private GameObject player;
     private bool activateRocket = false;
     private Vector3 initialPos;
@@ -16,6 +17,7 @@ public class RocketScript : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
+        PM = PlayerManager.instance;
         EM = EffectsManager.instance;
         aux = AuxManager.instance;
         player = aux.GetPlayer();
@@ -30,6 +32,7 @@ public class RocketScript : MonoBehaviour
             transform.Translate(Vector3.right * Time.deltaTime * rocketSpeed);
             player.transform.position = transform.position + Vector3.up;
             throwHook.isInvicible = true;
+            PM.SetIsTargetable(false);
             throwHook.DisableRope();
             if(Vector3.Distance(initialPos, transform.position) > maxDistance)
             {
@@ -40,7 +43,7 @@ public class RocketScript : MonoBehaviour
 
     private void OnTriggerEnter2D(Collider2D other)
     {
-        if (other.CompareTag("Player"))
+        if (other.CompareTag("Player") && PM.isTargetable)
         {
             initialPos = transform.position;
             activateRocket = true;
@@ -61,8 +64,9 @@ public class RocketScript : MonoBehaviour
     {
         activateRocket = false;
         throwHook.isInvicible = false;
-        throwHook.Jump();
+        PM.Jump(PM.jumpForce);
         OnDeath();
+        PM.SetIsTargetable(true);
         aux.DestroyInRadius(transform.position, destroyRadius);
     }
 

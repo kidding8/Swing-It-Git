@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class GrabberScript : MonoBehaviour
+public class Grabber : MonoBehaviour
 {
     private PlayerManager PM;
     private EffectsManager EM;
@@ -28,7 +28,8 @@ public class GrabberScript : MonoBehaviour
         else if (other.CompareTag("Player"))
         {
             OnDeath();
-            OnExplosive();
+            if(PM.useGrabberJump)
+                OnExplosive();
         }
     }
 
@@ -50,7 +51,7 @@ public class GrabberScript : MonoBehaviour
 
     private void OnExplosive()
     {
-        PM.AddImpulsiveForce(Vector3.up , 7f);
+        PM.Jump(PM.grabberJumpForce);
     }
 
     public void AddRope(RopeScript rope)
