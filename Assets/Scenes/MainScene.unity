@@ -2606,6 +2606,7 @@ GameObject:
   - component: {fileID: 685057418}
   - component: {fileID: 685057416}
   - component: {fileID: 685057417}
+  - component: {fileID: 685057420}
   m_Layer: 8
   m_Name: Player
   m_TagString: Player
@@ -2777,15 +2778,15 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9751f4002c8d123469443af9459dac38, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  maxSpeed: 60
+  maxSpeed: 70
   forceRopeLeave: 10
   torqueAddedRopeLeave: 1
   jumpForce: 15
   fallMultiplier: 1.6
   useFallMultiplier: 1
   dragGrounded: 0.8
-  xVelocityMultiplierHooked: 20
-  yVelocityMultiplierHooked: 15
+  xVelocityMultiplierHooked: 60
+  yVelocityMultiplierHooked: 60
   maxYVelocity: -30
   gravityUnhooked: 2
   gravityHooked: 0.7
@@ -2796,9 +2797,30 @@ MonoBehaviour:
   canSpawnEnemies: 0
   canShootMissiles: 0
   canShootGuidedMissiles: 0
+  ropeSpeed: 1
+  ropeDistance: 2
   currentJumps: 0
   isHooked: 0
   isTargetable: 1
+--- !u!232 &685057420
+DistanceJoint2D:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 685057411}
+  m_Enabled: 0
+  serializedVersion: 4
+  m_EnableCollision: 0
+  m_ConnectedRigidBody: {fileID: 0}
+  m_BreakForce: Infinity
+  m_BreakTorque: Infinity
+  m_AutoConfigureConnectedAnchor: 1
+  m_Anchor: {x: 0, y: 0}
+  m_ConnectedAnchor: {x: -1.44, y: 6.18}
+  m_AutoConfigureDistance: 0
+  m_Distance: 4
+  m_MaxDistanceOnly: 1
 --- !u!1 &693122344
 GameObject:
   m_ObjectHideFlags: 0
@@ -11100,7 +11122,7 @@ GameObject:
   - component: {fileID: 1609805336}
   - component: {fileID: 1609805337}
   m_Layer: 0
-  m_Name: GrabberWBox
+  m_Name: GrabberTeleporter
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -11132,7 +11154,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a0c087711cb632e43b0656c6c73ab92a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  pooledObject: {fileID: 8325705422101326611, guid: 63d5df23b29f79b4eaf00e60413efdc8,
+  pooledObject: {fileID: 8348049769186881595, guid: 70abd54257d699042afdc8e08c92e122,
     type: 3}
   SpawnnedObjectsTransform: {fileID: 2125252527}
   pooledAmount: 10
@@ -11378,7 +11400,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1699162011}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 9f33f9e9f832b894c877d33fb914e03a, type: 3}
   m_Name: 
@@ -12436,6 +12458,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   hookPool:
   - {fileID: 1374795527}
+  - {fileID: 1609805337}
   missiles: {fileID: 296177872}
   spawnMissileTop: {fileID: 1283627773}
   spawnMissileDown: {fileID: 817315387}

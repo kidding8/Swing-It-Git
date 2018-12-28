@@ -28,6 +28,11 @@ public class PlayerManager : MonoBehaviour
     public bool canSpawnEnemies = true;
     public bool canShootMissiles = true;
     public bool canShootGuidedMissiles = true;
+
+    public float ropeSpeed = 1f;
+    public float ropeDistance = 2f;
+    
+
     [HideInInspector]
     public int currentJumps = 0;
     [HideInInspector]
@@ -85,6 +90,11 @@ public class PlayerManager : MonoBehaviour
         currentHook = null;
     }
 
+    public GameObject GetCurrentHook()
+    {
+        return currentHook;
+    }
+
     public void AddImpulsiveForce(Vector3 dir, float amount)
     {
         rb.AddForce(dir * amount, ForceMode2D.Impulse);
@@ -135,5 +145,11 @@ public class PlayerManager : MonoBehaviour
         rb.velocity = velocityVector;
         //rb.velocity = new Vector2(rb.velocity.x, Mathf.Sqrt(-2.0f * Physics2D.gravity.y * jumpHeight));
     }
+
+    public void TeleportToPoint(Transform point)
+    {
+        transform.position = point.position;
+    }
+
 }
 

@@ -9,6 +9,7 @@ public class Grabber : MonoBehaviour
     private ThrowHook throwHook;
     private SpawnHookManager SHM;
     private List<RopeScript> attachedRopes;
+    public bool isTeleport = false;
     // Start is called before the first frame update
     void Start()
     {
@@ -33,7 +34,7 @@ public class Grabber : MonoBehaviour
         }
     }
 
-    private void OnDeath()
+    public void OnDeath()
     {
         EM.SetCoinPickUpParticles(transform.position);
         EM.CreateDisappearingCircle(transform.position);
@@ -49,6 +50,8 @@ public class Grabber : MonoBehaviour
         }
     }
 
+   
+
     private void OnExplosive()
     {
         PM.Jump(PM.grabberJumpForce);
@@ -59,5 +62,12 @@ public class Grabber : MonoBehaviour
         attachedRopes.Add(rope);
     }
 
+    public void CheckIfTeleporter()
+    {
+        if (isTeleport)
+        {
+            PM.TeleportToPoint(transform);
+        }
+    }
 
 }

@@ -31,6 +31,7 @@ public class ThrowHook : MonoBehaviour
     public bool isInvicible = false;
     private bool alreadyFlipped = false;
 
+    private DistanceJoint2D disjoint;
 
     public float distanceToGround = 3f;
     public LayerMask whatIsGround;
@@ -41,6 +42,10 @@ public class ThrowHook : MonoBehaviour
     private float rotMin = -360f;
     private float rotMax = 360f;
 
+    private float distance = 0;
+    private Transform connectedHook;
+    private bool useDistanceLimit = false;
+
     void Start()
     {
         GM = GameManager.instance;
@@ -49,6 +54,8 @@ public class ThrowHook : MonoBehaviour
         PM = PlayerManager.instance;
         GC = GameController.instance;
         rb = GetComponent<Rigidbody2D>();
+        disjoint = GetComponent<DistanceJoint2D>();
+        disjoint.enabled = false;
     }
     private void Update()
     {
@@ -98,8 +105,28 @@ public class ThrowHook : MonoBehaviour
     // Update is called once per frame
     void FixedUpdate()
     {
-        
 
+        if (useDistanceLimit)
+        {
+            float dis = Vector2.Distance(transform.position, connectedHook.position);
+            if (dis > distance)
+            {
+                Vector3 dir = transform.position - connectedHook.position;
+
+
+                Vector3 offset = transform.position - connectedHook.position;
+              //  transform.position = connectedHook.position + Vector3.ClampMagnitude(offset, distance);
+                
+            }
+
+            
+
+            /*if (Vector3.Distance(transform.position, connectedHook.position) > distance)
+            {
+                transform.position = (transform.position - connectedHook.position).normalized * distance + transform.position;
+                Debug.Log("Limitinggggggggggggg");
+            }*/
+        }
         /*if(rb.velocity.x > 11)
         {
             EM.speeding = true;
@@ -112,7 +139,7 @@ public class ThrowHook : MonoBehaviour
 
         if (PM.isHooked && isPressed)
         {
-           
+            //rb.freezeRotation = true;
             Vector3 vel = rb.velocity;
             if (vel.x > 0)
                 vel.x += PM.xVelocityMultiplierHooked * Time.deltaTime;
@@ -209,6 +236,30 @@ public class ThrowHook : MonoBehaviour
         return Physics2D.Raycast(transform.position, -Vector2.up, distanceToGround, whatIsGround);
     }
 
+   /* public void LimitDistance()
+    {
+        useDistanceLimit = true;
+        connectedHook = PM.GetCurrentHook().transform;
+        distance = Vector3.Distance(transform.position, connectedHook.position);
+    }*/
+
+    public void TravelToPoint(Transform point)
+    {
+        float dis = Vector2.Distance(transform.position, point.position);
+        if (dis > distance) dis = distance;
+
+        transform.position = transform.position + (point.position - transform.position).normalized * distance;
+    }
+
+    public void DontLimitDistance()
+    {
+        useDistanceLimit = false;
+    }
+
+    public void DisconnectDistanceJoint()
+    {
+        disjoint.enabled = false;
+    }
 
     private void CheckIfFlipped()
     {
@@ -260,6 +311,7 @@ public class ThrowHook : MonoBehaviour
     private void Unhook()
     {
         rb.gravityScale = PM.gravityUnhooked;
+        //rb.freezeRotation = false;
         isPressed = false;
         if (ropeActive)
         {

@@ -11,9 +11,8 @@ public class RopeScript : MonoBehaviour
     private PlayerManager PM;
     private Vector2 destiny = Vector2.zero;
     private GameObject attachedHook;
-    public float speed = 1f;
-    public float distance = 2f;
     public float disToDestroyX = 300f;
+    public bool goTowardsHook = false;
     private ObjectPooler nodePool;
     private GameObject player;
     private GameObject lastNode;
@@ -71,11 +70,13 @@ public class RopeScript : MonoBehaviour
         
             if (isAttachedToPlayer && !isDone)
             {
-                transform.position = Vector2.MoveTowards(transform.position, destiny, speed);
-                if ((Vector2)transform.position == destiny)
+                transform.position = Vector2.MoveTowards(transform.position, destiny, PM.ropeSpeed);
+                if ((Vector2)transform.position == destiny )
                 {
-                    GrabbedHook();
-                
+                    if (!goTowardsHook)
+                    {
+                        GrabbedHook();
+                    } 
                 }
             }
             else if ((Vector2)transform.position != destiny && !alreadyJumped)
@@ -85,7 +86,7 @@ public class RopeScript : MonoBehaviour
 
             if ((Vector2)transform.position != destiny && isAttachedToPlayer && !isDone)
             {
-                if (Vector2.Distance(player.transform.position, lastNode.transform.position) > distance)
+                if (Vector2.Distance(player.transform.position, lastNode.transform.position) > PM.ropeDistance)
                 {
                     CreateNode();
                 }
@@ -107,9 +108,7 @@ public class RopeScript : MonoBehaviour
                 GM.AddCombo();
             }
 
-           
-
-            while (Vector2.Distance(player.transform.position, lastNode.transform.position) > distance)
+            while (Vector2.Distance(player.transform.position, lastNode.transform.position) > PM.ropeDistance)
             {
                 CreateNode();
             }
@@ -121,13 +120,39 @@ public class RopeScript : MonoBehaviour
             HingeJoint2D hingeLastNode = lastNode.GetComponent<HingeJoint2D>();
             hingeLastNode.enabled = true;
 
-            lastNode.GetComponent<HingeJoint2D>().connectedBody = player.GetComponent<Rigidbody2D>();
+            Rigidbody2D playerRb = player.GetComponent<Rigidbody2D>();
+            lastNode.GetComponent<HingeJoint2D>().connectedBody = playerRb;
+
+            /*DistanceJoint2D distanceLastNode = GetComponent<DistanceJoint2D>();
+            distanceLastNode.enabled = true;
+            distanceLastNode.autoConfigureConnectedAnchor = true;
+            distanceLastNode.autoConfigureDistance = true;
+            //distanceLastNode.distance = distance;
+            distanceLastNode.anchor = Vector2.zero;
+            distanceLastNode.connectedBody = playerRb;*/
+
+            //playerThrowHook.ConnectDistanceJoint(rb);
+            /* DistanceJoint2D disjoint = GetComponent<DistanceJoint2D>();
+             disjoint.enabled = true;
+             disjoint.connectedBody = playerRb;*/
+
+           
+
 
             PM.SetNewHook(gameObject);
-            attachedHook.GetComponent<Grabber>().AddRope(this);
+            Grabber grabber = attachedHook.GetComponent<Grabber>();
+            grabber.CheckIfTeleporter();
+            if (attachedHook.activeInHierarchy)
+                grabber.AddRope(this);
+            else
+            {
+                UnhookRope();
+                grabber.OnDeath();
 
+            }
+                
+            //playerThrowHook.LimitDistance();
             PM.currentJumps = PM.maxRopeJumps;
-            Debug.Log("Grabbed Hook");
         }
         else if(!alreadyJumped)
         {
@@ -137,6 +162,7 @@ public class RopeScript : MonoBehaviour
             
 
     }
+
 
     private void LeftHookBeforeDestination()
     {
@@ -223,7 +249,7 @@ public class RopeScript : MonoBehaviour
 
     private void LateUpdate()
     {
-        RenderLine();
+        //RenderLine();
 
         /* screenPos = cam.WorldToScreenPoint(transform.position);
          if (screenPos.x < -disToDestroyX)
@@ -232,7 +258,7 @@ public class RopeScript : MonoBehaviour
          }*/
     }
 
-    void RenderLine()
+    /*void RenderLine()
     {
 
         if (drawRope)
@@ -273,7 +299,7 @@ public class RopeScript : MonoBehaviour
 
         }
 
-    }
+    }*/
 
     /*void CreateCollider()
     {
@@ -291,10 +317,10 @@ public class RopeScript : MonoBehaviour
 
     void CreateNode()
     {
-        Vector2 dir = player.transform.position - lastNode.transform.position;
-        Vector2 pos2Create = dir;
+        
+        Vector2 pos2Create = player.transform.position - lastNode.transform.position;
         pos2Create.Normalize();
-        pos2Create *= distance;
+        pos2Create *= PM.ropeDistance;
         pos2Create += (Vector2)lastNode.transform.position;
 
         GameObject node = nodePool.GetPooledObject();
@@ -303,23 +329,43 @@ public class RopeScript : MonoBehaviour
         node.transform.SetParent(transform);
         node.SetActive(true);
 
+        Rigidbody2D nodeRb = node.GetComponent<Rigidbody2D>();
+
         HingeJoint2D hingeLastNode = lastNode.GetComponent<HingeJoint2D>();
         hingeLastNode.enabled = true;
-        /*hingeLastNode.autoConfigureConnectedAnchor = true;
-        hingeLastNode.anchor = Vector2.zero; */
-        hingeLastNode.connectedBody = node.GetComponent<Rigidbody2D>();
-        //hingeLastNode.autoConfigureConnectedAnchor = false;
+        hingeLastNode.anchor = Vector2.zero;
+        hingeLastNode.connectedBody = nodeRb;
+
+       /* DistanceJoint2D distanceLastNode = lastNode.GetComponent<DistanceJoint2D>();
+        distanceLastNode.enabled = true;
+        distanceLastNode.autoConfigureConnectedAnchor = true;
+        distanceLastNode.autoConfigureDistance = false;
+        distanceLastNode.distance = distance;
+        distanceLastNode.anchor = Vector2.zero;
+        distanceLastNode.connectedBody = nodeRb;*/
+
+        /*LineRenderer lineLastNode = lastNode.GetComponent<LineRenderer>();
+        lineLastNode.positionCount = 2;
+        lineLastNode.SetPosition(0, lastNode.transform.position);
+        lineLastNode.SetPosition(1, node.transform.position);*/
+
+        
+
         lastNode = node;
 
         nodeList.Add(lastNode);
 
-        vertexCount++;
+        //vertexCount++;
         Debug.Log("Created Node");
     }
 
     public void UnhookRope()
     {
-        PlayerManager.instance.RemoveHook();
+        // playerThrowHook.DisconnectDistanceJoint();
+        //playerThrowHook.DontLimitDistance();
+       /* DistanceJoint2D disjoint = GetComponent<DistanceJoint2D>();
+        disjoint.enabled = false;*/
+        PM.RemoveHook();
         if (camFollow != null)
             camFollow.RemoveTarget();
         if (lastNode != null)
