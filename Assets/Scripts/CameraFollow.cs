@@ -17,9 +17,9 @@ public class CameraFollow : MonoBehaviour
     public float minZoom = 8f;
     public float offsetDistance = 4f;
 
-    //private List<Transform> targets;
+    private List<Transform> targets;
     private Transform playerTrans;
-    private Transform hookTrans;
+    //private Transform hookTrans;
     private Rigidbody2D playerRb;
     private Vector3 velocity = Vector3.zero;
     private Camera cam;
@@ -40,8 +40,8 @@ public class CameraFollow : MonoBehaviour
         cam = GetComponent<Camera>();
         aux = AuxManager.instance;
        
-        //targets = new List<Transform>();
-       // targets.Add(aux.GetPlayer().transform);
+        targets = new List<Transform>();
+        targets.Add(aux.GetPlayer().transform);
         playerTrans = aux.GetPlayer().transform;
 
         /*target = aux.GetPlayer().transform;*/
@@ -68,7 +68,7 @@ public class CameraFollow : MonoBehaviour
         Vector3 extended = new Vector3(4, 4, 0);
         Vector3 centerPoint = GetCenterPoint();
         offset.z = 0;
-        if (hookTrans == null)
+        if (targets.Count <= 1)
         {
            offset.y = GetOffsetVertical();
         }
@@ -89,7 +89,7 @@ public class CameraFollow : MonoBehaviour
     private float GetGreatestDistance()
     {
 
-        if (hookTrans == null)
+        if (targets.Count <= 1)
         {
             return 0;
         }
@@ -101,7 +101,19 @@ public class CameraFollow : MonoBehaviour
              bounds.Encapsulate(targets[i].position);
          }
          return bounds.size.x;*/
-        return Vector3.Distance(playerTrans.position, hookTrans.position);
+        float farthestDistance = 0;
+        Transform farthestObject = null;
+        for (int i = 0; i < targets.Count; i++)
+        {
+            float distance = Vector3.Distance(transform.position, targets[i].transform.position);
+            if (distance > farthestDistance)
+            {
+                farthestDistance = distance;
+                farthestObject = targets[i];
+            }
+        }
+
+        return Vector3.Distance(playerTrans.position, farthestObject.position);
     }
 
 
@@ -114,16 +126,16 @@ public class CameraFollow : MonoBehaviour
 
     private Vector3 GetCenterPoint()
     {
-        if(hookTrans == null)
+        /*if(hookTrans == null)
         {
             return playerTrans.position;
         }
 
         Vector3 average = playerTrans.position + hookTrans.position;
+        */
 
 
-
-       /* if(targets.Count == 1)
+        if(targets.Count == 1)
         {
             return targets[0].position;
         }
@@ -132,7 +144,7 @@ public class CameraFollow : MonoBehaviour
         for (int i = 0; i < targets.Count; i++)
         {
             average += targets[i].position;
-        }*/
+        }
 
 
         /*var bounds = new Bounds(targets[0].position, Vector3.zero);
@@ -140,19 +152,19 @@ public class CameraFollow : MonoBehaviour
         {
             bounds.Encapsulate(targets[i].position);
         }*/
-        return average/2;
+        return average/ targets.Count;
     }
 
     public void AddTarget(Transform newTarget)
     {
-        hookTrans = newTarget;
-        //targets.Add(newTarget);
+        //hookTrans = newTarget;
+        targets.Add(newTarget);
     }
 
-    public void RemoveTarget()
+    public void RemoveTarget(Transform newTarget)
     {
-        //targets.Remove(newTarget);
-        hookTrans = null;
+        targets.Remove(newTarget);
+        //hookTrans = null;
     }
 
     private void MoveCamToPlayer()

@@ -5,7 +5,7 @@ using UnityEngine;
 public class AuxManager : MonoBehaviour {
 
     public static AuxManager instance;
-
+    private PlayerManager PM;
     
     public Canvas canvas;
     public Camera mainCamera;
@@ -23,12 +23,13 @@ public class AuxManager : MonoBehaviour {
     public Color shadowColor;
     public Sprite availableHook;
     public Sprite unavailableHook;
+    public GameObject grabObjectIndicator;
 
     public LayerMask layerMaskOtherObjectsAround;
     public float radiusOtherObjectsAround = 5f;
 
     private bool canSpawn = false;
-
+    
     
     private void Awake()
     {
@@ -42,6 +43,10 @@ public class AuxManager : MonoBehaviour {
         }
     }
 
+    private void Start()
+    {
+        PM = PlayerManager.instance;
+    }
     /*private void Update()
     {
         if (GameManager.instance.isPlaying())
@@ -91,6 +96,11 @@ public class AuxManager : MonoBehaviour {
     public ObjectPooler GetBoxPool()
     {
         return boxPool;
+    }
+
+    public GameObject GetGrabObjectIndicator()
+    {
+        return grabObjectIndicator;
     }
 
     public ObjectPooler GetIndicatorPool()
@@ -178,7 +188,7 @@ public class AuxManager : MonoBehaviour {
             }
             else if(col.tag == "Hook")
             {
-                SpawnHookManager.instance.RemoveHookList(col.gameObject);
+                PM.RemoveGrabbableObject(col.gameObject);
                 col.gameObject.SetActive(false);
             }
         }

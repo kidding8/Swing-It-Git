@@ -21,10 +21,10 @@ public class DestroyOffscreen : MonoBehaviour {
 	void LateUpdate () {
         screenPosition = cam.WorldToScreenPoint(transform.position);
         if (destroyX && screenPosition.x < widthThreshold.x) {
-            if (isHook)
+            /*if (isHook)
             {
                 SpawnHookManager.instance.RemoveHookList(this.gameObject);
-            }
+            }*/
             //SpawnManager.instance.RemovePlatformList(gameObject);
             gameObject.SetActive(false);
             

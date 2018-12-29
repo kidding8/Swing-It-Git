@@ -344,10 +344,10 @@ public class RopeScript : MonoBehaviour
         distanceLastNode.anchor = Vector2.zero;
         distanceLastNode.connectedBody = nodeRb;*/
 
-        /*LineRenderer lineLastNode = lastNode.GetComponent<LineRenderer>();
+        LineRenderer lineLastNode = lastNode.GetComponent<LineRenderer>();
         lineLastNode.positionCount = 2;
         lineLastNode.SetPosition(0, lastNode.transform.position);
-        lineLastNode.SetPosition(1, node.transform.position);*/
+        lineLastNode.SetPosition(1, node.transform.position);
 
         
 
@@ -367,7 +367,7 @@ public class RopeScript : MonoBehaviour
         disjoint.enabled = false;*/
         PM.RemoveHook();
         if (camFollow != null)
-            camFollow.RemoveTarget();
+            camFollow.RemoveTarget(transform);
         if (lastNode != null)
             lastNode.GetComponent<HingeJoint2D>().enabled = false;
         isAttachedToPlayer = false;
@@ -430,8 +430,6 @@ public class RopeScript : MonoBehaviour
 
     public void SetLayerRecursively(int layerNumber)
     {
-
-
         foreach (Transform trans in gameObject.GetComponentsInChildren<Transform>(true))
         {
             trans.gameObject.layer = layerNumber;

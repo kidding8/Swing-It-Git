@@ -31,7 +31,6 @@ public class RocketScript : MonoBehaviour
         {
             transform.Translate(Vector3.right * Time.deltaTime * rocketSpeed);
             player.transform.position = transform.position + Vector3.up;
-            throwHook.isInvicible = true;
             PM.SetIsTargetable(false);
             throwHook.DisableRope();
             if(Vector3.Distance(initialPos, transform.position) > maxDistance)
@@ -63,7 +62,6 @@ public class RocketScript : MonoBehaviour
     private void ReachedDistination()
     {
         activateRocket = false;
-        throwHook.isInvicible = false;
         PM.Jump(PM.jumpForce);
         OnDeath();
         PM.SetIsTargetable(true);

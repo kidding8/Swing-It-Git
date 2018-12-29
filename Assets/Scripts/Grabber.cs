@@ -7,7 +7,6 @@ public class Grabber : MonoBehaviour
     private PlayerManager PM;
     private EffectsManager EM;
     private ThrowHook throwHook;
-    private SpawnHookManager SHM;
     private List<RopeScript> attachedRopes;
     public bool isTeleport = false;
     // Start is called before the first frame update
@@ -16,7 +15,7 @@ public class Grabber : MonoBehaviour
         throwHook = AuxManager.instance.GetPlayer().GetComponent<ThrowHook>();
         EM = EffectsManager.instance;
         PM = PlayerManager.instance;
-        SHM = SpawnHookManager.instance;
+        
         attachedRopes = new List<RopeScript>();
     }
 
@@ -26,7 +25,7 @@ public class Grabber : MonoBehaviour
         {
             OnDeath();
         }
-        else if (other.CompareTag("Player"))
+        else if (other.CompareTag("Player") && PM.isTargetable)
         {
             OnDeath();
             if(PM.useGrabberJump)
@@ -34,12 +33,12 @@ public class Grabber : MonoBehaviour
         }
     }
 
-    public void OnDeath()
+    public void OnDeath() 
     {
         EM.SetCoinPickUpParticles(transform.position);
         EM.CreateDisappearingCircle(transform.position);
         gameObject.SetActive(false);
-        SHM.RemoveHookList(gameObject);
+        PM.RemoveGrabbableObject(gameObject);
         foreach(RopeScript rope in attachedRopes)
         {
             if(rope != null)

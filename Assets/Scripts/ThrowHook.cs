@@ -27,8 +27,7 @@ public class ThrowHook : MonoBehaviour
     private float timerNextJump = 0.5f;
     public ParticleSystem smokeParticle;
     private bool isPressed = false;
-    
-    public bool isInvicible = false;
+   
     private bool alreadyFlipped = false;
 
     private DistanceJoint2D disjoint;
@@ -330,7 +329,7 @@ public class ThrowHook : MonoBehaviour
         rb.gravityScale = PM.gravityHooked;
         if (ropeActive == false)
         {
-            GameObject closestHook = SM.GetCurrentFarthestHook();
+            GameObject closestHook = PM.GetCurrentGrabbableObject();
 
             if (closestHook != null)
             {
@@ -394,7 +393,7 @@ public class ThrowHook : MonoBehaviour
     {
         //ropeScript.UnhookRope();
         DisableRope();
-        GameObject closest = SM.GetClosestHookWithoutLimit();
+        GameObject closest = PM.GetClosestGrabbableWithoutRadius();
         transform.position = new Vector3(closest.transform.position.x, closest.transform.position.y, transform.position.z);
         rb.velocity = new Vector2(1f, 1f) * 10f;
     }
@@ -404,28 +403,6 @@ public class ThrowHook : MonoBehaviour
         GUI.Label(new Rect(10, 110, 100, 20), "Magnitude: " + (int)rb.velocity.magnitude);
         GUI.Label(new Rect(10, 130, 100, 20), "velocity X: " + (int)rb.velocity.x);
         GUI.Label(new Rect(10, 150, 100, 20), "velocity Y: " + (int)rb.velocity.y);
-    }
-
-    private void OnTriggerEnter2D(Collider2D other)
-    {
-        
-        if (other.CompareTag("Enemy") || other.CompareTag("Wall"))
-        {
-            // other.gameObject.SetActive(false);
-            if (!isInvicible)
-            {
-                GM.RemoveLife();
-            }
-            
-        }
-    }
-
-    public void OnCollisionEnter2D(Collision2D other)
-    {
-        if(other.gameObject.tag == "Ground")
-        {
-            
-        }
     }
 
     public void DisableRope()

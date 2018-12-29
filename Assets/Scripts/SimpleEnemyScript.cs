@@ -5,10 +5,12 @@ using UnityEngine;
 public class SimpleEnemyScript : MonoBehaviour
 {
     private EffectsManager EM;
+    private PlayerManager PM;
     public bool isHook = false;
     private void Start()
     {
         EM = EffectsManager.instance;
+        PM = PlayerManager.instance;
     }
     private void OnTriggerEnter2D(Collider2D other)
     {
@@ -29,7 +31,7 @@ public class SimpleEnemyScript : MonoBehaviour
         gameObject.SetActive(false);
         if(isHook)
         {
-            SpawnHookManager.instance.RemoveHookList(this.gameObject);
+            PM.RemoveGrabbableObject(gameObject);
         }
     }
 }

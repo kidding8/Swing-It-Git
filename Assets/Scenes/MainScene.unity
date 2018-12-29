@@ -1639,6 +1639,7 @@ MonoBehaviour:
   shadowColor: {r: 0.23584908, g: 0.17688681, b: 0.22224241, a: 1}
   availableHook: {fileID: 21300000, guid: 7b0ac90520b7e6946ac232f38ab297d8, type: 3}
   unavailableHook: {fileID: 21300000, guid: 260361ad6a87f994cb151f08ffc46568, type: 3}
+  grabObjectIndicator: {fileID: 2086458420}
   layerMaskOtherObjectsAround:
     serializedVersion: 2
     m_Bits: 5120
@@ -2694,7 +2695,6 @@ MonoBehaviour:
   hookToInstantiate: {fileID: 1404701874796426, guid: 0082b9bed9fbedb40a1ce0e7b34729a5,
     type: 3}
   smokeParticle: {fileID: 1087480207}
-  isInvicible: 0
   distanceToGround: 3
   whatIsGround:
     serializedVersion: 2
@@ -2799,6 +2799,8 @@ MonoBehaviour:
   canShootGuidedMissiles: 0
   ropeSpeed: 1
   ropeDistance: 2
+  radiusToGrab: 200
+  invincible: 0
   currentJumps: 0
   isHooked: 0
   isTargetable: 1
@@ -11029,7 +11031,6 @@ MonoBehaviour:
   hookToInstantiate: {fileID: 1404701874796426, guid: 0082b9bed9fbedb40a1ce0e7b34729a5,
     type: 3}
   smokeParticle: {fileID: 1087480207}
-  isInvicible: 0
   distanceToGround: 3
   whatIsGround:
     serializedVersion: 2
@@ -12458,7 +12459,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   hookPool:
   - {fileID: 1374795527}
-  - {fileID: 1609805337}
   missiles: {fileID: 296177872}
   spawnMissileTop: {fileID: 1283627773}
   spawnMissileDown: {fileID: 817315387}
@@ -12471,8 +12471,6 @@ MonoBehaviour:
   xOffset: {x: 5, y: 15}
   yOffset: {x: -15, y: 5}
   coinObject: {fileID: 0}
-  radiusToGrab: 250
-  hookIndicator: {fileID: 2086458420}
 --- !u!4 &1948049693
 Transform:
   m_ObjectHideFlags: 0
