@@ -211,7 +211,7 @@ public class PlayerManager : MonoBehaviour
 
     public void RemoveLineTarget()
     {
-        //line.positionCount = 0;
+        line.positionCount = 0;
         line.enabled = false;
         useLine = false;
         lastNode = null;

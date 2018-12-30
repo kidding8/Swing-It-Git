@@ -62,6 +62,11 @@ public class Grabber : MonoBehaviour
         attachedRopes.Add(rope);
     }
 
+    public void RemoveRope(RopeScript rope)
+    {
+        isAttached = false;
+        attachedRopes.Remove(rope);
+    }
     public void CheckIfTeleporter()
     {
         if (isTeleport)

@@ -55,8 +55,8 @@ public class NodeScript : MonoBehaviour {
                 RemoveLineTarget();
                 hinge2D.enabled = false;
                 RopeScript ropeScript = GetComponentInParent<RopeScript>();
-                if(ropeScript != null)
-                    ropeScript.UnhookRope();
+                if (ropeScript != null)
+                    ropeScript.DestroyedRope();
             }
             
         }

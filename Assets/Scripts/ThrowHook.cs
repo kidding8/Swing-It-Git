@@ -311,6 +311,7 @@ public class ThrowHook : MonoBehaviour
     {
         rb.gravityScale = PM.gravityUnhooked;
         //rb.freezeRotation = false;
+        
         isPressed = false;
         if (ropeActive)
         {
@@ -410,6 +411,7 @@ public class ThrowHook : MonoBehaviour
 
     public void DisableRope()
     {
+        
         ropeScript.UnhookRope();
         ropeActive = false;
         currrentHook = null;
