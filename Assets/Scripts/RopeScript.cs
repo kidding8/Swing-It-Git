@@ -16,25 +16,15 @@ public class RopeScript : MonoBehaviour
     private ObjectPooler nodePool;
     private GameObject player;
     private GameObject lastNode;
-    
 
     private List<GameObject> nodeList;
 
-    private List<GameObject> bottomNodeList;
-    private List<GameObject> upperNodeList;
-
     private bool isDone = false;
     private LineRenderer line;
-    private int vertexCount = 2;
 
-    //private EdgeCollider2D edgeCol;
-    private bool isAlreadyCut = false;
-    private bool drawRope = true;
     private bool isAttachedToPlayer = false;
-    private LineRenderer nodeLineRenderer;
     private Vector3 screenPos;
     private Camera cam;
-    private int index;
 
     private bool alreadyJumped = false;
     private bool particlesDone = false;
@@ -42,7 +32,6 @@ public class RopeScript : MonoBehaviour
     private bool noTarget;
     private CameraFollow camFollow;
     private Rigidbody2D rb;
-    private bool isFirstNode = true;
     private bool useLine = false;
     private Transform firstNode = null;
 
@@ -58,8 +47,6 @@ public class RopeScript : MonoBehaviour
         lastNode = transform.gameObject;
         nodePool = aux.GetNodePool();
         nodeList = new List<GameObject>();
-        bottomNodeList = new List<GameObject>();
-        upperNodeList = new List<GameObject>();
         nodeList.Add(transform.gameObject);
         line = GetComponent<LineRenderer>();
         camFollow = cam.GetComponent<CameraFollow>();
@@ -136,6 +123,8 @@ public class RopeScript : MonoBehaviour
             PM.SetNewHook(gameObject);
             Grabber grabber = attachedHook.GetComponent<Grabber>();
             grabber.CheckIfTeleporter();
+
+
             if (attachedHook.activeInHierarchy)
                 grabber.AddRope(this);
             else
@@ -161,15 +150,6 @@ public class RopeScript : MonoBehaviour
             /* DistanceJoint2D disjoint = GetComponent<DistanceJoint2D>();
              disjoint.enabled = true;
              disjoint.connectedBody = playerRb;*/
-
-
-            /* NodeScript nodeScript = lastNode.GetComponent<NodeScript>();
-             if (nodeScript != null)
-             {
-                 //Debug.Log("IS NOTT MOTHERFUCKING NULL: " + nodeScript.isUsed());
-                 nodeScript.SetNewLineTarget(player.transform);
-             }*/
-
 
 
         }
@@ -225,114 +205,14 @@ public class RopeScript : MonoBehaviour
         this.destiny = destiny;
     }
 
-    /*public void DestroyRope(GameObject node)
-    {
-        if (isAlreadyCut || !isDone || !isAttachedToPlayer)
-            return;
-
-        if (isAttachedToPlayer)
-        {
-            GM.RemoveCombo();
-            playerThrowHook.DisableRope();
-        }
-
-        bottomNodeList.Clear();
-        upperNodeList.Clear();
-
-        index = nodeList.IndexOf(node);
-        for (int i = 0; i < nodeList.Count; i++)
-        {
-            if (i > index)
-            {
-                bottomNodeList.Add(nodeList[i]);
-            }
-            else
-            {
-                upperNodeList.Add(nodeList[i]);
-
-            }
-        }
-
-        upperNodeList[upperNodeList.Count - 1].GetComponent<HingeJoint2D>().enabled = false;
-        nodeLineRenderer = nodeList[index].AddComponent<LineRenderer>();
-        if (nodeLineRenderer != null)
-        {
-            nodeLineRenderer.startWidth = 0.1f;
-            nodeLineRenderer.material.color = Color.green;
-        }
-        //destroyRope = true;
-        drawRope = false;
-        isAlreadyCut = true;
-        UnhookRope();
-    }*/
-
     private void LateUpdate()
     {
-        //RenderLine();
-
         /* screenPos = cam.WorldToScreenPoint(transform.position);
          if (screenPos.x < -disToDestroyX)
          {
              DisableRope();
          }*/
     }
-
-    /*void RenderLine()
-    {
-
-        if (drawRope)
-        {
-            if (isAttachedToPlayer)
-                lr.positionCount = vertexCount;
-            else
-                lr.positionCount = vertexCount - 1;
-
-            int i;
-            for (i = 0; i < nodeList.Count; i++)
-            {
-
-                lr.SetPosition(i, nodeList[i].transform.position);
-
-            }
-            if (isAttachedToPlayer)
-                lr.SetPosition(i, player.transform.position);
-        }
-        else
-        {
-            nodeLineRenderer.positionCount = bottomNodeList.Count;
-            int i;
-            for (i = 0; i < bottomNodeList.Count; i++)
-            {
-
-                nodeLineRenderer.SetPosition(i, bottomNodeList[i].transform.position);
-
-            }
-            //nodeLineRenderer.SetPosition(i, player.transform.position);
-
-            lr.positionCount = upperNodeList.Count;
-
-            for (int a = 0; a < upperNodeList.Count; a++)
-            {
-                lr.SetPosition(a, upperNodeList[a].transform.position);
-            }
-
-        }
-
-    }*/
-
-    /*void CreateCollider()
-    {
-        int i;
-        List<Vector2> edgePoints = new List<Vector2>();
-        for (i = 0; i < nodeList.Count; i++)
-        {
-
-            edgePoints.Add(transform.InverseTransformPoint(nodeList[i].transform.position));
-        }
-        edgePoints.Add(transform.InverseTransformPoint(player.transform.position));
-
-        edgeCol.points = edgePoints.ToArray();
-    }*/
 
     void CreateNode()
     {
@@ -376,20 +256,10 @@ public class RopeScript : MonoBehaviour
                 nodeScript.SetNewLineTarget(node.transform);
             }
         }
-        
-        /*LineRenderer lineLastNode = lastNode.GetComponent<LineRenderer>();
-        lineLastNode.positionCount = 2;
-        lineLastNode.SetPosition(0, lastNode.transform.position);
-        lineLastNode.SetPosition(1, node.transform.position);*/
-
-
 
         lastNode = node;
 
         nodeList.Add(lastNode);
-
-        //vertexCount++;
-        Debug.Log("Created Node");
     }
 
     public void UnhookRope()
@@ -433,15 +303,10 @@ public class RopeScript : MonoBehaviour
             nodeList[i].transform.parent = aux.GetSpawnTransform();
 
         }
-        if (nodeLineRenderer != null)
-        {
-            Destroy(nodeLineRenderer);
-        }
         /*nodeList.Clear();
         lr.positionCount = 0;*/
-        Destroy(gameObject);
-        //nodeLineRenderer.positionCount = 0;
-        //gameObject.SetActive(false);
+        gameObject.SetActive(false);
+
 
     }
 

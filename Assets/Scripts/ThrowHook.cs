@@ -9,7 +9,7 @@ public class ThrowHook : MonoBehaviour
     private EffectsManager EM;
     private PlayerManager PM;
     private GameController GC;
-    public ObjectPooler hook;
+    public ObjectPooler hookPool;
     public GameObject hookToInstantiate;
     //public float forceRopeGrab = 1f;
     
@@ -354,11 +354,11 @@ public class ThrowHook : MonoBehaviour
 
     private void CreateHook(GameObject hook, bool noTarget)
     {
-        currrentHook = (GameObject)Instantiate(hookToInstantiate, transform.position, Quaternion.identity);
-        /*currrentHook = hook.GetPooledObject();
+        //currrentHook = (GameObject)Instantiate(hookToInstantiate, transform.position, Quaternion.identity);
+        currrentHook = hookPool.GetPooledObject();
         currrentHook.transform.position = transform.position;
         currrentHook.transform.rotation = Quaternion.identity;
-        currrentHook.SetActive(true);*/
+        currrentHook.SetActive(true);
         ropeScript = currrentHook.GetComponent<RopeScript>();
         ropeScript.AddRope(hook, noTarget);
         ropeActive = true;
@@ -366,7 +366,10 @@ public class ThrowHook : MonoBehaviour
 
     private void CreateHook(Vector2 pos, bool noTarget)
     {
-        currrentHook = (GameObject)Instantiate(hookToInstantiate, transform.position, Quaternion.identity);
+        currrentHook = hookPool.GetPooledObject();
+        currrentHook.transform.position = transform.position;
+        currrentHook.transform.rotation = Quaternion.identity;
+        currrentHook.SetActive(true);
         ropeScript = currrentHook.GetComponent<RopeScript>();
         ropeScript.AddRope(pos, noTarget);
         ropeActive = true;

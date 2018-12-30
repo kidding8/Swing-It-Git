@@ -2692,7 +2692,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4f22371844450b94782598a258279351, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  hook: {fileID: 432272298}
+  hookPool: {fileID: 432272298}
   hookToInstantiate: {fileID: 1404701874796426, guid: 0082b9bed9fbedb40a1ce0e7b34729a5,
     type: 3}
   smokeParticle: {fileID: 1087480207}
@@ -2802,7 +2802,7 @@ MonoBehaviour:
   ropeDistance: 1.5
   radiusToGrab: 250
   invincible: 0
-  destroyRope: 0
+  destroyRope: 1
   currentJumps: 0
   isHooked: 0
   isTargetable: 1
@@ -11124,7 +11124,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4f22371844450b94782598a258279351, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  hook: {fileID: 432272298}
+  hookPool: {fileID: 0}
   hookToInstantiate: {fileID: 1404701874796426, guid: 0082b9bed9fbedb40a1ce0e7b34729a5,
     type: 3}
   smokeParticle: {fileID: 1087480207}
