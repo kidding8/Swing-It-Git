@@ -37,7 +37,7 @@ public class PlayerManager : MonoBehaviour
     public float radiusToGrab = 200f;
 
     public bool invincible = false;
-
+    public bool destroyRope = false;
 
     [HideInInspector]
     public int currentJumps = 0;
@@ -53,6 +53,9 @@ public class PlayerManager : MonoBehaviour
     private GameObject currentHook;
     private GameObject currentGrababbleObject;
     private GameObject grabObjectIndicator;
+    private bool useLine;
+    private LineRenderer line;
+    private Transform lastNode;
 
     private void Awake()
     {
@@ -74,6 +77,7 @@ public class PlayerManager : MonoBehaviour
         currentJumps = maxRopeJumps;
         grabbableObjectsList = new List<GameObject>();
         grabObjectIndicator = aux.GetGrabObjectIndicator();
+        line = GetComponent<LineRenderer>();
     }
 
     private void Update()
@@ -103,6 +107,13 @@ public class PlayerManager : MonoBehaviour
             }
         }
         currentGrababbleObject = hookTemp;
+
+        if (useLine && lastNode != null)
+        {
+            line.SetPosition(0, transform.position);
+            line.SetPosition(1, lastNode.transform.position);
+        }
+
     }
 
     private void FixedUpdate()
@@ -190,9 +201,26 @@ public class PlayerManager : MonoBehaviour
         isTargetable = newBool;
     }
 
+    public void SetNewLineTarget(Transform target)
+    {
+        line.enabled = true;
+        line.positionCount = 2;
+        lastNode = target;
+        useLine = true;
+    }
+
+    public void RemoveLineTarget()
+    {
+        //line.positionCount = 0;
+        line.enabled = false;
+        useLine = false;
+        lastNode = null;
+    }
+
     public void RemoveHook()
     {
         isHooked = false;
+        RemoveLineTarget();
         currentHook = null;
     }
 
