@@ -6,14 +6,13 @@ public class Grabber : MonoBehaviour
 {
     private PlayerManager PM;
     private EffectsManager EM;
-    private ThrowHook throwHook;
     private List<RopeScript> attachedRopes;
     public bool isTeleport = false;
-    bool isAttached = false;
+    //bool isAttached = false;
     // Start is called before the first frame update
     void Start()
     {
-        throwHook = AuxManager.instance.GetPlayer().GetComponent<ThrowHook>();
+        //throwHook = AuxManager.instance.GetPlayer().GetComponent<ThrowHook>();
         EM = EffectsManager.instance;
         PM = PlayerManager.instance;
         
@@ -39,7 +38,7 @@ public class Grabber : MonoBehaviour
         EM.SetCoinPickUpParticles(transform.position);
         EM.CreateDisappearingCircle(transform.position);
         gameObject.SetActive(false);
-        isAttached = false;
+       // isAttached = false;
         PM.RemoveGrabbableObject(gameObject);
         foreach(RopeScript rope in attachedRopes)
         {
@@ -58,13 +57,13 @@ public class Grabber : MonoBehaviour
 
     public void AddRope(RopeScript rope)
     {
-        isAttached = true;
+        //isAttached = true;
         attachedRopes.Add(rope);
     }
 
     public void RemoveRope(RopeScript rope)
     {
-        isAttached = false;
+        //isAttached = false;
         attachedRopes.Remove(rope);
     }
     public void CheckIfTeleporter()

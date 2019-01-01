@@ -105,7 +105,7 @@ public class ThrowHook : MonoBehaviour
     void FixedUpdate()
     {
 
-        if (useDistanceLimit)
+        /*if (useDistanceLimit)
         {
             float dis = Vector2.Distance(transform.position, connectedHook.position);
             if (dis > distance)
@@ -117,15 +117,8 @@ public class ThrowHook : MonoBehaviour
               //  transform.position = connectedHook.position + Vector3.ClampMagnitude(offset, distance);
                 
             }
+        }*/
 
-            
-
-            /*if (Vector3.Distance(transform.position, connectedHook.position) > distance)
-            {
-                transform.position = (transform.position - connectedHook.position).normalized * distance + transform.position;
-                Debug.Log("Limitinggggggggggggg");
-            }*/
-        }
         /*if(rb.velocity.x > 11)
         {
             EM.speeding = true;
@@ -411,8 +404,8 @@ public class ThrowHook : MonoBehaviour
 
     public void DisableRope()
     {
-        
-        ropeScript.UnhookRope();
+        if(ropeScript !=null)
+            ropeScript.UnhookRope();
         ropeActive = false;
         currrentHook = null;
     }

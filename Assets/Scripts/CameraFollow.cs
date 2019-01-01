@@ -65,7 +65,6 @@ public class CameraFollow : MonoBehaviour
 
     private void Move()
     {
-        Vector3 extended = new Vector3(4, 4, 0);
         Vector3 centerPoint = GetCenterPoint();
         offset.z = 0;
         if (targets.Count <= 1)
@@ -77,9 +76,6 @@ public class CameraFollow : MonoBehaviour
         Vector3 newCenter = centerPoint + offset;
 
         Vector3 newPos = Vector3.SmoothDamp(transform.position, newCenter, ref refVelocity, dampTime);
-
-        /*var vertExtent = cam.orthographicSize;
-        var horzExtent = vertExtent * Screen.width / Screen.height;*/
 
         float maxY = limitCameraTop - cam.orthographicSize;
         float minY = limitCameraBottom + cam.orthographicSize;
@@ -158,12 +154,14 @@ public class CameraFollow : MonoBehaviour
     public void AddTarget(Transform newTarget)
     {
         //hookTrans = newTarget;
-        targets.Add(newTarget);
+        if(newTarget != null)
+            targets.Add(newTarget);
     }
 
     public void RemoveTarget(Transform newTarget)
     {
-        targets.Remove(newTarget);
+        if(targets.Contains(newTarget))
+            targets.Remove(newTarget);
         //hookTrans = null;
     }
 

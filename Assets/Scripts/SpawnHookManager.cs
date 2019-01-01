@@ -106,6 +106,7 @@ public class SpawnHookManager : MonoBehaviour
     {
         return Random.Range(0, hookPool.Length);
     }
+
     /*public void RemoveHookList(GameObject hook)
     {
         hooksList.Remove(hook);
@@ -190,7 +191,7 @@ public class SpawnHookManager : MonoBehaviour
         Vector3 downRight = aux.GetLowerRightCorner();
         /*if (top)
         {*/
-          return new Vector3(Random.Range(topLeft.x + 10, topRight.x), topRight.y + 7);
+        return new Vector3(Random.Range(topLeft.x + 10, topRight.x), topRight.y + 7);
         /*}
         else
         {

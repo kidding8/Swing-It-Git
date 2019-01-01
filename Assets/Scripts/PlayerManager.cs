@@ -39,6 +39,7 @@ public class PlayerManager : MonoBehaviour
     public bool invincible = false;
     public bool destroyRope = false;
 
+    private float timerForNextHookIndicator = 0.4f;
     [HideInInspector]
     public int currentJumps = 0;
     [HideInInspector]
@@ -47,7 +48,8 @@ public class PlayerManager : MonoBehaviour
     public bool isTargetable = true;
 
 
-
+    private float timerHookIndicator;
+    
     private Rigidbody2D rb;
     private List<GameObject> grabbableObjectsList;
     private GameObject currentHook;
@@ -82,32 +84,36 @@ public class PlayerManager : MonoBehaviour
 
     private void Update()
     {
+        timerHookIndicator += Time.deltaTime;
         GameObject hookTemp = GetFarthestGrabbableObjectInRadius();
-
-        if (hookTemp != null)
+        
+        if (timerHookIndicator >= timerForNextHookIndicator)
         {
-            grabObjectIndicator.SetActive(true);
-            grabObjectIndicator.transform.position = hookTemp.transform.position;
-            /*SpriteRenderer sRenderer = currentFarthestHook.GetComponent<SpriteRenderer>();
-            sRenderer.sprite = aux.GetAvailableHookSprite();*/
-        }
-        else
-        {
-            /*SpriteRenderer sRenderer = currentFarthestHook.GetComponent<SpriteRenderer>();
-            sRenderer.sprite = aux.GetUnavailableHookSprite();*/
-            hookTemp = GetClosestGrabbableObjectInRadius();
+            timerHookIndicator = 0;
             if (hookTemp != null)
             {
                 grabObjectIndicator.SetActive(true);
+                grabObjectIndicator.GetComponent<SpriteRenderer>().color = Color.white;
                 grabObjectIndicator.transform.position = hookTemp.transform.position;
             }
             else
             {
-                grabObjectIndicator.SetActive(false);
-            }
-        }
-        currentGrababbleObject = hookTemp;
 
+                /*hookTemp = GetClosestGrabbableObjectInRadius();
+                if (hookTemp != null)
+                {
+                    grabObjectIndicator.GetComponent<SpriteRenderer>().color = Color.red;
+                    grabObjectIndicator.SetActive(true);
+                    grabObjectIndicator.transform.position = hookTemp.transform.position;
+                }
+                else
+                {*/
+                    grabObjectIndicator.SetActive(false);
+                //}
+            }
+
+            currentGrababbleObject = hookTemp;
+        }
         if (useLine && lastNode != null)
         {
             line.SetPosition(0, transform.position);
