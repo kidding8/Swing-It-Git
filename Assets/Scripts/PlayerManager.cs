@@ -4,9 +4,15 @@ using UnityEngine;
 
 public class PlayerManager : MonoBehaviour
 {
+    
+
+    public int playerState = States.STATE_HIDDEN;
+
     public static PlayerManager instance;
     private AuxManager aux;
     private GameManager GM;
+
+
 
     public float maxSpeed = 40f;
     public float forceRopeLeave = 10f;
@@ -47,9 +53,11 @@ public class PlayerManager : MonoBehaviour
     [HideInInspector]
     public bool isTargetable = true;
 
+    private bool isAttachedToAPlane = false;
 
     private float timerHookIndicator;
     
+
     private Rigidbody2D rb;
     private List<GameObject> grabbableObjectsList;
     private GameObject currentHook;
@@ -58,6 +66,13 @@ public class PlayerManager : MonoBehaviour
     private bool useLine;
     private LineRenderer line;
     private Transform lastNode;
+
+    private GameObject previousTargetHook;
+    private CameraFollow camFollow;
+
+    private ThrowHook throwHook;
+    private GameObject currentFlyingPlane;
+    private bool isAlreadyFlying = false;
 
     private void Awake()
     {
@@ -80,6 +95,8 @@ public class PlayerManager : MonoBehaviour
         grabbableObjectsList = new List<GameObject>();
         grabObjectIndicator = aux.GetGrabObjectIndicator();
         line = GetComponent<LineRenderer>();
+        camFollow = aux.GetCamera().GetComponent<CameraFollow>();
+        throwHook = GetComponent<ThrowHook>();
     }
 
     private void Update()
@@ -87,7 +104,7 @@ public class PlayerManager : MonoBehaviour
         timerHookIndicator += Time.deltaTime;
         GameObject hookTemp = GetFarthestGrabbableObjectInRadius();
         
-        if (timerHookIndicator >= timerForNextHookIndicator)
+        if (timerHookIndicator >= timerForNextHookIndicator && playerState == States.STATE_NORMAL)
         {
             timerHookIndicator = 0;
             if (hookTemp != null)
@@ -95,25 +112,50 @@ public class PlayerManager : MonoBehaviour
                 grabObjectIndicator.SetActive(true);
                 grabObjectIndicator.GetComponent<SpriteRenderer>().color = Color.white;
                 grabObjectIndicator.transform.position = hookTemp.transform.position;
+                //AddTargetHookToCamera(hookTemp);
             }
             else
             {
 
-                /*hookTemp = GetClosestGrabbableObjectInRadius();
+                hookTemp = GetClosestGrabbableObjectInRadius();
                 if (hookTemp != null)
                 {
                     grabObjectIndicator.GetComponent<SpriteRenderer>().color = Color.red;
                     grabObjectIndicator.SetActive(true);
                     grabObjectIndicator.transform.position = hookTemp.transform.position;
+                    //AddTargetHookToCamera(hookTemp);
                 }
                 else
-                {*/
+                {
+                   /* if (previousTargetHook != null)
+                        camFollow.RemoveTarget(previousTargetHook.transform);*/
                     grabObjectIndicator.SetActive(false);
-                //}
+                }
             }
 
             currentGrababbleObject = hookTemp;
-        }
+
+            /*if(previousTargetHook != hookTemp && hookTemp != null)
+            {
+                camFollow.AddTarget(hookTemp.transform);
+                camFollow.RemoveTarget(previousTargetHook.transform);
+                
+            }*/
+            //previousTargetHook = hookTemp;
+
+
+        }/*else if(playerState == States.STATE_FLYING && currentFlyingPlane != null)
+        {
+            
+            if (!isAlreadyFlying)
+            {
+                /*Vector3 newPos = new Vector3(currentFlyingPlane.transform.position.x - 2f, currentFlyingPlane.transform.position.y, transform.position.z);
+                transform.position = newPos;*/
+                //throwHook.CreateHookToTarget(currentFlyingPlane);
+               /* isAlreadyFlying = true;
+            }
+            
+        }*/
         if (useLine && lastNode != null)
         {
             line.SetPosition(0, transform.position);
@@ -129,6 +171,14 @@ public class PlayerManager : MonoBehaviour
             rb.velocity = rb.velocity.normalized * maxSpeed;
             Debug.Log("Reached Max Speed");
         }
+    }
+
+    void OnGUI()
+    {
+        GUI.Label(new Rect(10, 110, 100, 20), "Magnitude: " + (int)rb.velocity.magnitude);
+        GUI.Label(new Rect(10, 130, 100, 20), "velocity X: " + (int)rb.velocity.x);
+        GUI.Label(new Rect(10, 150, 100, 20), "velocity Y: " + (int)rb.velocity.y);
+        GUI.Label(new Rect(10, 170, 100, 20), "Cam Targets: " + (int)camFollow.GetTargetsNum());
     }
 
     private void OnTriggerEnter2D(Collider2D other)
@@ -196,15 +246,34 @@ public class PlayerManager : MonoBehaviour
         //rb.velocity = new Vector2(rb.velocity.x, Mathf.Sqrt(-2.0f * Physics2D.gravity.y * jumpHeight));
     }
 
+    public void SetNewFlyingPlane(GameObject plane)
+    {
+        SetNewPlayerState(States.STATE_FLYING);
+        //currentFlyingPlane = plane;
+        /*Vector3 newPos = new Vector3(plane.transform.position.x - 2f, plane.transform.position.y, transform.position.z);
+        transform.position = newPos;*/
+    }
+
     public void SetNewHook(GameObject hook)
     {
         isHooked = true;
         currentHook = hook;
     }
 
-    public void SetIsTargetable(bool newBool)
+    public void SetNewPlayerState(int state)
     {
-        isTargetable = newBool;
+        playerState = state;
+    }
+
+    private void AddTargetHookToCamera(GameObject hookTemp)
+    {
+        if (previousTargetHook != hookTemp)
+        {
+            camFollow.AddTarget(hookTemp.transform);
+            if (previousTargetHook != null)
+                camFollow.RemoveTarget(previousTargetHook.transform);
+            previousTargetHook = hookTemp;
+        }
     }
 
     public void SetNewLineTarget(Transform target)
@@ -266,7 +335,7 @@ public class PlayerManager : MonoBehaviour
         {
             Vector3 diff = obj.transform.position - currentPosition;
             float curDistance = diff.sqrMagnitude;
-            float dirNum = AngleDir(transform.forward, diff, transform.up);
+            float dirNum = AngleDir(Vector3.forward, diff, Vector3.up);
             if (curDistance > distance && curDistance < radiusToGrab && dirNum == 1)
             {
                 farthest = obj;
@@ -339,5 +408,24 @@ public class PlayerManager : MonoBehaviour
         }
     }
 
+    public GameObject GetPlayer()
+    {
+        return gameObject;
+    }
+
+    public bool CanCollectCoins()
+    {
+        return playerState == States.STATE_FLYING || playerState == States.STATE_HOOKED || playerState == States.STATE_NORMAL || playerState == States.STATE_ROCKET;
+    }
+
+    public bool CanCollect()
+    {
+        return playerState == States.STATE_NORMAL || playerState == States.STATE_HOOKED;
+    }
+
+    public bool CanDie()
+    {
+        return playerState != States.STATE_ROCKET || playerState != States.STATE_FLYING; 
+    }
 }
 

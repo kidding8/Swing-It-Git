@@ -15,7 +15,7 @@ public class CoinScript : MonoBehaviour {
     }
     private void OnTriggerEnter2D(Collider2D other)
     {
-        if (other.CompareTag("Player") && PM.isTargetable)
+        if (other.CompareTag("Player") && PM.CanCollectCoins())
         {
             GM.IncrementCoins(1);
             EM.SetCoinPickUpParticles(transform.position);

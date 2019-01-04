@@ -2,6 +2,16 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+
+public class States
+{
+    public const int STATE_HIDDEN = 0;
+    public const int STATE_NORMAL = 1;
+    public const int STATE_HOOKED = 2;
+    public const int STATE_ROCKET = 3;
+    public const int STATE_FLYING = 4;
+}
+
 public class AuxManager : MonoBehaviour {
 
     public static AuxManager instance;

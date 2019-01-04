@@ -22,11 +22,11 @@ public class ThrowHook : MonoBehaviour
     /* private float lastClickTime = 0;
      public float catchTime = .25f;*/
     private float timerHook;
-    private float timerNextHook = 0.4f;
+    private readonly float timerNextHook = 0.4f;
     private float timerJump;
-    private float timerNextJump = 0.5f;
+    private readonly float timerNextJump = 0.5f;
     public ParticleSystem smokeParticle;
-    private bool isPressed = false;
+    private bool isAttachedToAHook = false;
    
     private bool alreadyFlipped = false;
 
@@ -41,10 +41,6 @@ public class ThrowHook : MonoBehaviour
     private float rotMin = -360f;
     private float rotMax = 360f;
 
-    private float distance = 0;
-    private Transform connectedHook;
-    private bool useDistanceLimit = false;
-
     void Start()
     {
         GM = GameManager.instance;
@@ -53,28 +49,26 @@ public class ThrowHook : MonoBehaviour
         PM = PlayerManager.instance;
         GC = GameController.instance;
         rb = GetComponent<Rigidbody2D>();
-        disjoint = GetComponent<DistanceJoint2D>();
-        disjoint.enabled = false;
     }
     private void Update()
     {
         timerHook += Time.deltaTime;
         timerJump += Time.deltaTime;
 
-        if (Input.GetMouseButtonDown(0) && GM.isPlaying() && timerHook > timerNextHook)
+        if (Input.GetMouseButtonDown(0) && GM.isPlaying() && timerHook > timerNextHook && PM.playerState == States.STATE_NORMAL)
         {
             if (CheckIfGrounded())
             {
                 GroundJump();
             }
-            else
+            else if(PM.CanCollect())
             {
                 Hook();
             }
 
         }
 
-        else if (Input.GetMouseButtonUp(0) && isPressed)
+        else if (Input.GetMouseButtonUp(0) && isAttachedToAHook)
         {
             Unhook();
             //AuxManager.instance.GetCamera().GetComponent<CameraFollow>().AddTarget(transform);
@@ -105,55 +99,19 @@ public class ThrowHook : MonoBehaviour
     void FixedUpdate()
     {
 
-        /*if (useDistanceLimit)
+        if (PM.isHooked && isAttachedToAHook)
         {
-            float dis = Vector2.Distance(transform.position, connectedHook.position);
-            if (dis > distance)
-            {
-                Vector3 dir = transform.position - connectedHook.position;
-
-
-                Vector3 offset = transform.position - connectedHook.position;
-              //  transform.position = connectedHook.position + Vector3.ClampMagnitude(offset, distance);
-                
-            }
-        }*/
-
-        /*if(rb.velocity.x > 11)
-        {
-            EM.speeding = true;
-        }
-        else
-        {
-            EM.speeding = false;
-        }
-        */
-
-        if (PM.isHooked && isPressed)
-        {
-            //rb.freezeRotation = true;
-            Vector3 vel = rb.velocity;
-            if (vel.x > 0)
-                vel.x += PM.xVelocityMultiplierHooked * Time.deltaTime;
-            else
-                vel.x -= PM.xVelocityMultiplierHooked * Time.deltaTime;
-
-
-            if (vel.y > 0)
-                vel.y += PM.yVelocityMultiplierHooked * Time.deltaTime;
-            else
-                vel.y -= PM.yVelocityMultiplierHooked * Time.deltaTime;
+            HookedVelocity();
 
             backFlips = 0;
             frontFlips = 0;
-
-            rb.velocity = vel;
 
             // var angulo = CalculateAngle(transform.position, destinyHook);
             if (!alreadyFlipped)
             {
                 CheckIfFlipped();
             }
+
         }
         else
         {
@@ -179,14 +137,6 @@ public class ThrowHook : MonoBehaviour
             }
 
         }
-
-        
-        /*if(currentAngle >= startedAngle - 10 && currentAngle <= startedAngle + 10)
-        {
-            currentSpins++;
-            Debug.Log("HOLY FUCKING SHITTTT : " + currentSpins);
-        }*/
-
 
         #region Android
         //#if UNITY_EDITOR
@@ -228,30 +178,42 @@ public class ThrowHook : MonoBehaviour
         return Physics2D.Raycast(transform.position, -Vector2.up, distanceToGround, whatIsGround);
     }
 
-   /* public void LimitDistance()
+    private void HookedVelocity()
     {
-        useDistanceLimit = true;
-        connectedHook = PM.GetCurrentHook().transform;
-        distance = Vector3.Distance(transform.position, connectedHook.position);
-    }*/
+        Vector3 vel = rb.velocity;
+        if (vel.x > 0)
+            vel.x += PM.xVelocityMultiplierHooked * Time.deltaTime;
+        else
+            vel.x -= PM.xVelocityMultiplierHooked * Time.deltaTime;
+
+
+        if (vel.y > 0)
+            vel.y += PM.yVelocityMultiplierHooked * Time.deltaTime;
+        else
+            vel.y -= PM.yVelocityMultiplierHooked * Time.deltaTime;
+
+        rb.velocity = vel;
+    }
+
+    /* public void LimitDistance()
+     {
+         useDistanceLimit = true;
+         float dis = Vector2.Distance(transform.position, connectedHook.position);
+             if (dis > distance)
+             {
+                 Vector3 dir = transform.position - connectedHook.position;
+
+
+                 Vector3 offset = transform.position - connectedHook.position;
+               //  transform.position = connectedHook.position + Vector3.ClampMagnitude(offset, distance);
+     }*/
 
     public void TravelToPoint(Transform point)
     {
         float dis = Vector2.Distance(transform.position, point.position);
-        if (dis > distance) dis = distance;
-
-        transform.position = transform.position + (point.position - transform.position).normalized * distance;
+        transform.position = transform.position + (point.position - transform.position).normalized * dis;
     }
 
-    public void DontLimitDistance()
-    {
-        useDistanceLimit = false;
-    }
-
-    public void DisconnectDistanceJoint()
-    {
-        disjoint.enabled = false;
-    }
 
     private void CheckIfFlipped()
     {
@@ -305,7 +267,7 @@ public class ThrowHook : MonoBehaviour
         rb.gravityScale = PM.gravityUnhooked;
         //rb.freezeRotation = false;
         
-        isPressed = false;
+        isAttachedToAHook = false;
         if (ropeActive)
         {
             DisableRope();
@@ -319,7 +281,7 @@ public class ThrowHook : MonoBehaviour
     private void Hook()
     {
         timerHook = 0;
-        isPressed = true;
+        isAttachedToAHook = true;
         rb.gravityScale = PM.gravityHooked;
         if (ropeActive == false)
         {
@@ -327,7 +289,7 @@ public class ThrowHook : MonoBehaviour
 
             if (closestHook != null)
             {
-                CreateHook(closestHook, false);
+                CreateHook(closestHook);
                 EM.CreateCameraShake(0.05f);
                 
                 /*directionHook = destinyHook - (Vector2)transform.position;
@@ -346,7 +308,7 @@ public class ThrowHook : MonoBehaviour
         }
     }
 
-    private void CreateHook(GameObject hook, bool noTarget)
+    public void CreateHook(GameObject hook)
     {
         //currrentHook = (GameObject)Instantiate(hookToInstantiate, transform.position, Quaternion.identity);
         currrentHook = hookPool.GetPooledObject();
@@ -354,11 +316,23 @@ public class ThrowHook : MonoBehaviour
         currrentHook.transform.rotation = Quaternion.identity;
         currrentHook.SetActive(true);
         ropeScript = currrentHook.GetComponent<RopeScript>();
-        ropeScript.AddRope(hook, noTarget);
+        ropeScript.AddRope(hook, false);
         ropeActive = true;
     }
 
-    private void CreateHook(Vector2 pos, bool noTarget)
+    public void CreateHookToTarget(GameObject target)
+    {
+        //currrentHook = (GameObject)Instantiate(hookToInstantiate, transform.position, Quaternion.identity);
+        currrentHook = hookPool.GetPooledObject();
+        currrentHook.transform.position = transform.position;
+        currrentHook.transform.rotation = Quaternion.identity;
+        currrentHook.SetActive(true);
+        ropeScript = currrentHook.GetComponent<RopeScript>();
+        ropeScript.AddRopeToTarget(target);
+        ropeActive = true;
+    }
+
+    public void CreateHook(Vector2 pos, bool noTarget)
     {
         currrentHook = hookPool.GetPooledObject();
         currrentHook.transform.position = transform.position;
@@ -368,6 +342,7 @@ public class ThrowHook : MonoBehaviour
         ropeScript.AddRope(pos, noTarget);
         ropeActive = true;
     }
+
 
     private void SmokeScreen()
     {
@@ -395,12 +370,7 @@ public class ThrowHook : MonoBehaviour
         rb.velocity = new Vector2(1f, 1f) * 10f;
     }
 
-    void OnGUI()
-    {
-        GUI.Label(new Rect(10, 110, 100, 20), "Magnitude: " + (int)rb.velocity.magnitude);
-        GUI.Label(new Rect(10, 130, 100, 20), "velocity X: " + (int)rb.velocity.x);
-        GUI.Label(new Rect(10, 150, 100, 20), "velocity Y: " + (int)rb.velocity.y);
-    }
+    
 
     public void DisableRope()
     {

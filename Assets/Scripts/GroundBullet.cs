@@ -42,4 +42,9 @@ public class GroundBullet : MonoBehaviour
         camFollow.RemoveTarget(transform);
         isAlreadyATarget = false;
     }
+
+    /*private void OnDisable()
+    {
+        RemoveCamTarget();
+    }*/
 }

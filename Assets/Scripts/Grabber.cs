@@ -4,18 +4,21 @@ using UnityEngine;
 
 public class Grabber : MonoBehaviour
 {
+    
     private PlayerManager PM;
     private EffectsManager EM;
     private List<RopeScript> attachedRopes;
+
     public bool isTeleport = false;
-    //bool isAttached = false;
+    private GameObject player;
+    
     // Start is called before the first frame update
     void Start()
     {
         //throwHook = AuxManager.instance.GetPlayer().GetComponent<ThrowHook>();
         EM = EffectsManager.instance;
         PM = PlayerManager.instance;
-        
+        player = PM.GetPlayer();
         attachedRopes = new List<RopeScript>();
     }
 
@@ -25,11 +28,11 @@ public class Grabber : MonoBehaviour
         {
             OnDeath();
         }
-        else if (other.CompareTag("Player") && PM.isTargetable)
+        else if (other.CompareTag("Player") && PM.CanCollect() && PM.useGrabberJump)
         {
             OnDeath();
-            if(PM.useGrabberJump)
-                OnExplosive();
+            
+            OnExplosive();
         }
     }
 
@@ -66,6 +69,10 @@ public class Grabber : MonoBehaviour
         //isAttached = false;
         attachedRopes.Remove(rope);
     }
+
+    
+
+
     public void CheckIfTeleporter()
     {
         if (isTeleport)

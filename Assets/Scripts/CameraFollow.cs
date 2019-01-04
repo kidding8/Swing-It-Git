@@ -74,8 +74,16 @@ public class CameraFollow : MonoBehaviour
             
         centerPoint.z = transform.position.z;
         Vector3 newCenter = centerPoint + offset;
-
-        Vector3 newPos = Vector3.SmoothDamp(transform.position, newCenter, ref refVelocity, dampTime);
+        Vector3 newPos;
+        if(targets.Count <= 1)
+        {
+            newPos = Vector3.SmoothDamp(transform.position, newCenter, ref refVelocity, dampTime - 0.1f);
+        }
+        else
+        {
+            newPos = Vector3.SmoothDamp(transform.position, newCenter, ref refVelocity, dampTime);
+        }
+        
 
         float maxY = limitCameraTop - cam.orthographicSize;
         float minY = limitCameraBottom + cam.orthographicSize;
@@ -188,5 +196,10 @@ public class CameraFollow : MonoBehaviour
 
         f = Mathf.Lerp(orthoSize, f, timeToZoom);
         cam.orthographicSize = Mathf.Lerp(nearCamZoom, farCamZoom, f);*/
+    }
+
+    public int GetTargetsNum()
+    {
+        return targets.Count;
     }
 }

@@ -55,6 +55,7 @@ public class GameManager : MonoBehaviour
     Coroutine myCoroutine;
     private SpawnHookManager SHM;
     private AuxManager AM;
+    private PlayerManager PM;
     private int combo = 0;
     public float comboTimeToDie = 2f;
     private float comboTimer;
@@ -69,6 +70,7 @@ public class GameManager : MonoBehaviour
     {
         SHM = SpawnHookManager.instance;
         AM = AuxManager.instance;
+        PM = PlayerManager.instance;
         player = AM.GetPlayer();
         transform.position = player.transform.position;
         ShowMainMenu();
@@ -218,6 +220,7 @@ public class GameManager : MonoBehaviour
     public void StartNormalGame()
     {
         gameState = PLAYING;
+        PM.SetNewPlayerState(States.STATE_NORMAL);
         Time.timeScale = 1f;
         SHM.StartGame();
         ShowPlayer();

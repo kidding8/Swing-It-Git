@@ -11,11 +11,16 @@ public class SimpleShooter : MonoBehaviour
     public bool shootBullets = true;
     public float minDistanceToPlayer = 30f;
     private ObjectPooler bulletPool;
+
     public float timebetweenBullets = 4f;
+    private float timerToShoot = 0;
+
     public float rotationSpeed = 2f;
 
     private float distanceToPlayer;
     private GameObject player;
+
+
     void Start()
     {
         EM = EffectsManager.instance;
@@ -28,20 +33,25 @@ public class SimpleShooter : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        timerToShoot += Time.deltaTime;
+
         distanceToPlayer = Vector3.Distance(player.transform.position, transform.position);
         Vector3 vectorToTarget = player.transform.position - transform.position;
         float angle = Mathf.Atan2(vectorToTarget.y, vectorToTarget.x) * Mathf.Rad2Deg;
         Quaternion q = Quaternion.AngleAxis(angle, Vector3.forward);
         transform.rotation = Quaternion.Slerp(transform.rotation, q, rotationSpeed* Time.deltaTime);
         Debug.DrawRay(transform.position, vectorToTarget.normalized * minDistanceToPlayer);
+
+        if(distanceToPlayer > minDistanceToPlayer && timerToShoot >= timebetweenBullets)
+        {
+            timerToShoot = 0;
+            ShootBullet(q);
+        }
     }
 
     private void OnEnable()
     {
-        if (shootBullets)
-        {
-            StartCoroutine(ShootBulletGenerator());
-        }
+       
     }
     private void onDeath()
     {
@@ -64,27 +74,15 @@ public class SimpleShooter : MonoBehaviour
         }
     }
 
-    private void ShootBullet()
+    private void ShootBullet(Quaternion q)
     {
         GameObject newMissile = bulletPool.GetPooledObject();
         newMissile.SetActive(true);
         //newMissile.transform.rotation = Quaternion.Euler(0, 0, -90);
         //Vector3 newPos;
 
-        newMissile.transform.rotation = transform.rotation;
+        newMissile.transform.rotation = q;
         newMissile.transform.position = transform.position;
     }
 
-    IEnumerator ShootBulletGenerator()
-    {
-        while (true)
-        {
-            yield return new WaitForSeconds(timebetweenBullets);
-            if (distanceToPlayer > minDistanceToPlayer)
-                ShootBullet();
-            else
-                Debug.Log("Too Close to shoot");
-        }
-
-    }
 }

@@ -31,7 +31,7 @@ public class RocketScript : MonoBehaviour
         {
             transform.Translate(Vector3.right * Time.deltaTime * rocketSpeed);
             player.transform.position = transform.position + Vector3.up;
-            PM.SetIsTargetable(false);
+            PM.SetNewPlayerState(States.STATE_ROCKET);
             throwHook.DisableRope();
             if(Vector3.Distance(initialPos, transform.position) > maxDistance)
             {
@@ -42,7 +42,7 @@ public class RocketScript : MonoBehaviour
 
     private void OnTriggerEnter2D(Collider2D other)
     {
-        if (other.CompareTag("Player") && PM.isTargetable)
+        if (other.CompareTag("Player") && PM.CanCollect())
         {
             initialPos = transform.position;
             activateRocket = true;
@@ -64,7 +64,7 @@ public class RocketScript : MonoBehaviour
         activateRocket = false;
         PM.Jump(PM.jumpForce);
         OnDeath();
-        PM.SetIsTargetable(true);
+        PM.SetNewPlayerState(States.STATE_NORMAL);
         aux.DestroyInRadius(transform.position, destroyRadius);
     }
 
