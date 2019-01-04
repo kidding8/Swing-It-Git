@@ -11,68 +11,82 @@ public class PlayerManager : MonoBehaviour
     public static PlayerManager instance;
     private AuxManager aux;
     private GameManager GM;
+    private EffectsManager EM;
 
-
-
+    [Header("Player Controls")]
     public float maxSpeed = 40f;
     public float forceRopeLeave = 10f;
     public float torqueAddedRopeLeave = 1f;
     public float jumpForce = 15f;
-    public float fallMultiplier = 1.4f;
     public bool useFallMultiplier = true;
-    public float dragGrounded = 0.8f;
+    public float fallMultiplier = 1.4f;
+    public float maxYVelocity = -20;
+    public bool invincible = false;
+    
+    [Header("Rope")]
+    [Space(3)]
     public float xVelocityMultiplierHooked = 15;
     public float yVelocityMultiplierHooked = 10;
-    public float maxYVelocity = -20;
     public float gravityUnhooked = 2f;
     public float gravityHooked = 1f;
+    public float ropeSpeed = 1f;
+    public float ropeDistance = 2f;
+    public bool destroyRope = false;
 
+    private float timerHookIndicator;
+    private float timerForNextHookIndicator = 0.4f;
+
+    [Header("Grabber")]
+    [Space(3)]
     public bool useGrabberJump = true;
     public float grabberJumpForce = 10f;
+    public float radiusToGrab = 200f;
 
+    [Header("Jumps")]
+    [Space(3)]
     public bool limitRopeJump = true;
     public int maxRopeJumps = 2;
+    [HideInInspector]
+    public int currentJumps = 0;
 
+    [Header("Enemies")]
+    [Space(3)]
     public bool canSpawnEnemies = true;
     public bool canShootMissiles = true;
     public bool canShootGuidedMissiles = true;
 
-    public float ropeSpeed = 1f;
-    public float ropeDistance = 2f;
-
-    public float radiusToGrab = 200f;
-
-    public bool invincible = false;
-    public bool destroyRope = false;
-
-    private float timerForNextHookIndicator = 0.4f;
-    [HideInInspector]
-    public int currentJumps = 0;
-    [HideInInspector]
-    public bool isHooked = false;
-    [HideInInspector]
-    public bool isTargetable = true;
-
-    private bool isAttachedToAPlane = false;
-
-    private float timerHookIndicator;
+    [Header("Ground")]
+    [Space(3)]
+    public float distanceToGround = 3f;
+    public float dragGrounded = 0.8f;
+    public LayerMask whatIsGround;
     
-
+    //components
+    private LineRenderer line;
+    private Transform lastNode;
+    private CameraFollow camFollow;
+    private ThrowHook throwHook;
     private Rigidbody2D rb;
+
+    //private gameObjects
     private List<GameObject> grabbableObjectsList;
     private GameObject currentHook;
     private GameObject currentGrababbleObject;
     private GameObject grabObjectIndicator;
-    private bool useLine;
-    private LineRenderer line;
-    private Transform lastNode;
-
     private GameObject previousTargetHook;
-    private CameraFollow camFollow;
-
-    private ThrowHook throwHook;
     private GameObject currentFlyingPlane;
-    private bool isAlreadyFlying = false;
+
+
+    //bools
+    private bool alreadyCountedFlips = false;
+    private bool useLine;
+
+    //Rotation
+    private int backFlips = 0;
+    private int frontFlips = 0;
+    private float rotMin = -360f;
+    private float rotMax = 360f;
+
 
     private void Awake()
     {
@@ -90,6 +104,7 @@ public class PlayerManager : MonoBehaviour
     {
         aux = AuxManager.instance;
         GM = GameManager.instance;
+        EM = EffectsManager.instance;
         rb = GetComponent<Rigidbody2D>();
         currentJumps = maxRopeJumps;
         grabbableObjectsList = new List<GameObject>();
@@ -143,23 +158,36 @@ public class PlayerManager : MonoBehaviour
             }*/
             //previousTargetHook = hookTemp;
 
+        }
 
-        }/*else if(playerState == States.STATE_FLYING && currentFlyingPlane != null)
-        {
-            
-            if (!isAlreadyFlying)
-            {
-                /*Vector3 newPos = new Vector3(currentFlyingPlane.transform.position.x - 2f, currentFlyingPlane.transform.position.y, transform.position.z);
-                transform.position = newPos;*/
-                //throwHook.CreateHookToTarget(currentFlyingPlane);
-               /* isAlreadyFlying = true;
-            }
-            
-        }*/
+
         if (useLine && lastNode != null)
         {
             line.SetPosition(0, transform.position);
             line.SetPosition(1, lastNode.transform.position);
+        }
+
+        if (CheckIfGrounded())
+        {
+            rb.drag = dragGrounded;
+            rb.angularDrag = dragGrounded;
+            if(playerState == States.STATE_NORMAL)
+            {
+                playerState = States.STATE_CLOSE_TO_GROUND;
+            }
+            if (rb.velocity.x >= -0.7f && rb.velocity.x <= 0.7f && playerState == States.STATE_GROUNDED)
+            {
+                GM.OnDeath();
+            }
+        }
+        else
+        {
+            if (playerState == States.STATE_CLOSE_TO_GROUND || playerState == States.STATE_GROUNDED)
+            {
+                playerState = States.STATE_NORMAL;
+            }
+            rb.drag = 0f;
+            rb.angularDrag = 0f;
         }
 
     }
@@ -171,6 +199,75 @@ public class PlayerManager : MonoBehaviour
             rb.velocity = rb.velocity.normalized * maxSpeed;
             Debug.Log("Reached Max Speed");
         }
+
+        if(playerState == States.STATE_HOOKED)
+        {
+            HookedVelocity();
+            backFlips = 0;
+            frontFlips = 0;
+
+            // var angulo = CalculateAngle(transform.position, destinyHook);
+            if (!alreadyCountedFlips)
+            {
+                CheckIfFlipped();
+            }
+        }
+        else
+        {
+
+            if (rb.velocity.y < maxYVelocity)
+            {
+                rb.velocity = new Vector2(rb.velocity.x, maxYVelocity);
+                Debug.Log("limited falling velocity");
+            }
+
+            if (useFallMultiplier)
+            {
+                rb.velocity += Vector2.up * Physics2D.gravity * (fallMultiplier - 1) * Time.deltaTime;
+            }
+
+            if (rb.rotation > rotMax)
+            {
+                frontFlips++;
+                SetRotationMinMax();
+            }
+            if (rb.rotation < rotMin)
+            {
+                backFlips++;
+                SetRotationMinMax();
+            }
+        }
+    }
+
+    private void HookedVelocity()
+    {
+        Vector3 vel = rb.velocity;
+        if (vel.x > 0)
+            vel.x += xVelocityMultiplierHooked * Time.deltaTime;
+        else
+            vel.x -= xVelocityMultiplierHooked * Time.deltaTime;
+
+
+        if (vel.y > 0)
+            vel.y += yVelocityMultiplierHooked * Time.deltaTime;
+        else
+            vel.y -= yVelocityMultiplierHooked * Time.deltaTime;
+
+        rb.velocity = vel;
+    }
+
+    private void CheckIfFlipped()
+    {
+        if (backFlips > 0)
+        {
+            EM.GenerateText("Backflip x" + backFlips, transform);
+        }
+        else if (frontFlips > 0)
+        {
+            EM.GenerateText("Frontflip x" + frontFlips, transform);
+        }
+        SetRotationMinMax();
+        alreadyCountedFlips = true;
     }
 
     void OnGUI()
@@ -187,12 +284,28 @@ public class PlayerManager : MonoBehaviour
         if (other.CompareTag("Enemy") || other.CompareTag("Wall"))
         {
             // other.gameObject.SetActive(false);
-            if (!isTargetable)
+            if (!CanDie())
             {
                 GM.RemoveLife();
             }
 
         }
+    }
+
+    private void OnCollisionEnter2D(Collision2D other)
+    {
+        if(other.gameObject.tag == "Ground")
+        {
+            if (playerState == States.STATE_CLOSE_TO_GROUND)
+            {
+                    playerState = States.STATE_GROUNDED;
+            }
+        }
+    }
+
+    private bool CheckIfGrounded()
+    {
+        return Physics2D.Raycast(transform.position, -Vector2.up, distanceToGround, whatIsGround);
     }
 
     public void Jump(float jumpHeight)
@@ -210,6 +323,19 @@ public class PlayerManager : MonoBehaviour
             //  velocityVector.y += 0.5f;
         rb.velocity = velocityVector;
         //rb.velocity = new Vector2(rb.velocity.x, Mathf.Sqrt(-2.0f * Physics2D.gravity.y * jumpHeight));
+    }
+
+    public void JumpUpwards(float amount)
+    {
+        Vector2 velocity = rb.velocity;
+        rb.velocity = new Vector2(velocity.x, amount);
+    }
+
+    public void LoseMomentum(float percentage)
+    {
+        Vector2 velocity = rb.velocity;
+        velocity.x = rb.velocity.x * percentage;
+        rb.velocity = velocity;
     }
 
     public void AddImpulsiveForce(Vector3 dir, float amount)
@@ -246,17 +372,9 @@ public class PlayerManager : MonoBehaviour
         //rb.velocity = new Vector2(rb.velocity.x, Mathf.Sqrt(-2.0f * Physics2D.gravity.y * jumpHeight));
     }
 
-    public void SetNewFlyingPlane(GameObject plane)
-    {
-        SetNewPlayerState(States.STATE_FLYING);
-        //currentFlyingPlane = plane;
-        /*Vector3 newPos = new Vector3(plane.transform.position.x - 2f, plane.transform.position.y, transform.position.z);
-        transform.position = newPos;*/
-    }
-
     public void SetNewHook(GameObject hook)
     {
-        isHooked = true;
+        SetNewPlayerState(States.STATE_HOOKED);
         currentHook = hook;
     }
 
@@ -294,7 +412,7 @@ public class PlayerManager : MonoBehaviour
 
     public void RemoveHook()
     {
-        isHooked = false;
+        SetNewPlayerState(States.STATE_NORMAL);
         RemoveLineTarget();
         currentHook = null;
     }
@@ -312,6 +430,7 @@ public class PlayerManager : MonoBehaviour
     public void TeleportToPoint(Transform point)
     {
         transform.position = point.position;
+        throwHook.DisableRope();
     }
 
     public void RemoveGrabbableObject(GameObject obj)
@@ -426,6 +545,12 @@ public class PlayerManager : MonoBehaviour
     public bool CanDie()
     {
         return playerState != States.STATE_ROCKET || playerState != States.STATE_FLYING; 
+    }
+
+    void SetRotationMinMax()
+    {
+        rotMin = rb.rotation - 360f;
+        rotMax = rb.rotation + 360f;
     }
 }
 

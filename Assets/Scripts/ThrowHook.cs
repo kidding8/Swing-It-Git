@@ -26,7 +26,7 @@ public class ThrowHook : MonoBehaviour
     private float timerJump;
     private readonly float timerNextJump = 0.5f;
     public ParticleSystem smokeParticle;
-    private bool isAttachedToAHook = false;
+    private bool isPressingHooked = false;
    
     private bool alreadyFlipped = false;
 
@@ -35,11 +35,7 @@ public class ThrowHook : MonoBehaviour
     public float distanceToGround = 3f;
     public LayerMask whatIsGround;
 
-    int backFlips = 0;
-    int frontFlips = 0;
-
-    private float rotMin = -360f;
-    private float rotMax = 360f;
+    
 
     void Start()
     {
@@ -57,18 +53,15 @@ public class ThrowHook : MonoBehaviour
 
         if (Input.GetMouseButtonDown(0) && GM.isPlaying() && timerHook > timerNextHook && PM.playerState == States.STATE_NORMAL)
         {
-            if (CheckIfGrounded())
-            {
-                GroundJump();
-            }
-            else if(PM.CanCollect())
+            
+            if(PM.CanCollect())
             {
                 Hook();
             }
 
         }
 
-        else if (Input.GetMouseButtonUp(0) && isAttachedToAHook)
+        else if (Input.GetMouseButtonUp(0) && isPressingHooked)
         {
             Unhook();
             //AuxManager.instance.GetCamera().GetComponent<CameraFollow>().AddTarget(transform);
@@ -79,120 +72,7 @@ public class ThrowHook : MonoBehaviour
             PM.Jump(PM.jumpForce);
         }
 
-        if (CheckIfGrounded())
-        {
-            rb.drag = PM.dragGrounded;
-            rb.angularDrag = PM.dragGrounded;
-
-            if (rb.velocity.magnitude <= 1f)
-            {
-                GM.OnDeath();
-            }
-        }
-        else
-        {
-            rb.drag = 0f;
-            rb.angularDrag = 0f;
-        }
-    }
-    // Update is called once per frame
-    void FixedUpdate()
-    {
-
-        if (PM.isHooked && isAttachedToAHook)
-        {
-            HookedVelocity();
-
-            backFlips = 0;
-            frontFlips = 0;
-
-            // var angulo = CalculateAngle(transform.position, destinyHook);
-            if (!alreadyFlipped)
-            {
-                CheckIfFlipped();
-            }
-
-        }
-        else
-        {
-            if (rb.rotation > rotMax)
-            {
-                frontFlips++;
-                SetRotationMinMax();
-            }
-            if (rb.rotation < rotMin)
-            {
-                backFlips++;
-                SetRotationMinMax();
-            }
-
-            if (rb.velocity.y < PM.maxYVelocity)
-            {
-                rb.velocity = new Vector2(rb.velocity.x, -20);
-                Debug.Log("limited falling velocity");
-            }
-            if (PM.useFallMultiplier)
-            {
-                rb.velocity += Vector2.up * Physics2D.gravity * (PM.fallMultiplier - 1) * Time.deltaTime;
-            }
-
-        }
-
-        #region Android
-        //#if UNITY_EDITOR
-
-
-        //#elif UNITY_ANDROID
-
-        /*foreach (Touch touch in Input.touches)
-        {*/
-
-        /* if (Input.touches.Length > 0)
-         {
-             Touch touch = Input.touches[0];
-             if (touch.position.x < Screen.width / 2 && timerHook > timerNextHook)
-             {
-                 if (touch.phase == TouchPhase.Began)
-                 {
-                     /*if(isPressed){
-                         Unhook();
-                     }*/
-        /*Hook();
-
-    }
-    else if (touch.phase == TouchPhase.Ended && isPressed)
-    {
-        Unhook();
-    }
-}
-
-
-        //#endif
-        */
-        #endregion
-
-    }
-
-    private bool CheckIfGrounded()
-    {
-        return Physics2D.Raycast(transform.position, -Vector2.up, distanceToGround, whatIsGround);
-    }
-
-    private void HookedVelocity()
-    {
-        Vector3 vel = rb.velocity;
-        if (vel.x > 0)
-            vel.x += PM.xVelocityMultiplierHooked * Time.deltaTime;
-        else
-            vel.x -= PM.xVelocityMultiplierHooked * Time.deltaTime;
-
-
-        if (vel.y > 0)
-            vel.y += PM.yVelocityMultiplierHooked * Time.deltaTime;
-        else
-            vel.y -= PM.yVelocityMultiplierHooked * Time.deltaTime;
-
-        rb.velocity = vel;
+       
     }
 
     /* public void LimitDistance()
@@ -215,19 +95,7 @@ public class ThrowHook : MonoBehaviour
     }
 
 
-    private void CheckIfFlipped()
-    {
-        if (backFlips > 0)
-        {
-            EM.GenerateText("Backflip x" + backFlips, transform);
-        }
-        else if (frontFlips > 0)
-        {
-            EM.GenerateText("Frontflip x" + frontFlips, transform);
-        }
-        SetRotationMinMax();
-        alreadyFlipped = true;
-    }
+   
 
     public void Jump()
     {
@@ -267,7 +135,7 @@ public class ThrowHook : MonoBehaviour
         rb.gravityScale = PM.gravityUnhooked;
         //rb.freezeRotation = false;
         
-        isAttachedToAHook = false;
+        isPressingHooked = false;
         if (ropeActive)
         {
             DisableRope();
@@ -281,7 +149,7 @@ public class ThrowHook : MonoBehaviour
     private void Hook()
     {
         timerHook = 0;
-        isAttachedToAHook = true;
+        isPressingHooked = true;
         rb.gravityScale = PM.gravityHooked;
         if (ropeActive == false)
         {
@@ -378,12 +246,6 @@ public class ThrowHook : MonoBehaviour
             ropeScript.UnhookRope();
         ropeActive = false;
         currrentHook = null;
-    }
-   
-    void SetRotationMinMax()
-    {
-        rotMin = rb.rotation - 360f;
-        rotMax = rb.rotation + 360f;
     }
 
     public static float CalculateAngle(Vector3 from, Vector3 to)

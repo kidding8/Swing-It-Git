@@ -4,12 +4,13 @@ using UnityEngine;
 
 public class SpawnBottomManager : MonoBehaviour {
 
-    /*[System.Serializable]
+    [System.Serializable]
     public struct Obstacle
     {
         public int index;
         public ObjectPooler ObstaclePool;
-    }*/
+        public float probability;
+    }
 
     private SpawnBottomManager instance;
     private AuxManager aux;

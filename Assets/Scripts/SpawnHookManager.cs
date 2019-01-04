@@ -5,6 +5,13 @@ using UnityEngine.UI;
 
 public class SpawnHookManager : MonoBehaviour
 {
+    [System.Serializable]
+    public struct GrabberObstacle
+    {
+        public ObjectPooler grabberPool;
+        public int probability;
+    }
+
     public static SpawnHookManager instance;
 
     private AuxManager aux;
@@ -12,6 +19,7 @@ public class SpawnHookManager : MonoBehaviour
     private PlayerManager PM;
 
     public ObjectPooler[] hookPool;
+    public GrabberObstacle[] grabberPool;
     //private List<GameObject> hooksList;
 
     public ObjectPooler missiles;
@@ -107,6 +115,29 @@ public class SpawnHookManager : MonoBehaviour
         return Random.Range(0, hookPool.Length);
     }
 
+    private int GetGrabberObstacle()
+    {
+
+        int itemWeight = 0;
+
+        for (int i = 0; i < grabberPool.Length; i++)
+        {
+            itemWeight += grabberPool[i].probability;
+        }
+
+        int randomValue = Random.Range(0, itemWeight);
+
+        for (int j = 0; j < grabberPool.Length; j++)
+        {
+            if (randomValue <= grabberPool[j].probability)
+            {
+                return j;
+            }
+            randomValue -= grabberPool[j].probability;
+        }
+        return 0;
+    }
+
     /*public void RemoveHookList(GameObject hook)
     {
         hooksList.Remove(hook);
@@ -114,8 +145,8 @@ public class SpawnHookManager : MonoBehaviour
 
     void CreateHook()
     {
-        int rand = GetRandomHookPrefab();
-        GameObject hook = hookPool[rand].GetPooledObject();
+        int rand = GetGrabberObstacle();
+        GameObject hook = grabberPool[rand].grabberPool.GetPooledObject();
         /*if(rand == 1)
         {
             hook.GetComponent<SpringLineScript>().SetNewLine();

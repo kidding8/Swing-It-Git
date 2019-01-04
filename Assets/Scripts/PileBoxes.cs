@@ -2,13 +2,12 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class CoinFormation : MonoBehaviour {
-
-
-    private Transform[] coinList;
+public class PileBoxes : MonoBehaviour
+{
+    private Transform[] boxesTrans;
     private AuxManager aux;
     private bool canSpawnIt = false;
-   // private List<GameObject> coins  = new List<GameObject>();
+    // private List<GameObject> coins  = new List<GameObject>();
     private void Start()
     {
         aux = AuxManager.instance;
@@ -21,7 +20,7 @@ public class CoinFormation : MonoBehaviour {
     {
         if (canSpawnIt)
         {
-            CreateCoins();
+            CreateBoxes();
             canSpawnIt = false;
         }
 
@@ -36,22 +35,22 @@ public class CoinFormation : MonoBehaviour {
     private void StartChilds()
     {
         int count = transform.childCount;
-        coinList = new Transform[count];
+        boxesTrans = new Transform[count];
         for (int i = 0; i < count; i++)
         {
-            coinList[i] = transform.GetChild(i).transform;
+            boxesTrans[i] = transform.GetChild(i).transform;
         }
     }
 
 
-    public void CreateCoins()
+    public void CreateBoxes()
     {
-        foreach(Transform t in coinList)
+        foreach (Transform t in boxesTrans)
         {
-            GameObject coin = aux.GetSingleCoinPool().GetPooledObject();
-            coin.SetActive(true);
+            GameObject box = aux.GetBoxPool().GetPooledObject();
+            box.SetActive(true);
             //coins.Add(coin);
-            coin.transform.position = t.position;
+            box.transform.position = t.position;
         }
     }
 
@@ -62,6 +61,4 @@ public class CoinFormation : MonoBehaviour {
             gameObject.SetActive(false);
         }
     }
-
-    
 }
