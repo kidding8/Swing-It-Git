@@ -4,7 +4,10 @@ using UnityEngine;
 
 public class PlayerManager : MonoBehaviour
 {
-    
+    public enum powers
+    {
+        Hook,Spring,Teleport,Grapple
+    }
 
     public int playerState = States.STATE_HIDDEN;
     public int playerPower = Power.POWER_HOOK;
@@ -24,7 +27,7 @@ public class PlayerManager : MonoBehaviour
     public float fallMultiplier = 1.4f;
     public float maxYVelocity = -20;
     public bool invincible = false;
-    public bool useSpring = true;
+    public powers powerss;
     [Header("Rope")]
     [Space(3)]
     public float xVelocityMultiplierHooked = 15;
@@ -114,10 +117,22 @@ public class PlayerManager : MonoBehaviour
         line = GetComponent<LineRenderer>();
         camFollow = aux.GetCamera().GetComponent<CameraFollow>();
         throwHook = GetComponent<ThrowHook>();
-        if (useSpring)
-        {
-            playerPower = Power.POWER_SPRING;
+        switch (powerss) {
+            case powers.Hook:
+                playerPower = Power.POWER_HOOK;
+                break;
+            case powers.Spring:
+                playerPower = Power.POWER_SPRING;
+                break;
+            case powers.Teleport:
+                playerPower = Power.POWER_TELEPORT;
+                break;
+            case powers.Grapple:
+                playerPower = Power.POWER_GRAPPLE;
+                break;
+
         }
+
     }
 
     private void Update()
@@ -221,7 +236,7 @@ public class PlayerManager : MonoBehaviour
         else
         {
 
-            if (rb.velocity.y < maxYVelocity)
+            /*if (rb.velocity.y < maxYVelocity)
             {
                 rb.velocity = new Vector2(rb.velocity.x, maxYVelocity);
                 Debug.Log("limited falling velocity");
@@ -241,7 +256,7 @@ public class PlayerManager : MonoBehaviour
             {
                 backFlips++;
                 SetRotationMinMax();
-            }
+            }*/
         }
     }
 
@@ -436,7 +451,7 @@ public class PlayerManager : MonoBehaviour
     public void TeleportToPoint(Transform point)
     {
         transform.position = point.position;
-        throwHook.DisableRope();
+        //throwHook.DisableRope();
     }
 
     public void RemoveGrabbableObject(GameObject obj)
