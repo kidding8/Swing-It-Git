@@ -235,15 +235,6 @@ public class RopeScript : MonoBehaviour
         this.destiny = destiny;
     }
 
-    private void LateUpdate()
-    {
-        /* screenPos = cam.WorldToScreenPoint(transform.position);
-         if (screenPos.x < -disToDestroyX)
-         {
-             DisableRope();
-         }*/
-    }
-
     void CreateNode()
     {
 

@@ -8,15 +8,13 @@ public class ThrowHook : MonoBehaviour
     private GameManager GM;
     private EffectsManager EM;
     private PlayerManager PM;
-    private GameController GC;
     public ObjectPooler hookPool;
     public GameObject hookToInstantiate;
     //public float forceRopeGrab = 1f;
     
-    private bool ropeActive;
+   // private bool ropeActive;
     private GameObject currrentHook;
     private Rigidbody2D rb;
-    private SpawnHookManager SM;
     
     private RopeScript ropeScript;
     /* private float lastClickTime = 0;
@@ -27,23 +25,12 @@ public class ThrowHook : MonoBehaviour
     private readonly float timerNextJump = 0.5f;
     public ParticleSystem smokeParticle;
     private bool isPressingHooked = false;
-   
-    private bool alreadyFlipped = false;
-
-    private DistanceJoint2D disjoint;
-
-    public float distanceToGround = 3f;
-    public LayerMask whatIsGround;
-
-    
 
     void Start()
     {
         GM = GameManager.instance;
-        SM = SpawnHookManager.instance;
         EM = EffectsManager.instance;
         PM = PlayerManager.instance;
-        GC = GameController.instance;
         rb = GetComponent<Rigidbody2D>();
     }
     private void Update()
@@ -51,7 +38,7 @@ public class ThrowHook : MonoBehaviour
         timerHook += Time.deltaTime;
         timerJump += Time.deltaTime;
 
-        if (Input.GetMouseButtonDown(0) && GM.isPlaying() && timerHook > timerNextHook && PM.playerState == States.STATE_NORMAL)
+        if (Input.GetMouseButtonDown(0) && GM.isPlaying() && timerHook > timerNextHook && PM.playerState == States.STATE_NORMAL && PM.playerPower == Power.POWER_HOOK)
         {
             
             if(PM.CanCollect())
@@ -87,15 +74,6 @@ public class ThrowHook : MonoBehaviour
                  Vector3 offset = transform.position - connectedHook.position;
                //  transform.position = connectedHook.position + Vector3.ClampMagnitude(offset, distance);
      }*/
-
-    public void TravelToPoint(Transform point)
-    {
-        float dis = Vector2.Distance(transform.position, point.position);
-        transform.position = transform.position + (point.position - transform.position).normalized * dis;
-    }
-
-
-   
 
     public void Jump()
     {
@@ -136,14 +114,13 @@ public class ThrowHook : MonoBehaviour
         //rb.freezeRotation = false;
         
         isPressingHooked = false;
-        if (ropeActive)
-        {
+        /*if (ropeActive)
+        {*/
             DisableRope();
             EM.CreateCameraShake(0.05f);
             rb.AddForce(new Vector3(0.3f, 1f, 0) * PM.forceRopeLeave, ForceMode2D.Force);
             rb.AddTorque(PM.torqueAddedRopeLeave);
-        }
-        alreadyFlipped = false;
+        //}
     }
 
     private void Hook()
@@ -151,8 +128,8 @@ public class ThrowHook : MonoBehaviour
         timerHook = 0;
         isPressingHooked = true;
         rb.gravityScale = PM.gravityHooked;
-        if (ropeActive == false)
-        {
+        /*if (ropeActive == false)
+        {*/
             GameObject closestHook = PM.GetCurrentGrabbableObject();
 
             if (closestHook != null)
@@ -173,7 +150,7 @@ public class ThrowHook : MonoBehaviour
                 Vector3 downPos = new Vector3(transform.position.x, transform.position.y - 10, 0);
                 CreateHook(downPos, true);
             }
-        }
+        //}
     }
 
     public void CreateHook(GameObject hook)
@@ -185,7 +162,7 @@ public class ThrowHook : MonoBehaviour
         currrentHook.SetActive(true);
         ropeScript = currrentHook.GetComponent<RopeScript>();
         ropeScript.AddRope(hook, false);
-        ropeActive = true;
+        //ropeActive = true;
     }
 
     public void CreateHookToTarget(GameObject target)
@@ -197,7 +174,7 @@ public class ThrowHook : MonoBehaviour
         currrentHook.SetActive(true);
         ropeScript = currrentHook.GetComponent<RopeScript>();
         ropeScript.AddRopeToTarget(target);
-        ropeActive = true;
+        //ropeActive = true;
     }
 
     public void CreateHook(Vector2 pos, bool noTarget)
@@ -208,7 +185,7 @@ public class ThrowHook : MonoBehaviour
         currrentHook.SetActive(true);
         ropeScript = currrentHook.GetComponent<RopeScript>();
         ropeScript.AddRope(pos, noTarget);
-        ropeActive = true;
+        //ropeActive = true;
     }
 
 
@@ -244,7 +221,7 @@ public class ThrowHook : MonoBehaviour
     {
         if(ropeScript !=null)
             ropeScript.UnhookRope();
-        ropeActive = false;
+        //ropeActive = false;
         currrentHook = null;
     }
 

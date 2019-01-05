@@ -7,6 +7,8 @@ public class PlayerManager : MonoBehaviour
     
 
     public int playerState = States.STATE_HIDDEN;
+    public int playerPower = Power.POWER_HOOK;
+
 
     public static PlayerManager instance;
     private AuxManager aux;
@@ -22,7 +24,7 @@ public class PlayerManager : MonoBehaviour
     public float fallMultiplier = 1.4f;
     public float maxYVelocity = -20;
     public bool invincible = false;
-    
+    public bool useSpring = true;
     [Header("Rope")]
     [Space(3)]
     public float xVelocityMultiplierHooked = 15;
@@ -112,6 +114,10 @@ public class PlayerManager : MonoBehaviour
         line = GetComponent<LineRenderer>();
         camFollow = aux.GetCamera().GetComponent<CameraFollow>();
         throwHook = GetComponent<ThrowHook>();
+        if (useSpring)
+        {
+            playerPower = Power.POWER_SPRING;
+        }
     }
 
     private void Update()

@@ -12,6 +12,15 @@ public class States
     public const int STATE_FLYING = 4;
     public const int STATE_CLOSE_TO_GROUND = 5;
     public const int STATE_GROUNDED = 6;
+    public const int STATE_SPRING = 7;
+}
+
+public class Power
+{
+    public const int POWER_HOOK = 0;
+    public const int POWER_SPRING = 1;
+    public const int POWER_TELEPORT = 2;
+    public const int POWER_GRAPPLE = 3;
 }
 
 public class AuxManager : MonoBehaviour {
