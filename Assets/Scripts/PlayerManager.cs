@@ -236,7 +236,7 @@ public class PlayerManager : MonoBehaviour
         else
         {
 
-            /*if (rb.velocity.y < maxYVelocity)
+            if (rb.velocity.y < maxYVelocity)
             {
                 rb.velocity = new Vector2(rb.velocity.x, maxYVelocity);
                 Debug.Log("limited falling velocity");
@@ -256,7 +256,7 @@ public class PlayerManager : MonoBehaviour
             {
                 backFlips++;
                 SetRotationMinMax();
-            }*/
+            }
         }
     }
 
@@ -346,6 +346,27 @@ public class PlayerManager : MonoBehaviour
         //rb.velocity = new Vector2(rb.velocity.x, Mathf.Sqrt(-2.0f * Physics2D.gravity.y * jumpHeight));
     }
 
+    public void BigJump()
+    {
+        Vector2 velocityVector = rb.velocity;
+        //velocityVector.y = jumpForce;
+        if (velocityVector.y < jumpForce - 5)
+        {
+            velocityVector.y = jumpForce;
+        }
+        else
+        {
+            velocityVector.y += jumpForce / 2;
+        }
+
+        if(velocityVector.x <= jumpForce/2)
+        {
+            velocityVector.x = jumpForce/2;
+        }
+        //  velocityVector.y += 0.5f;
+        rb.velocity = velocityVector;
+    }
+
     public void JumpUpwards(float amount)
     {
         Vector2 velocity = rb.velocity;
@@ -364,6 +385,10 @@ public class PlayerManager : MonoBehaviour
         rb.AddForce(dir * amount, ForceMode2D.Impulse);
     }
 
+    public void AddDirectionalVelocity(Vector3 dir, float amount)
+    {
+        rb.velocity = dir * amount;
+    }
     public void JumpXY(float jumpHeight)
     {
         Vector2 velocityVector = rb.velocity;

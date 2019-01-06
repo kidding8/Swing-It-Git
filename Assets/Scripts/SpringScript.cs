@@ -15,9 +15,14 @@ public class SpringScript : MonoBehaviour
     private Vector2 destiny;
     private GameObject player;
     private Rigidbody2D playerRb;
+    private Grabber targetGrabber;
+    private Transform targetToDraw;
+    private Rigidbody2D rb;
     private bool isAttachedToPlayer = false;
     private bool isDone = false;
     private bool renderSpring = false;
+    private bool alreadyJumped = false;
+    private bool retractSpring = false;
     void Start()
     {
         GM = GameManager.instance;
@@ -30,6 +35,8 @@ public class SpringScript : MonoBehaviour
         player = aux.GetPlayer();
         playerRb = player.GetComponent<Rigidbody2D>();
         spring.enabled = false;
+        targetToDraw = player.transform;
+        rb = GetComponent<Rigidbody2D>();
     }
 
     // Update is called once per frame
@@ -46,12 +53,17 @@ public class SpringScript : MonoBehaviour
 
             }
         }
-        else if ((Vector2)transform.position != destiny)
+        else if ((Vector2)transform.position != destiny && isAttachedToPlayer)
         {
             LeftHookBeforeDestination();
         }
 
         RenderLine();
+
+        if(retractSpring && spring.distance > 1f)
+        {
+            spring.distance -= 0.8f * Time.deltaTime;
+        }
     }
 
     private void AttachSpring()
@@ -65,7 +77,17 @@ public class SpringScript : MonoBehaviour
 
     private void LeftHookBeforeDestination()
     {
+        rb.isKinematic = false;
+        if (PM.currentJumps > 0)
+        {
+            PM.BigJump();
+            PM.currentJumps--;
+        }
 
+        alreadyJumped = true;
+        if(isAttachedToPlayer)
+            DestroySpring();
+        
     }
 
     private void RenderLine()
@@ -73,7 +95,7 @@ public class SpringScript : MonoBehaviour
         if (renderSpring)
         {
             line.positionCount = 2;
-            line.SetPosition(0, player.transform.position);
+            line.SetPosition(0, targetToDraw.position);
             line.SetPosition(1, transform.position);
         }
         
@@ -86,15 +108,27 @@ public class SpringScript : MonoBehaviour
             isAttachedToPlayer = true;
             destinyGrabber = grabber;
             destiny = grabber.transform.position;
+            //targetToDraw = player.transform;
             renderSpring = true;
+            targetGrabber = destinyGrabber.GetComponent<Grabber>();
+            //if (targetGrabber != null)
+                //targetGrabber.AddRope(this);
         }
     }
 
     public void DestroySpring()
     {
-        PM.SetNewPlayerState(States.STATE_NORMAL);
+        
         isAttachedToPlayer = false;
-        spring.enabled = false;
-        renderSpring = false;
+        GameObject newEmptyObj = aux.emptyRbPool.GetPooledObject();
+        newEmptyObj.SetActive(true);
+        newEmptyObj.transform.position = player.transform.position;
+        targetToDraw = newEmptyObj.transform;
+        //spring.autoConfigureDistance = true;
+        spring.frequency = 1f;
+        spring.dampingRatio = 0.2f;
+        spring.connectedBody = newEmptyObj.GetComponent<Rigidbody2D>();
+        retractSpring = true;
+        PM.SetNewPlayerState(States.STATE_NORMAL);
     }
 }

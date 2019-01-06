@@ -135,7 +135,7 @@ public class GameManager : MonoBehaviour
 
     private void UpdateComboText()
     {
-        Debug.Log("COMBO " + combo);
+        //Debug.Log("COMBO " + combo);
         if(combo >= 2)
         {
             inGameComboText.gameObject.SetActive(true);

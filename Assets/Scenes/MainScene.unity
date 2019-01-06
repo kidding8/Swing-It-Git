@@ -1473,7 +1473,7 @@ GameObject:
   - component: {fileID: 432272297}
   - component: {fileID: 432272298}
   m_Layer: 0
-  m_Name: Hook
+  m_Name: Rope
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1678,6 +1678,7 @@ MonoBehaviour:
   - {fileID: 629008914}
   boxPool: {fileID: 2066914596}
   groundBulletPool: {fileID: 1260209229}
+  emptyRbPool: {fileID: 1499558791}
   backgroundSprites:
   - {fileID: 21300000, guid: e915c30cd00811940b1cdb23e5dee261, type: 3}
   - {fileID: 21300000, guid: 82e9bbef5bc792442aa39cd374a8e608, type: 3}
@@ -2777,9 +2778,6 @@ GameObject:
   - component: {fileID: 685057412}
   - component: {fileID: 685057419}
   - component: {fileID: 685057414}
-  - component: {fileID: 685057418}
-  - component: {fileID: 685057422}
-  - component: {fileID: 685057420}
   - component: {fileID: 685057415}
   - component: {fileID: 685057416}
   - component: {fileID: 685057417}
@@ -2868,14 +2866,16 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4f22371844450b94782598a258279351, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  ropePool: {fileID: 0}
+  ropePool: {fileID: 432272298}
   timeToNextRope: 0.4
-  springPool: {fileID: 0}
+  springPool: {fileID: 1806069266}
   timeToNextSpring: 0.9
-  teleporterPool: {fileID: 0}
+  teleporterPool: {fileID: 955447945}
   timeToNextTeleport: 0.9
-  grapplePool: {fileID: 0}
+  grapplePool: {fileID: 436266079}
   timeToNextGrapple: 0.4
+  magnetPool: {fileID: 0}
+  timeToNextMagnet: 0.5
   timeToNextJump: 1
 --- !u!50 &685057415
 Rigidbody2D:
@@ -2930,19 +2930,6 @@ CircleCollider2D:
   m_Offset: {x: 0, y: 0}
   serializedVersion: 2
   m_Radius: 0.42
---- !u!114 &685057418
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 685057411}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 5794fd978dc80df4ca654e32c82b3b22, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  springPool: {fileID: 1806069266}
 --- !u!114 &685057419
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2960,12 +2947,12 @@ MonoBehaviour:
   maxSpeed: 60
   forceRopeLeave: 10
   torqueAddedRopeLeave: 1
-  jumpForce: 15
+  jumpForce: 22
   useFallMultiplier: 1
   fallMultiplier: 1.6
   maxYVelocity: -30
   invincible: 1
-  powerss: 1
+  powerss: 3
   xVelocityMultiplierHooked: 15
   yVelocityMultiplierHooked: 10
   gravityUnhooked: 2
@@ -2987,19 +2974,6 @@ MonoBehaviour:
   whatIsGround:
     serializedVersion: 2
     m_Bits: 8192
---- !u!114 &685057420
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 685057411}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 940b750207ee13643aaf1c88bf1b7727, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  teleporterPool: {fileID: 955447945}
 --- !u!120 &685057421
 LineRenderer:
   m_ObjectHideFlags: 0
@@ -3093,19 +3067,6 @@ LineRenderer:
     generateLightingData: 0
   m_UseWorldSpace: 1
   m_Loop: 0
---- !u!114 &685057422
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 685057411}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 4a5f3c749e704844986f2f2ab4508782, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  grapplePool: {fileID: 436266079}
 --- !u!232 &685057423
 DistanceJoint2D:
   m_ObjectHideFlags: 0
@@ -9682,7 +9643,7 @@ GameObject:
   - component: {fileID: 1116293393}
   - component: {fileID: 1116293394}
   m_Layer: 0
-  m_Name: Node
+  m_Name: RopeNode
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -11213,6 +11174,53 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1430628371}
   m_CullTransparentMesh: 0
+--- !u!1 &1499558789
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1499558790}
+  - component: {fileID: 1499558791}
+  m_Layer: 0
+  m_Name: EmptyRigidBody
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1499558790
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1499558789}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 1794109152}
+  m_RootOrder: 5
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1499558791
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1499558789}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a0c087711cb632e43b0656c6c73ab92a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  pooledObject: {fileID: 3219047455795202451, guid: 720ddfa47e11fd84697e4043d9c8d003,
+    type: 3}
+  SpawnnedObjectsTransform: {fileID: 2125252527}
+  pooledAmount: 1
 --- !u!1 &1504052198
 GameObject:
   m_ObjectHideFlags: 0
@@ -11440,6 +11448,8 @@ MonoBehaviour:
   timeToNextTeleport: 0.9
   grapplePool: {fileID: 0}
   timeToNextGrapple: 0.4
+  magnetPool: {fileID: 0}
+  timeToNextMagnet: 0.5
   timeToNextJump: 1
 --- !u!1 &1594282530
 GameObject:
@@ -12205,80 +12215,6 @@ TrailRenderer:
   m_MinVertexDistance: 0.1
   m_Autodestruct: 0
   m_Emitting: 1
---- !u!1001 &1777165293
-PrefabInstance:
-  m_ObjectHideFlags: 0
-  serializedVersion: 2
-  m_Modification:
-    m_TransformParent: {fileID: 0}
-    m_Modifications:
-    - target: {fileID: 6547852700614300415, guid: 57deaaecfe8f69442a8f5c85ac49d1c8,
-        type: 3}
-      propertyPath: m_Name
-      value: GrappleHook
-      objectReference: {fileID: 0}
-    - target: {fileID: 3358164808664615996, guid: 57deaaecfe8f69442a8f5c85ac49d1c8,
-        type: 3}
-      propertyPath: m_LocalPosition.x
-      value: 1.05
-      objectReference: {fileID: 0}
-    - target: {fileID: 3358164808664615996, guid: 57deaaecfe8f69442a8f5c85ac49d1c8,
-        type: 3}
-      propertyPath: m_LocalPosition.y
-      value: 0.71
-      objectReference: {fileID: 0}
-    - target: {fileID: 3358164808664615996, guid: 57deaaecfe8f69442a8f5c85ac49d1c8,
-        type: 3}
-      propertyPath: m_LocalPosition.z
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 3358164808664615996, guid: 57deaaecfe8f69442a8f5c85ac49d1c8,
-        type: 3}
-      propertyPath: m_LocalRotation.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 3358164808664615996, guid: 57deaaecfe8f69442a8f5c85ac49d1c8,
-        type: 3}
-      propertyPath: m_LocalRotation.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 3358164808664615996, guid: 57deaaecfe8f69442a8f5c85ac49d1c8,
-        type: 3}
-      propertyPath: m_LocalRotation.z
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 3358164808664615996, guid: 57deaaecfe8f69442a8f5c85ac49d1c8,
-        type: 3}
-      propertyPath: m_LocalRotation.w
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 3358164808664615996, guid: 57deaaecfe8f69442a8f5c85ac49d1c8,
-        type: 3}
-      propertyPath: m_RootOrder
-      value: 20
-      objectReference: {fileID: 0}
-    - target: {fileID: 3358164808664615996, guid: 57deaaecfe8f69442a8f5c85ac49d1c8,
-        type: 3}
-      propertyPath: m_LocalEulerAnglesHint.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 3358164808664615996, guid: 57deaaecfe8f69442a8f5c85ac49d1c8,
-        type: 3}
-      propertyPath: m_LocalEulerAnglesHint.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 3358164808664615996, guid: 57deaaecfe8f69442a8f5c85ac49d1c8,
-        type: 3}
-      propertyPath: m_LocalEulerAnglesHint.z
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 8348727612396008358, guid: 57deaaecfe8f69442a8f5c85ac49d1c8,
-        type: 3}
-      propertyPath: m_EnableCollision
-      value: 1
-      objectReference: {fileID: 0}
-    m_RemovedComponents: []
-  m_SourcePrefab: {fileID: 100100000, guid: 57deaaecfe8f69442a8f5c85ac49d1c8, type: 3}
 --- !u!1 &1794109151
 GameObject:
   m_ObjectHideFlags: 0
@@ -12311,6 +12247,7 @@ Transform:
   - {fileID: 1806069265}
   - {fileID: 436266078}
   - {fileID: 955447944}
+  - {fileID: 1499558790}
   m_Father: {fileID: 814971466}
   m_RootOrder: 4
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -13119,10 +13056,6 @@ MonoBehaviour:
   grabberPool:
   - grabberPool: {fileID: 1374795527}
     probability: 80
-  - grabberPool: {fileID: 1258549456}
-    probability: 20
-  - grabberPool: {fileID: 1609805337}
-    probability: 10
   missiles: {fileID: 296177872}
   spawnMissileTop: {fileID: 1283627773}
   spawnMissileDown: {fileID: 817315387}

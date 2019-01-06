@@ -41,7 +41,7 @@ public class GrappleScript : MonoBehaviour
             if ((Vector2)transform.position == destiny)
             {
 
-               AttachDistanceJoint();
+               AttachGrapple();
 
             }
         }
@@ -52,20 +52,20 @@ public class GrappleScript : MonoBehaviour
         {
             if(disJoint.distance >= 1f)
             {
-
+                disJoint.distance -= step * Time.deltaTime;
             }
-                //disJoint.distance -= 0.2f;
+
         }
 
         RenderLine();
     }
 
-    private void AttachDistanceJoint()
+    private void AttachGrapple()
     {
         disJoint.enabled = true;
         //float dist = Vector2.Distance(transform.position, destiny);
         disJoint.autoConfigureDistance = true;
-        disJoint.maxDistanceOnly = true;
+        disJoint.maxDistanceOnly = false;
         //disJoint.distance = Vector2.Distance(transform.position, destiny);
         disJoint.connectedBody = destinyGrabber.GetComponent<Rigidbody2D>();
         
@@ -90,7 +90,7 @@ public class GrappleScript : MonoBehaviour
 
     }
 
-    public void CreateDistanceJoint(GameObject grabber, DistanceJoint2D dist)
+    public void CreateGrapple(GameObject grabber, DistanceJoint2D dist)
     {
         if (grabber != null)
         {
@@ -102,7 +102,7 @@ public class GrappleScript : MonoBehaviour
         }
     }
 
-    public void DestroyDistanceJoint()
+    public void DestroyGrapple()
     {
         PM.SetNewPlayerState(States.STATE_NORMAL);
         isAttachedToPlayer = false;

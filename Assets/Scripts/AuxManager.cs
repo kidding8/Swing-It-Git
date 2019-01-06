@@ -15,6 +15,7 @@ public class States
     public const int STATE_SPRING = 7;
     public const int STATE_GRAPPLE = 8;
     public const int STATE_TELEPORT = 9;
+    public const int STATE_MAGNET = 10;
 }
 
 public class Power
@@ -23,6 +24,7 @@ public class Power
     public const int POWER_SPRING = 1;
     public const int POWER_TELEPORT = 2;
     public const int POWER_GRAPPLE = 3;
+    public const int POWER_MAGNET = 4;
 }
 
 
@@ -43,6 +45,7 @@ public class AuxManager : MonoBehaviour {
     public ObjectPooler[] coinPool;
     public ObjectPooler boxPool;
     public ObjectPooler groundBulletPool;
+    public ObjectPooler emptyRbPool;
     public Sprite[] backgroundSprites;
     public Material shadowMaterial;
     public Color shadowColor;

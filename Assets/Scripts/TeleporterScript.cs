@@ -8,14 +8,11 @@ public class TeleporterScript : MonoBehaviour
     private AuxManager aux;
     private EffectsManager EM;
     private PlayerManager PM;
-    private LineRenderer line;
     private GameObject destinyGrabber;
     private Vector2 destiny;
     private GameObject player;
-    private Rigidbody2D playerRb;
     private bool isAttachedToPlayer = false;
     private bool isDone = false;
-    private bool renderDisJoint = false;
 
     void Start()
     {
@@ -23,9 +20,7 @@ public class TeleporterScript : MonoBehaviour
         aux = AuxManager.instance;
         EM = EffectsManager.instance;
         PM = PlayerManager.instance;
-        line = GetComponent<LineRenderer>();
         player = aux.GetPlayer();
-        playerRb = player.GetComponent<Rigidbody2D>();
     }
 
     void Update()
@@ -41,38 +36,37 @@ public class TeleporterScript : MonoBehaviour
 
             }
         }
-        else if ((Vector2)transform.position != destiny && !isAttachedToPlayer)
+        else if ((Vector2)transform.position != destiny && isAttachedToPlayer)
         {
             LeftHookBeforeDestination();
         }
 
-        RenderLine();
     }
 
     private void TeleportPlayer()
     {
         PM.SetNewPlayerState(States.STATE_TELEPORT);
         isDone = true;
-        isAttachedToPlayer = true;
+        
+        //playerRb.velocity = new Vector3(0.5f, 0.8f, 0f) * 20f;
+        Vector3 dir = destinyGrabber.transform.position - player.transform.position;
+        //PM.BigJump();
+        PM.AddDirectionalVelocity(dir.normalized, 20f);
         PM.TeleportToPoint(destinyGrabber.transform);
-        playerRb.velocity = new Vector3(0.5f, 0.8f, 0f) * 20f;
         DestroyTeleporter();
     }
 
     private void LeftHookBeforeDestination()
     {
-
-    }
-
-    private void RenderLine()
-    {
-        if (renderDisJoint)
+        isAttachedToPlayer = false;
+        isDone = true;
+        if (PM.currentJumps > 0)
         {
-            line.positionCount = 2;
-            line.SetPosition(0, player.transform.position);
-            line.SetPosition(1, transform.position);
+            PM.BigJump();
+            PM.currentJumps--;
         }
-
+      
+        DestroyTeleporter();
     }
 
     public void CreateTeleporterDestiny(GameObject grabber)
@@ -82,7 +76,6 @@ public class TeleporterScript : MonoBehaviour
             isAttachedToPlayer = true;
             destinyGrabber = grabber;
             destiny = grabber.transform.position;
-            renderDisJoint = true;
         }
     }
 
@@ -90,6 +83,6 @@ public class TeleporterScript : MonoBehaviour
     {
         PM.SetNewPlayerState(States.STATE_NORMAL);
         isAttachedToPlayer = false;
-        renderDisJoint = false;
+        //gameObject.SetActive(false);
     }
 }

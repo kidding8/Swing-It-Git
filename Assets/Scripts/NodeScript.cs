@@ -52,7 +52,7 @@ public class NodeScript : MonoBehaviour {
                 hinge2D.enabled = false;
                 RopeScript ropeScript = GetComponentInParent<RopeScript>();
                 if (ropeScript != null)
-                    ropeScript.DestroyedRope();
+                    ropeScript.RopeIsDestroyed();
             }
             
         }else if (other.CompareTag("Wall"))

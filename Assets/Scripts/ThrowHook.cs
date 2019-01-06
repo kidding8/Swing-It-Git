@@ -32,6 +32,13 @@ public class ThrowHook : MonoBehaviour
     public float timeToNextGrapple = 0.4f;
     private float timerGrapple;
 
+    [Header("Grapple")]
+    [Space(4)]
+    public ObjectPooler magnetPool;
+    public float timeToNextMagnet = 0.5f;
+    private float timerMagnet;
+
+
     [Header("Jump Boost")]
     [Space(4)]
     public float timeToNextJump = 1f;
@@ -66,22 +73,27 @@ public class ThrowHook : MonoBehaviour
         timerTeleport += Time.deltaTime;
         timerGrapple += Time.deltaTime;
         timerJump += Time.deltaTime;
+        timerMagnet += Time.deltaTime;
 
-        if (Input.GetMouseButtonDown(0) && GM.isPlaying() && PM.IsState(States.STATE_NORMAL) && PM.CanHook())
+        if (Input.GetMouseButtonDown(0) && GM.isPlaying() && PM.CanHook())
         {
-
-            Hook();
-
-        }
-
-        else if (Input.GetMouseButtonUp(0) && isPressingButton)
+            if (PM.IsState(States.STATE_CLOSE_TO_GROUND))
+            {
+                PM.BigJump();
+            }
+            else
+            {
+                Hook();
+            }
+            
+        }else if (Input.GetMouseButtonUp(0) && isPressingButton)
         {
             UnhookHook();
         }
 
         else if (Input.GetMouseButtonDown(1) && GM.isPlaying())
         {
-            PM.Jump(PM.jumpForce);
+            PM.BigJump();
         }
 
 
@@ -119,6 +131,13 @@ public class ThrowHook : MonoBehaviour
                     CreateNewHook();
                 }
                 break;
+            case Power.POWER_MAGNET:
+                if (timerMagnet > timeToNextMagnet)
+                {
+                    CreateNewHook();
+                }
+                break;
+
             default:
                 Debug.Log("No power selected to create");
                 break;
@@ -128,18 +147,17 @@ public class ThrowHook : MonoBehaviour
 
     public void UnhookHook()
     {
+        rb.gravityScale = PM.gravityUnhooked;
+        isPressingButton = false;
+        currentHook = null;
         switch (PM.playerPower)
         {
             case Power.POWER_ROPE:
-
                 DestroyRope();
-
                 break;
 
             case Power.POWER_SPRING:
-
                 DestroySpring();
-
                 break;
 
             case Power.POWER_TELEPORT:
@@ -148,6 +166,9 @@ public class ThrowHook : MonoBehaviour
 
             case Power.POWER_GRAPPLE:
                 DestroyGrapple();
+                break;
+            case Power.POWER_MAGNET:
+                
                 break;
             default:
                 Debug.Log("No power selected to destroy");
@@ -160,6 +181,7 @@ public class ThrowHook : MonoBehaviour
         switch (PM.playerPower)
         {
             case Power.POWER_ROPE:
+                
                 CreateRope(target);
                 break;
 
@@ -174,39 +196,16 @@ public class ThrowHook : MonoBehaviour
             case Power.POWER_GRAPPLE:
                 CreateGrapple(target);
                 break;
+            case Power.POWER_MAGNET:
+                
+                break;
             default:
                 Debug.Log("No power selected to create on target");
                 break;
         }
     }
 
-    /*private void CreateHookOnTarget(GameObject target)
-    {
-        switch (PM.playerPower)
-        {
-            case Power.POWER_ROPE:
-
-                CreateRope(target);
-
-                break;
-
-            case Power.POWER_SPRING:
-
-                break;
-
-            case Power.POWER_TELEPORT:
-
-                break;
-
-            case Power.POWER_GRAPPLE:
-
-                break;
-            default:
-                Debug.Log("No power selected to create on target");
-                break;
-        }
-    }*/
-
+    
     private void CreateNewHook()
     {
         timerRope = 0;
@@ -221,56 +220,29 @@ public class ThrowHook : MonoBehaviour
         }
         else
         {
-            Debug.Log("No Target");
-            /*Vector3 downPos = new Vector3(transform.position.x, transform.position.y - 10, 0);
-            CreateHook(downPos, true);*/
+            PM.BigJump();
         }
-        //}
     }
 
     public void CreateRope(GameObject target)
     {
-        //currrentHook = (GameObject)Instantiate(hookToInstantiate, transform.position, Quaternion.identity);
         currentHook = ropePool.GetPooledObject();
         currentHook.transform.position = transform.position;
         currentHook.transform.rotation = Quaternion.identity;
         currentHook.SetActive(true);
         ropeScript = currentHook.GetComponent<RopeScript>();
-        ropeScript.AddRopeToTarget(target);
-        //ropeActive = true;
+        ropeScript.AddRope(target);
     }
 
     private void DestroyRope()
     {
-
-        isPressingButton = false;
+        //isPressingButton = false;
         if (ropeScript != null)
             ropeScript.UnhookRope();
-
-        currentHook = null;
         EM.CreateCameraShake(0.05f);
         rb.AddForce(new Vector3(0.3f, 1f, 0) * PM.forceRopeLeave, ForceMode2D.Force);
         rb.AddTorque(PM.torqueAddedRopeLeave);
     }
-
-    
-
-    private void CreateGrapple(GameObject target)
-    {
-        currentHook = grapplePool.GetPooledObject();
-        currentHook.transform.position = transform.position;
-        currentHook.transform.rotation = Quaternion.identity;
-        currentHook.SetActive(true);
-        grappleScript = currentHook.GetComponent<GrappleScript>();
-        grappleScript.CreateDistanceJoint(target, disJoint);
-    }
-
-    private void DestroyGrapple()
-    {
-        if (grappleScript != null)
-            grappleScript.DestroyDistanceJoint();
-    }
-
 
     private void CreateSpring(GameObject target)
     {
@@ -284,10 +256,12 @@ public class ThrowHook : MonoBehaviour
 
     private void DestroySpring()
     {
+        isPressingButton = false;
         if (springScript != null)
             springScript.DestroySpring();
+        currentHook = null;
+        EM.CreateCameraShake(0.05f);
     }
-
 
     private void CreateTeleporter(GameObject target)
     {
@@ -303,6 +277,38 @@ public class ThrowHook : MonoBehaviour
     {
         if (teleporterScript != null)
             teleporterScript.DestroyTeleporter();
+    }
+
+    private void CreateGrapple(GameObject target)
+    {
+        currentHook = grapplePool.GetPooledObject();
+        currentHook.transform.position = transform.position;
+        currentHook.transform.rotation = Quaternion.identity;
+        currentHook.SetActive(true);
+        grappleScript = currentHook.GetComponent<GrappleScript>();
+        grappleScript.CreateGrapple(target, disJoint);
+    }
+
+    private void DestroyGrapple()
+    {
+        if (grappleScript != null)
+            grappleScript.DestroyGrapple();
+    }
+
+    private void CreateMagnet(GameObject target)
+    {
+        currentHook = magnetPool.GetPooledObject();
+        currentHook.transform.position = transform.position;
+        currentHook.transform.rotation = Quaternion.identity;
+        currentHook.SetActive(true);
+       /* magnetScript = currentHook.GetComponent<MagnetScript>();
+        magnetScript.CreateGrapple(target, disJoint);*/
+    }
+
+    private void DestroyMagnet()
+    {
+        /*if (magnetScript != null)
+            magnetScript.DestroyGrapple();*/
     }
     /*public static float CalculateAngle(Vector3 from, Vector3 to)
     {
@@ -343,6 +349,34 @@ public class ThrowHook : MonoBehaviour
         ropeScript.AddRope(hook, false);
         //ropeActive = true;
     }*/
+
+    /*private void CreateHookOnTarget(GameObject target)
+    {
+        switch (PM.playerPower)
+        {
+            case Power.POWER_ROPE:
+
+                CreateRope(target);
+
+                break;
+
+            case Power.POWER_SPRING:
+
+                break;
+
+            case Power.POWER_TELEPORT:
+
+                break;
+
+            case Power.POWER_GRAPPLE:
+
+                break;
+            default:
+                Debug.Log("No power selected to create on target");
+                break;
+        }
+    }*/
+
 }
 
 
