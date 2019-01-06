@@ -126,4 +126,21 @@ public class EffectsManager : MonoBehaviour {
         particle.SetActive(true);
         particle.transform.position = pos;
     }
+
+    private void SmokeScreen()
+    {
+
+        //
+        /*Vector2 direction = (Vector2)transform.position - rb.position;
+        direction.Normalize();
+        float rotateAmount = Vector3.Cross(direction, transform.up).z;
+
+        smokeParticle.transform.rotation = Quaternion.Euler(new Vector3(transform.rotation.x, transform.rotation.y, direction.z));*/
+
+        /*Vector3 targetDir = (Vector2)transform.position - destiny;
+        float angleBetween = Vector3.Angle(Vector3.up, targetDir);
+
+        smokeParticle.transform.rotation = Quaternion.Euler(new Vector3(0, 0, angleBetween ));
+        smokeParticle.gameObject.SetActive(true);*/
+    }
 }

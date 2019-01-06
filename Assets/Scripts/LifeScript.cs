@@ -16,7 +16,7 @@ public class LifeScript : MonoBehaviour {
 
     private void OnTriggerEnter2D(Collider2D other)
     {
-        if (other.CompareTag("Player") && PM.CanCollect())
+        if (other.CompareTag("Player") && PM.CanCollectObjects())
         {
             GM.AddLife();
             EM.SetCoinPickUpParticles(transform.position);

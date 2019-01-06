@@ -22,12 +22,12 @@ public class ThrowTeleporter : MonoBehaviour
     }
 
     // Update is called once per frame
-    void Update()
+    /*void Update()
     {
         if (Input.GetMouseButtonDown(0) && GM.isPlaying() && PM.playerState == States.STATE_NORMAL && PM.playerPower == Power.POWER_TELEPORT)
         {
 
-            if (PM.CanCollect())
+            if (PM.CanHook())
             {
                 AddTeleporter();
             }
@@ -50,21 +50,6 @@ public class ThrowTeleporter : MonoBehaviour
             CreateTeleporter(closestGrabber);
         }
     }
-
-    private void CreateTeleporter(GameObject grabber)
-    {
-        currentTeleporter = teleporterPool.GetPooledObject();
-        currentTeleporter.transform.position = transform.position;
-        currentTeleporter.transform.rotation = Quaternion.identity;
-        currentTeleporter.SetActive(true);
-        teleporterScript = currentTeleporter.GetComponent<TeleporterScript>();
-        teleporterScript.CreateTeleporterDestiny(grabber);
-    }
-
-    private void DestroyTeleporter()
-    {
-        isPressingTeleporter = false;
-        if (teleporterScript != null)
-            teleporterScript.DestroyTeleporter();
-    }
+    */
+    
 }

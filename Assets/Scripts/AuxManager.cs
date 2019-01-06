@@ -19,7 +19,7 @@ public class States
 
 public class Power
 {
-    public const int POWER_HOOK = 0;
+    public const int POWER_ROPE = 0;
     public const int POWER_SPRING = 1;
     public const int POWER_TELEPORT = 2;
     public const int POWER_GRAPPLE = 3;

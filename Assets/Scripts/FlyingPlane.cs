@@ -77,7 +77,7 @@ public class FlyingPlane : MonoBehaviour
         {
             OnDeath();
         }
-        else if (other.CompareTag("Player") && PM.CanCollect())
+        else if (other.CompareTag("Player") && PM.CanCollectObjects())
         {
             SetAttachedPlayer();
         }

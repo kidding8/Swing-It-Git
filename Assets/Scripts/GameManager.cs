@@ -335,7 +335,7 @@ public class GameManager : MonoBehaviour
         StartCoroutine(InvicibleTimer(invinsibleTime));
         gameState = PLAYING;
         HideContinueMenu();
-        player.GetComponent<ThrowHook>().OnContinue();
+        PM.OnContinue();
     }
 
     int GetBestScore()

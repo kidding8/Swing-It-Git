@@ -24,12 +24,12 @@ public class ThrowGrapple : MonoBehaviour
     }
 
     // Update is called once per frame
-    void Update()
+   /* void Update()
     {
         if (Input.GetMouseButtonDown(0) && GM.isPlaying() && PM.playerState == States.STATE_NORMAL && PM.playerPower == Power.POWER_GRAPPLE)
         {
 
-            if (PM.CanCollect())
+            if (PM.CanHook())
             {
                 AddDistanceJoint();
             }
@@ -51,22 +51,7 @@ public class ThrowGrapple : MonoBehaviour
         {
             CreateDistanceJoint(closestGrabber);
         }
-    }
+    }*/
 
-    private void CreateDistanceJoint(GameObject grabber)
-    {
-        currentGrapple = grapplePool.GetPooledObject();
-        currentGrapple.transform.position = transform.position;
-        currentGrapple.transform.rotation = Quaternion.identity;
-        currentGrapple.SetActive(true);
-        grappleScript = currentGrapple.GetComponent<GrappleScript>();
-        grappleScript.CreateDistanceJoint(grabber, disJoint);
-    }
-
-    private void DestroyDistanceJoint()
-    {
-        isPressingGrapple = false;
-        if (grappleScript != null)
-            grappleScript.DestroyDistanceJoint();
-    }
+    
 }

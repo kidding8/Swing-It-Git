@@ -8,23 +8,48 @@ public class ThrowHook : MonoBehaviour
     private GameManager GM;
     private EffectsManager EM;
     private PlayerManager PM;
-    public ObjectPooler hookPool;
-    public GameObject hookToInstantiate;
-    //public float forceRopeGrab = 1f;
-    
-   // private bool ropeActive;
-    private GameObject currrentHook;
-    private Rigidbody2D rb;
-    
-    private RopeScript ropeScript;
-    /* private float lastClickTime = 0;
-     public float catchTime = .25f;*/
-    private float timerHook;
-    private readonly float timerNextHook = 0.4f;
+    [Header("Rope")]
+    [Space(4)]
+    public ObjectPooler ropePool;
+    public float timeToNextRope = 0.4f;
+    private float timerRope;
+
+    [Header("Spring")]
+    [Space(4)]
+    public ObjectPooler springPool;
+    public float timeToNextSpring = 0.9f;
+    private float timerSpring;
+
+    [Header("Teleporter")]
+    [Space(4)]
+    public ObjectPooler teleporterPool;
+    public float timeToNextTeleport = 0.9f;
+    private float timerTeleport;
+
+    [Header("Grapple")]
+    [Space(4)]
+    public ObjectPooler grapplePool;
+    public float timeToNextGrapple = 0.4f;
+    private float timerGrapple;
+
+    [Header("Jump Boost")]
+    [Space(4)]
+    public float timeToNextJump = 1f;
     private float timerJump;
-    private readonly float timerNextJump = 0.5f;
-    public ParticleSystem smokeParticle;
-    private bool isPressingHooked = false;
+
+
+    private GameObject currentHook;
+    private GameObject currentTarget;
+    private Rigidbody2D rb;
+    private DistanceJoint2D disJoint;
+
+
+    private RopeScript ropeScript;
+    private SpringScript springScript;
+    private TeleporterScript teleporterScript;
+    private GrappleScript grappleScript;
+
+    private bool isPressingButton = false;
 
     void Start()
     {
@@ -32,26 +57,26 @@ public class ThrowHook : MonoBehaviour
         EM = EffectsManager.instance;
         PM = PlayerManager.instance;
         rb = GetComponent<Rigidbody2D>();
+        disJoint = GetComponent<DistanceJoint2D>();
     }
     private void Update()
     {
-        timerHook += Time.deltaTime;
+        timerRope += Time.deltaTime;
+        timerSpring += Time.deltaTime;
+        timerTeleport += Time.deltaTime;
+        timerGrapple += Time.deltaTime;
         timerJump += Time.deltaTime;
 
-        if (Input.GetMouseButtonDown(0) && GM.isPlaying() && timerHook > timerNextHook && PM.playerState == States.STATE_NORMAL && PM.playerPower == Power.POWER_HOOK)
+        if (Input.GetMouseButtonDown(0) && GM.isPlaying() && PM.IsState(States.STATE_NORMAL) && PM.CanHook())
         {
-            
-            if(PM.CanCollect())
-            {
-                Hook();
-            }
+
+            Hook();
 
         }
 
-        else if (Input.GetMouseButtonUp(0) && isPressingHooked)
+        else if (Input.GetMouseButtonUp(0) && isPressingButton)
         {
-            Unhook();
-            //AuxManager.instance.GetCamera().GetComponent<CameraFollow>().AddTarget(transform);
+            UnhookHook();
         }
 
         else if (Input.GetMouseButtonDown(1) && GM.isPlaying())
@@ -59,176 +84,265 @@ public class ThrowHook : MonoBehaviour
             PM.Jump(PM.jumpForce);
         }
 
-       
+
     }
 
-    /* public void LimitDistance()
-     {
-         useDistanceLimit = true;
-         float dis = Vector2.Distance(transform.position, connectedHook.position);
-             if (dis > distance)
-             {
-                 Vector3 dir = transform.position - connectedHook.position;
-
-
-                 Vector3 offset = transform.position - connectedHook.position;
-               //  transform.position = connectedHook.position + Vector3.ClampMagnitude(offset, distance);
-     }*/
-
-    public void Jump()
+    public void Hook()
     {
-        timerJump = 0;
-        Vector2 velocityVector = rb.velocity;
-        //velocityVector.y = jumpForce;
-        if (velocityVector.y < PM.jumpForce)
+        switch (PM.playerPower)
         {
-            velocityVector.y = PM.jumpForce;
+            case Power.POWER_ROPE:
+                if (timerRope > timeToNextRope)
+                {
+                    CreateNewHook();
+                }
+
+                break;
+
+            case Power.POWER_SPRING:
+                if (timerSpring > timeToNextSpring)
+                {
+                    CreateNewHook();
+                }
+                break;
+
+            case Power.POWER_TELEPORT:
+                if (timerTeleport > timeToNextTeleport)
+                {
+                    CreateNewHook();
+                }
+                break;
+
+            case Power.POWER_GRAPPLE:
+                if (timerGrapple > timeToNextGrapple)
+                {
+                    CreateNewHook();
+                }
+                break;
+            default:
+                Debug.Log("No power selected to create");
+                break;
+        }
+    }
+
+
+    public void UnhookHook()
+    {
+        switch (PM.playerPower)
+        {
+            case Power.POWER_ROPE:
+
+                DestroyRope();
+
+                break;
+
+            case Power.POWER_SPRING:
+
+                DestroySpring();
+
+                break;
+
+            case Power.POWER_TELEPORT:
+                DestroyTeleporter();
+                break;
+
+            case Power.POWER_GRAPPLE:
+                DestroyGrapple();
+                break;
+            default:
+                Debug.Log("No power selected to destroy");
+                break;
+        }
+    }
+
+    private void CreateHookOnTarget(GameObject target)
+    {
+        switch (PM.playerPower)
+        {
+            case Power.POWER_ROPE:
+                CreateRope(target);
+                break;
+
+            case Power.POWER_SPRING:
+                CreateSpring(target);
+                break;
+
+            case Power.POWER_TELEPORT:
+                CreateTeleporter(target);
+                break;
+
+            case Power.POWER_GRAPPLE:
+                CreateGrapple(target);
+                break;
+            default:
+                Debug.Log("No power selected to create on target");
+                break;
+        }
+    }
+
+    /*private void CreateHookOnTarget(GameObject target)
+    {
+        switch (PM.playerPower)
+        {
+            case Power.POWER_ROPE:
+
+                CreateRope(target);
+
+                break;
+
+            case Power.POWER_SPRING:
+
+                break;
+
+            case Power.POWER_TELEPORT:
+
+                break;
+
+            case Power.POWER_GRAPPLE:
+
+                break;
+            default:
+                Debug.Log("No power selected to create on target");
+                break;
+        }
+    }*/
+
+    private void CreateNewHook()
+    {
+        timerRope = 0;
+        isPressingButton = true;
+        rb.gravityScale = PM.gravityHooked;
+        currentTarget = PM.GetCurrentGrabbableObject();
+
+        if (currentTarget != null)
+        {
+            CreateHookOnTarget(currentTarget);
+            EM.CreateCameraShake(0.05f);
         }
         else
         {
-            velocityVector.y += PM.jumpForce / 1.6f;
+            Debug.Log("No Target");
+            /*Vector3 downPos = new Vector3(transform.position.x, transform.position.y - 10, 0);
+            CreateHook(downPos, true);*/
         }
-        //  velocityVector.y += 0.5f;
-        rb.velocity = velocityVector;
-        smokeParticle.gameObject.SetActive(true);
-    }
-
-    private void GroundJump()
-    {
-        Vector2 velocityVector = rb.velocity;
-        if (velocityVector.x < 5f)
-        {
-            velocityVector.x = 10f;
-        }
-
-        velocityVector.y = PM.jumpForce;
-        //  velocityVector.y += 0.5f;
-        
-        rb.velocity = velocityVector;
-        smokeParticle.gameObject.SetActive(true);
-    }
-
-    private void Unhook()
-    {
-        rb.gravityScale = PM.gravityUnhooked;
-        //rb.freezeRotation = false;
-        
-        isPressingHooked = false;
-        /*if (ropeActive)
-        {*/
-            DisableRope();
-            EM.CreateCameraShake(0.05f);
-            rb.AddForce(new Vector3(0.3f, 1f, 0) * PM.forceRopeLeave, ForceMode2D.Force);
-            rb.AddTorque(PM.torqueAddedRopeLeave);
         //}
     }
 
-    private void Hook()
-    {
-        timerHook = 0;
-        isPressingHooked = true;
-        rb.gravityScale = PM.gravityHooked;
-        /*if (ropeActive == false)
-        {*/
-            GameObject closestHook = PM.GetCurrentGrabbableObject();
-
-            if (closestHook != null)
-            {
-                CreateHook(closestHook);
-                EM.CreateCameraShake(0.05f);
-                
-                /*directionHook = destinyHook - (Vector2)transform.position;
-                directionHook.Normalize();*/
-
-                /*Vector3 forceDir = new Vector3(1f, 0.5f, 0f);
-                rb.AddForce(forceDir * forceRopeGrab, ForceMode2D.Force);*/
-
-            }
-            else
-            {
-                //ropeActive = false;
-                Vector3 downPos = new Vector3(transform.position.x, transform.position.y - 10, 0);
-                CreateHook(downPos, true);
-            }
-        //}
-    }
-
-    public void CreateHook(GameObject hook)
+    public void CreateRope(GameObject target)
     {
         //currrentHook = (GameObject)Instantiate(hookToInstantiate, transform.position, Quaternion.identity);
-        currrentHook = hookPool.GetPooledObject();
-        currrentHook.transform.position = transform.position;
-        currrentHook.transform.rotation = Quaternion.identity;
-        currrentHook.SetActive(true);
-        ropeScript = currrentHook.GetComponent<RopeScript>();
-        ropeScript.AddRope(hook, false);
-        //ropeActive = true;
-    }
-
-    public void CreateHookToTarget(GameObject target)
-    {
-        //currrentHook = (GameObject)Instantiate(hookToInstantiate, transform.position, Quaternion.identity);
-        currrentHook = hookPool.GetPooledObject();
-        currrentHook.transform.position = transform.position;
-        currrentHook.transform.rotation = Quaternion.identity;
-        currrentHook.SetActive(true);
-        ropeScript = currrentHook.GetComponent<RopeScript>();
+        currentHook = ropePool.GetPooledObject();
+        currentHook.transform.position = transform.position;
+        currentHook.transform.rotation = Quaternion.identity;
+        currentHook.SetActive(true);
+        ropeScript = currentHook.GetComponent<RopeScript>();
         ropeScript.AddRopeToTarget(target);
         //ropeActive = true;
     }
 
-    public void CreateHook(Vector2 pos, bool noTarget)
-    {
-        currrentHook = hookPool.GetPooledObject();
-        currrentHook.transform.position = transform.position;
-        currrentHook.transform.rotation = Quaternion.identity;
-        currrentHook.SetActive(true);
-        ropeScript = currrentHook.GetComponent<RopeScript>();
-        ropeScript.AddRope(pos, noTarget);
-        //ropeActive = true;
-    }
-
-
-    private void SmokeScreen()
+    private void DestroyRope()
     {
 
-        //
-        /*Vector2 direction = (Vector2)transform.position - rb.position;
-        direction.Normalize();
-        float rotateAmount = Vector3.Cross(direction, transform.up).z;
+        isPressingButton = false;
+        if (ropeScript != null)
+            ropeScript.UnhookRope();
 
-        smokeParticle.transform.rotation = Quaternion.Euler(new Vector3(transform.rotation.x, transform.rotation.y, direction.z));*/
-
-        /*Vector3 targetDir = (Vector2)transform.position - destiny;
-        float angleBetween = Vector3.Angle(Vector3.up, targetDir);
-
-        smokeParticle.transform.rotation = Quaternion.Euler(new Vector3(0, 0, angleBetween ));
-        smokeParticle.gameObject.SetActive(true);*/
-    }
-
-    public void OnContinue()
-    {
-        //ropeScript.UnhookRope();
-        DisableRope();
-        GameObject closest = PM.GetClosestGrabbableWithoutRadius();
-        transform.position = new Vector3(closest.transform.position.x, closest.transform.position.y, transform.position.z);
-        rb.velocity = new Vector2(1f, 1f) * 10f;
+        currentHook = null;
+        EM.CreateCameraShake(0.05f);
+        rb.AddForce(new Vector3(0.3f, 1f, 0) * PM.forceRopeLeave, ForceMode2D.Force);
+        rb.AddTorque(PM.torqueAddedRopeLeave);
     }
 
     
 
-    public void DisableRope()
+    private void CreateGrapple(GameObject target)
     {
-        if(ropeScript !=null)
-            ropeScript.UnhookRope();
-        //ropeActive = false;
-        currrentHook = null;
+        currentHook = grapplePool.GetPooledObject();
+        currentHook.transform.position = transform.position;
+        currentHook.transform.rotation = Quaternion.identity;
+        currentHook.SetActive(true);
+        grappleScript = currentHook.GetComponent<GrappleScript>();
+        grappleScript.CreateDistanceJoint(target, disJoint);
     }
 
-    public static float CalculateAngle(Vector3 from, Vector3 to)
+    private void DestroyGrapple()
+    {
+        if (grappleScript != null)
+            grappleScript.DestroyDistanceJoint();
+    }
+
+
+    private void CreateSpring(GameObject target)
+    {
+        currentHook = springPool.GetPooledObject();
+        currentHook.transform.position = transform.position;
+        currentHook.transform.rotation = Quaternion.identity;
+        currentHook.SetActive(true);
+        springScript = currentHook.GetComponent<SpringScript>();
+        springScript.CreateSpring(target);
+    }
+
+    private void DestroySpring()
+    {
+        if (springScript != null)
+            springScript.DestroySpring();
+    }
+
+
+    private void CreateTeleporter(GameObject target)
+    {
+        currentHook = teleporterPool.GetPooledObject();
+        currentHook.transform.position = transform.position;
+        currentHook.transform.rotation = Quaternion.identity;
+        currentHook.SetActive(true);
+        teleporterScript = currentHook.GetComponent<TeleporterScript>();
+        teleporterScript.CreateTeleporterDestiny(target);
+    }
+
+    private void DestroyTeleporter()
+    {
+        if (teleporterScript != null)
+            teleporterScript.DestroyTeleporter();
+    }
+    /*public static float CalculateAngle(Vector3 from, Vector3 to)
     {
         return Quaternion.FromToRotation(Vector3.up, to - from).eulerAngles.z;
-    }
+    }*/
+
+    /* public void LimitDistance()
+    {
+        useDistanceLimit = true;
+        float dis = Vector2.Distance(transform.position, connectedHook.position);
+            if (dis > distance)
+            {
+                Vector3 dir = transform.position - connectedHook.position;
+
+
+                Vector3 offset = transform.position - connectedHook.position;
+              //  transform.position = connectedHook.position + Vector3.ClampMagnitude(offset, distance);
+    }*/
+
+    /*public void CreateRopeWithoutTarget(Vector2 pos, bool noTarget)
+    {
+        currentHook = ropePool.GetPooledObject();
+        currentHook.transform.position = transform.position;
+        currentHook.transform.rotation = Quaternion.identity;
+        currentHook.SetActive(true);
+        ropeScript = currentHook.GetComponent<RopeScript>();
+        ropeScript.AddRope(pos, noTarget);
+    }*/
+
+    /*public void CreateRope(GameObject hook)
+    {
+        //currrentHook = (GameObject)Instantiate(hookToInstantiate, transform.position, Quaternion.identity);
+        currentHook = ropePool.GetPooledObject();
+        currentHook.transform.position = transform.position;
+        currentHook.transform.rotation = Quaternion.identity;
+        currentHook.SetActive(true);
+        ropeScript = currentHook.GetComponent<RopeScript>();
+        ropeScript.AddRope(hook, false);
+        //ropeActive = true;
+    }*/
 }
 
 

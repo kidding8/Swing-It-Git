@@ -22,12 +22,12 @@ public class ThrowSpring : MonoBehaviour
     }
 
     // Update is called once per frame
-    void Update()
+    /*void Update()
     {
         if (Input.GetMouseButtonDown(0) && GM.isPlaying() && PM.playerState == States.STATE_NORMAL && PM.playerPower == Power.POWER_SPRING)
         {
 
-            if (PM.CanCollect())
+            if (PM.CanHook())
             {
                 AddSpring();
             }
@@ -49,22 +49,7 @@ public class ThrowSpring : MonoBehaviour
         {
             CreateSpring(closestGrabber);
         }
-    }
+    }*/
 
-    private void CreateSpring(GameObject grabber)
-    {
-        currentSpring = springPool.GetPooledObject();
-        currentSpring.transform.position = transform.position;
-        currentSpring.transform.rotation = Quaternion.identity;
-        currentSpring.SetActive(true);
-        springScript = currentSpring.GetComponent<SpringScript>();
-        springScript.CreateSpring(grabber);
-    }
-
-    private void DestroySpring()
-    {
-        isPressingSpring = false;
-        if (springScript != null)
-            springScript.DestroySpring();
-    }
+    
 }

@@ -25,10 +25,6 @@ public class NodeScript : MonoBehaviour {
         useLine = true;
     }
     
-    public bool isUsed()
-    {
-        return useLine;
-    }
     public void RemoveLineTarget()
     {
         //line.positionCount = 0;
@@ -59,6 +55,9 @@ public class NodeScript : MonoBehaviour {
                     ropeScript.DestroyedRope();
             }
             
+        }else if (other.CompareTag("Wall"))
+        {
+            gameObject.SetActive(false);
         }
     }
 }

@@ -10,7 +10,7 @@ public class PlayerManager : MonoBehaviour
     }
 
     public int playerState = States.STATE_HIDDEN;
-    public int playerPower = Power.POWER_HOOK;
+    public int playerPower = Power.POWER_ROPE;
 
 
     public static PlayerManager instance;
@@ -119,7 +119,7 @@ public class PlayerManager : MonoBehaviour
         throwHook = GetComponent<ThrowHook>();
         switch (powerss) {
             case powers.Hook:
-                playerPower = Power.POWER_HOOK;
+                playerPower = Power.POWER_ROPE;
                 break;
             case powers.Spring:
                 playerPower = Power.POWER_SPRING;
@@ -393,6 +393,19 @@ public class PlayerManager : MonoBehaviour
         //rb.velocity = new Vector2(rb.velocity.x, Mathf.Sqrt(-2.0f * Physics2D.gravity.y * jumpHeight));
     }
 
+    private void GroundJump()
+    {
+        Vector2 velocityVector = rb.velocity;
+        if (velocityVector.x < 5f)
+        {
+            velocityVector.x = 10f;
+        }
+
+        velocityVector.y = jumpForce;
+        //  velocityVector.y += 0.5f;
+
+        rb.velocity = velocityVector;
+    }
     public void SetNewHook(GameObject hook)
     {
         SetNewPlayerState(States.STATE_HOOKED);
@@ -558,9 +571,14 @@ public class PlayerManager : MonoBehaviour
         return playerState == States.STATE_FLYING || playerState == States.STATE_HOOKED || playerState == States.STATE_NORMAL || playerState == States.STATE_ROCKET;
     }
 
-    public bool CanCollect()
+    public bool CanCollectObjects()
     {
-        return playerState == States.STATE_NORMAL || playerState == States.STATE_HOOKED;
+        return playerState == States.STATE_HOOKED || playerState == States.STATE_NORMAL;
+    }
+
+    public bool CanHook()
+    {
+        return playerState == States.STATE_NORMAL;
     }
 
     public bool CanDie()
@@ -568,10 +586,24 @@ public class PlayerManager : MonoBehaviour
         return playerState != States.STATE_ROCKET || playerState != States.STATE_FLYING; 
     }
 
+    public bool IsState(int state)
+    {
+        return playerState == state;
+    }
+
     void SetRotationMinMax()
     {
         rotMin = rb.rotation - 360f;
         rotMax = rb.rotation + 360f;
+    }
+
+    public void OnContinue()
+    {
+        //ropeScript.UnhookRope();
+        throwHook.UnhookHook();
+        GameObject closest = GetClosestGrabbableWithoutRadius();
+        transform.position = new Vector3(closest.transform.position.x, closest.transform.position.y, transform.position.z);
+        rb.velocity = new Vector2(1f, 1f) * 10f;
     }
 }
 

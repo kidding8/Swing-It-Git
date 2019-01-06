@@ -2868,10 +2868,15 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4f22371844450b94782598a258279351, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  hookPool: {fileID: 432272298}
-  hookToInstantiate: {fileID: 1404701874796426, guid: 0082b9bed9fbedb40a1ce0e7b34729a5,
-    type: 3}
-  smokeParticle: {fileID: 1087480207}
+  ropePool: {fileID: 0}
+  timeToNextRope: 0.4
+  springPool: {fileID: 0}
+  timeToNextSpring: 0.9
+  teleporterPool: {fileID: 0}
+  timeToNextTeleport: 0.9
+  grapplePool: {fileID: 0}
+  timeToNextGrapple: 0.4
+  timeToNextJump: 1
 --- !u!50 &685057415
 Rigidbody2D:
   serializedVersion: 4
@@ -2959,8 +2964,8 @@ MonoBehaviour:
   useFallMultiplier: 1
   fallMultiplier: 1.6
   maxYVelocity: -30
-  invincible: 0
-  powerss: 3
+  invincible: 1
+  powerss: 1
   xVelocityMultiplierHooked: 15
   yVelocityMultiplierHooked: 10
   gravityUnhooked: 2
@@ -3108,7 +3113,7 @@ DistanceJoint2D:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 685057411}
-  m_Enabled: 1
+  m_Enabled: 0
   serializedVersion: 4
   m_EnableCollision: 0
   m_ConnectedRigidBody: {fileID: 0}
@@ -11427,10 +11432,15 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4f22371844450b94782598a258279351, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  hookPool: {fileID: 0}
-  hookToInstantiate: {fileID: 1404701874796426, guid: 0082b9bed9fbedb40a1ce0e7b34729a5,
-    type: 3}
-  smokeParticle: {fileID: 1087480207}
+  ropePool: {fileID: 0}
+  timeToNextRope: 0.4
+  springPool: {fileID: 0}
+  timeToNextSpring: 0.9
+  teleporterPool: {fileID: 0}
+  timeToNextTeleport: 0.9
+  grapplePool: {fileID: 0}
+  timeToNextGrapple: 0.4
+  timeToNextJump: 1
 --- !u!1 &1594282530
 GameObject:
   m_ObjectHideFlags: 0

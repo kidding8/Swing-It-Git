@@ -28,7 +28,7 @@ public class Grabber : MonoBehaviour
         {
             OnDeath();
         }
-        else if (other.CompareTag("Player") && PM.CanCollect() && PM.useGrabberJump)
+        else if (other.CompareTag("Player") && PM.CanCollectObjects() && PM.useGrabberJump)
         {
             OnDeath();
             
