@@ -2952,7 +2952,7 @@ MonoBehaviour:
   fallMultiplier: 1.6
   maxYVelocity: -30
   invincible: 1
-  powerss: 3
+  powerss: 4
   xVelocityMultiplierHooked: 15
   yVelocityMultiplierHooked: 10
   gravityUnhooked: 2

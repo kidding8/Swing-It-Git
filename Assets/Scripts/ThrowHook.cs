@@ -57,7 +57,7 @@ public class ThrowHook : MonoBehaviour
     private GrappleScript grappleScript;
 
     private bool isPressingButton = false;
-
+    private GameObject magnetTarget = null;
     void Start()
     {
         GM = GameManager.instance;
@@ -96,6 +96,10 @@ public class ThrowHook : MonoBehaviour
             PM.BigJump();
         }
 
+        if (PM.IsState(States.STATE_MAGNET))
+        {
+            MoveMagnet(magnetTarget);
+        }
 
     }
 
@@ -168,7 +172,8 @@ public class ThrowHook : MonoBehaviour
                 DestroyGrapple();
                 break;
             case Power.POWER_MAGNET:
-                
+                PM.SetNewPlayerState(States.STATE_NORMAL);
+                magnetTarget = null;
                 break;
             default:
                 Debug.Log("No power selected to destroy");
@@ -197,7 +202,13 @@ public class ThrowHook : MonoBehaviour
                 CreateGrapple(target);
                 break;
             case Power.POWER_MAGNET:
-                
+                PM.SetNewPlayerState(States.STATE_MAGNET);
+                /*Vector3 vel = rb.velocity;
+                rb.velocity = vel /2;*/
+                magnetTarget = target;
+                /*Vector3 dir = target.transform.position - transform.position;
+                dir.Normalize();
+                rb.AddForce(dir * 50f, ForceMode2D.Impulse);*/
                 break;
             default:
                 Debug.Log("No power selected to create on target");
@@ -295,21 +306,25 @@ public class ThrowHook : MonoBehaviour
             grappleScript.DestroyGrapple();
     }
 
-    private void CreateMagnet(GameObject target)
+    private void MoveMagnet(GameObject target)
     {
-        currentHook = magnetPool.GetPooledObject();
-        currentHook.transform.position = transform.position;
-        currentHook.transform.rotation = Quaternion.identity;
-        currentHook.SetActive(true);
-       /* magnetScript = currentHook.GetComponent<MagnetScript>();
-        magnetScript.CreateGrapple(target, disJoint);*/
+        if(target != null)
+        {
+            Vector3 dir = target.transform.position - transform.position;
+            //dir.Normalize();
+            
+            rb.AddForce(dir * 10f);
+            //Debug.DrawRay(transform.position, dir * 20f);
+        }
+        
     }
 
-    private void DestroyMagnet()
+    /*private void DestroyMagnet()
     {
         /*if (magnetScript != null)
             magnetScript.DestroyGrapple();*/
-    }
+    //}
+
     /*public static float CalculateAngle(Vector3 from, Vector3 to)
     {
         return Quaternion.FromToRotation(Vector3.up, to - from).eulerAngles.z;

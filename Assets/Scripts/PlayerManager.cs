@@ -6,7 +6,7 @@ public class PlayerManager : MonoBehaviour
 {
     public enum powers
     {
-        Hook,Spring,Teleport,Grapple
+        Hook,Spring,Teleport,Grapple,Magnet
     }
 
     public int playerState = States.STATE_HIDDEN;
@@ -130,7 +130,9 @@ public class PlayerManager : MonoBehaviour
             case powers.Grapple:
                 playerPower = Power.POWER_GRAPPLE;
                 break;
-
+            case powers.Magnet:
+                playerPower = Power.POWER_MAGNET;
+                break;
         }
 
     }
@@ -615,7 +617,10 @@ public class PlayerManager : MonoBehaviour
     {
         return playerState == state;
     }
-
+    public bool isPower(int power)
+    {
+        return powerss.Equals(power);
+    }
     void SetRotationMinMax()
     {
         rotMin = rb.rotation - 360f;
