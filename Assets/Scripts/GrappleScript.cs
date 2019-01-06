@@ -25,11 +25,11 @@ public class GrappleScript : MonoBehaviour
         aux = AuxManager.instance;
         EM = EffectsManager.instance;
         PM = PlayerManager.instance;
-        disJoint = GetComponent<DistanceJoint2D>();
+        //disJoint = GetComponent<DistanceJoint2D>();
         line = GetComponent<LineRenderer>();
         player = aux.GetPlayer();
         playerRb = player.GetComponent<Rigidbody2D>();
-        disJoint.enabled = false;
+        //disJoint.enabled = false;
     }
 
     void Update()
@@ -67,7 +67,7 @@ public class GrappleScript : MonoBehaviour
         disJoint.autoConfigureDistance = true;
         disJoint.maxDistanceOnly = true;
         //disJoint.distance = Vector2.Distance(transform.position, destiny);
-        disJoint.connectedBody = playerRb;
+        disJoint.connectedBody = destinyGrabber.GetComponent<Rigidbody2D>();
         
         PM.SetNewPlayerState(States.STATE_GRAPPLE);
         isDone = true;
@@ -90,7 +90,7 @@ public class GrappleScript : MonoBehaviour
 
     }
 
-    public void CreateDistanceJoint(GameObject grabber)
+    public void CreateDistanceJoint(GameObject grabber, DistanceJoint2D dist)
     {
         if (grabber != null)
         {
@@ -98,6 +98,7 @@ public class GrappleScript : MonoBehaviour
             destinyGrabber = grabber;
             destiny = grabber.transform.position;
             renderDisJoint = true;
+            disJoint = dist;
         }
     }
 

@@ -12,6 +12,7 @@ public class ThrowGrapple : MonoBehaviour
     public ObjectPooler grapplePool;
     private GameObject currentGrapple;
     private GrappleScript grappleScript;
+    private DistanceJoint2D disJoint;
     // Start is called before the first frame update
     void Start()
     {
@@ -19,6 +20,7 @@ public class ThrowGrapple : MonoBehaviour
         EM = EffectsManager.instance;
         PM = PlayerManager.instance;
         rb = GetComponent<Rigidbody2D>();
+        disJoint = GetComponent<DistanceJoint2D>();
     }
 
     // Update is called once per frame
@@ -58,7 +60,7 @@ public class ThrowGrapple : MonoBehaviour
         currentGrapple.transform.rotation = Quaternion.identity;
         currentGrapple.SetActive(true);
         grappleScript = currentGrapple.GetComponent<GrappleScript>();
-        grappleScript.CreateDistanceJoint(grabber);
+        grappleScript.CreateDistanceJoint(grabber, disJoint);
     }
 
     private void DestroyDistanceJoint()
