@@ -47,10 +47,7 @@ public class TeleporterScript : MonoBehaviour
     {
         PM.SetNewPlayerState(States.STATE_TELEPORT);
         isDone = true;
-        
-        //playerRb.velocity = new Vector3(0.5f, 0.8f, 0f) * 20f;
         Vector3 dir = destinyGrabber.transform.position - player.transform.position;
-        //PM.BigJump();
         PM.AddDirectionalVelocity(dir.normalized, 20f);
         PM.TeleportToPoint(destinyGrabber.transform);
         DestroyTeleporter();
@@ -58,15 +55,11 @@ public class TeleporterScript : MonoBehaviour
 
     private void LeftHookBeforeDestination()
     {
-        isAttachedToPlayer = false;
-        isDone = true;
         if (PM.currentJumps > 0)
         {
             PM.BigJump();
             PM.currentJumps--;
         }
-      
-        DestroyTeleporter();
     }
 
     public void CreateTeleporterDestiny(GameObject grabber)
@@ -74,6 +67,7 @@ public class TeleporterScript : MonoBehaviour
         if (grabber != null)
         {
             isAttachedToPlayer = true;
+            isDone = false;
             destinyGrabber = grabber;
             destiny = grabber.transform.position;
         }
@@ -83,6 +77,7 @@ public class TeleporterScript : MonoBehaviour
     {
         PM.SetNewPlayerState(States.STATE_NORMAL);
         isAttachedToPlayer = false;
-        //gameObject.SetActive(false);
+        isDone = true;
+        gameObject.SetActive(false);
     }
 }

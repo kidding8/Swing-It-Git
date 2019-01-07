@@ -13,7 +13,6 @@ GameObject:
   - component: {fileID: 8195343216048052956}
   - component: {fileID: 108046987269687352}
   - component: {fileID: 4322511738717207903}
-  - component: {fileID: 8348727612396008358}
   - component: {fileID: 6547852700614300416}
   - component: {fileID: 5054958701384107775}
   m_Layer: 9
@@ -217,25 +216,6 @@ LineRenderer:
     generateLightingData: 0
   m_UseWorldSpace: 1
   m_Loop: 0
---- !u!232 &8348727612396008358
-DistanceJoint2D:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6547852700614300415}
-  m_Enabled: 0
-  serializedVersion: 4
-  m_EnableCollision: 0
-  m_ConnectedRigidBody: {fileID: 0}
-  m_BreakForce: Infinity
-  m_BreakTorque: Infinity
-  m_AutoConfigureConnectedAnchor: 1
-  m_Anchor: {x: 0, y: 0}
-  m_ConnectedAnchor: {x: 234.904, y: -1084.9738}
-  m_AutoConfigureDistance: 1
-  m_Distance: 1110.1117
-  m_MaxDistanceOnly: 0
 --- !u!231 &6547852700614300416
 SpringJoint2D:
   m_ObjectHideFlags: 0

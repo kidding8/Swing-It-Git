@@ -59,15 +59,12 @@ public class MagnetScript : MonoBehaviour
 
     private void LeftHookBeforeDestination()
     {
-        isAttachedToPlayer = false;
-        isDone = true;
         if (PM.currentJumps > 0)
         {
             PM.BigJump();
             PM.currentJumps--;
         }
 
-        DestroyTeleporter();
     }
 
     public void CreateTeleporterDestiny(GameObject grabber)

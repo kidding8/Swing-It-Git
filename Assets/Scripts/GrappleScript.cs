@@ -14,22 +14,27 @@ public class GrappleScript : MonoBehaviour
     private Vector2 destiny;
     private GameObject player;
     private Rigidbody2D playerRb;
+    private Rigidbody2D rb;
+    private GameObject targetToDraw;
     public float step = 20f;
     private bool isAttachedToPlayer = false;
     private bool isDone = false;
     private bool renderDisJoint = false;
 
+
+    private bool alreadyJumped = false;
     void Start()
     {
         GM = GameManager.instance;
         aux = AuxManager.instance;
         EM = EffectsManager.instance;
         PM = PlayerManager.instance;
-        //disJoint = GetComponent<DistanceJoint2D>();
+        rb = GetComponent<Rigidbody2D>();
         line = GetComponent<LineRenderer>();
         player = aux.GetPlayer();
         playerRb = player.GetComponent<Rigidbody2D>();
         //disJoint.enabled = false;
+        targetToDraw = player;
     }
 
     void Update()
@@ -48,6 +53,7 @@ public class GrappleScript : MonoBehaviour
         else if ((Vector2)transform.position != destiny && !isAttachedToPlayer)
         {
             LeftHookBeforeDestination();
+
         }else if(isAttachedToPlayer && isDone)
         {
             if(disJoint.distance >= 1f)
@@ -55,6 +61,9 @@ public class GrappleScript : MonoBehaviour
                 disJoint.distance -= step * Time.deltaTime;
             }
 
+        }else if(!isAttachedToPlayer && disJoint.distance >= 0.4f)
+        {
+            disJoint.distance -= (step * 2) * Time.deltaTime;
         }
 
         RenderLine();
@@ -68,15 +77,20 @@ public class GrappleScript : MonoBehaviour
         disJoint.maxDistanceOnly = false;
         //disJoint.distance = Vector2.Distance(transform.position, destiny);
         disJoint.connectedBody = destinyGrabber.GetComponent<Rigidbody2D>();
-        
         PM.SetNewPlayerState(States.STATE_GRAPPLE);
         isDone = true;
-        //isAttachedToPlayer = true;
     }
 
     private void LeftHookBeforeDestination()
     {
+        rb.isKinematic = false;
+        if (PM.currentJumps > 0)
+        {
+            PM.BigJump();
+            PM.currentJumps--;
+        }
 
+        alreadyJumped = true;
     }
 
     private void RenderLine()
@@ -106,7 +120,8 @@ public class GrappleScript : MonoBehaviour
     {
         PM.SetNewPlayerState(States.STATE_NORMAL);
         isAttachedToPlayer = false;
-        disJoint.enabled = false;
-        renderDisJoint = false;
+        //disJoint.enabled = false;
+        //renderDisJoint = false;
     }
+
 }

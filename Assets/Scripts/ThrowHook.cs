@@ -32,6 +32,7 @@ public class ThrowHook : MonoBehaviour
     public float timeToNextGrapple = 0.4f;
     private float timerGrapple;
 
+
     [Header("Grapple")]
     [Space(4)]
     public ObjectPooler magnetPool;
@@ -231,7 +232,11 @@ public class ThrowHook : MonoBehaviour
         }
         else
         {
-            PM.BigJump();
+            if (PM.currentJumps > 0)
+            {
+                PM.BigJump();
+                PM.currentJumps--;
+            }
         }
     }
 
@@ -292,11 +297,15 @@ public class ThrowHook : MonoBehaviour
 
     private void CreateGrapple(GameObject target)
     {
-        currentHook = grapplePool.GetPooledObject();
-        currentHook.transform.position = transform.position;
-        currentHook.transform.rotation = Quaternion.identity;
-        currentHook.SetActive(true);
-        grappleScript = currentHook.GetComponent<GrappleScript>();
+        if(grappleScript == null)
+        {
+            currentHook = grapplePool.GetPooledObject();
+            currentHook.transform.position = transform.position;
+            currentHook.transform.rotation = Quaternion.identity;
+            currentHook.SetActive(true);
+            grappleScript = currentHook.GetComponent<GrappleScript>();
+        }
+        
         grappleScript.CreateGrapple(target, disJoint);
     }
 
@@ -318,6 +327,8 @@ public class ThrowHook : MonoBehaviour
         }
         
     }
+
+
 
     /*private void DestroyMagnet()
     {
