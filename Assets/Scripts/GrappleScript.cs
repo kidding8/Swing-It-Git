@@ -15,12 +15,11 @@ public class GrappleScript : MonoBehaviour
     private GameObject player;
     private Rigidbody2D playerRb;
     private Rigidbody2D rb;
-    private GameObject targetToDraw;
     public float step = 20f;
     private bool isAttachedToPlayer = false;
     private bool isDone = false;
     private bool renderDisJoint = false;
-
+    
 
     private bool alreadyJumped = false;
     void Start()
@@ -34,7 +33,6 @@ public class GrappleScript : MonoBehaviour
         player = aux.GetPlayer();
         playerRb = player.GetComponent<Rigidbody2D>();
         //disJoint.enabled = false;
-        targetToDraw = player;
     }
 
     void Update()
@@ -50,7 +48,7 @@ public class GrappleScript : MonoBehaviour
 
             }
         }
-        else if ((Vector2)transform.position != destiny && !isAttachedToPlayer)
+        else if ((Vector2)transform.position != destiny && !alreadyJumped && !isDone)
         {
             LeftHookBeforeDestination();
 
@@ -61,9 +59,13 @@ public class GrappleScript : MonoBehaviour
                 disJoint.distance -= step * Time.deltaTime;
             }
 
-        }else if(!isAttachedToPlayer && disJoint.distance >= 0.4f)
+        }else if(Vector2.Distance(transform.position, player.transform.position) > 0.5f )
         {
-            disJoint.distance -= (step * 2) * Time.deltaTime;
+            transform.position = Vector2.MoveTowards(transform.position, player.transform.position, PM.ropeSpeed * 2);
+        }
+        else
+        {
+            renderDisJoint = false;
         }
 
         RenderLine();
@@ -79,17 +81,18 @@ public class GrappleScript : MonoBehaviour
         disJoint.connectedBody = destinyGrabber.GetComponent<Rigidbody2D>();
         PM.SetNewPlayerState(States.STATE_GRAPPLE);
         isDone = true;
+        
     }
 
     private void LeftHookBeforeDestination()
     {
-        rb.isKinematic = false;
-        if (PM.currentJumps > 0)
+        //rb.isKinematic = false;
+        /*if (PM.currentJumps > 0)
         {
             PM.BigJump();
             PM.currentJumps--;
-        }
-
+        }*/
+        PM.BigJump();
         alreadyJumped = true;
     }
 
@@ -101,6 +104,10 @@ public class GrappleScript : MonoBehaviour
             line.SetPosition(0, player.transform.position);
             line.SetPosition(1, transform.position);
         }
+        else
+        {
+            line.positionCount = 0;
+        }
 
     }
 
@@ -109,6 +116,8 @@ public class GrappleScript : MonoBehaviour
         if (grabber != null)
         {
             isAttachedToPlayer = true;
+            isDone = false;
+            alreadyJumped = false;
             destinyGrabber = grabber;
             destiny = grabber.transform.position;
             renderDisJoint = true;
@@ -120,7 +129,7 @@ public class GrappleScript : MonoBehaviour
     {
         PM.SetNewPlayerState(States.STATE_NORMAL);
         isAttachedToPlayer = false;
-        //disJoint.enabled = false;
+        disJoint.enabled = false;
         //renderDisJoint = false;
     }
 

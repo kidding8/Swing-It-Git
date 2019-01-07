@@ -221,4 +221,14 @@ public class AuxManager : MonoBehaviour {
             }
         }
     }
+
+    public bool IsDistanceLower(Vector3 a, Vector3 b, float dist)
+    {
+        return (a - b).sqrMagnitude <= dist * dist;
+    }
+
+    public bool IsDistanceHigher(Vector3 a, Vector3 b, float dist)
+    {
+        return (a - b).sqrMagnitude >= dist * dist;
+    }
 }

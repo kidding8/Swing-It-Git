@@ -635,5 +635,7 @@ public class PlayerManager : MonoBehaviour
         transform.position = new Vector3(closest.transform.position.x, closest.transform.position.y, transform.position.z);
         rb.velocity = new Vector2(1f, 1f) * 10f;
     }
+
+    
 }
 
