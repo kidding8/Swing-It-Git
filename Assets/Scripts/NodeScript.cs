@@ -57,6 +57,9 @@ public class NodeScript : MonoBehaviour {
             
         }else if (other.CompareTag("Wall"))
         {
+            //transform.parent = null;
+            RemoveLineTarget();
+            hinge2D.enabled = false;
             gameObject.SetActive(false);
         }
     }

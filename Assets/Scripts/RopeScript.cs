@@ -227,12 +227,19 @@ public class RopeScript : MonoBehaviour
 
     public void DisableRope()
     {
-        for (int i = 1; i < nodeList.Count; i++)
+        /*for (int i = 1; i < nodeList.Count; i++)
         {
             nodeList[i].gameObject.SetActive(false);
             nodeList[i].transform.parent = aux.GetSpawnTransform();
 
-        }
+        }*/
+        rb.isKinematic = true;
+        if (lastNode != null)
+            lastNode.GetComponent<HingeJoint2D>().connectedBody = null;
+        particlesDone = false;
+        isAttachedToPlayer = false;
+        isDone = false;
+        useLine = false;
         gameObject.SetActive(false);
 
 

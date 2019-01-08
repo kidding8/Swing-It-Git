@@ -59,6 +59,11 @@ public class ThrowHook : MonoBehaviour
 
     private bool isPressingButton = false;
     private GameObject magnetTarget = null;
+
+    private float previousVelocity = 0;
+    private bool alreadySpinned = false;
+    private float durationOfSpin = 1f;
+    private float timerSpin;
     void Start()
     {
         GM = GameManager.instance;
@@ -75,6 +80,11 @@ public class ThrowHook : MonoBehaviour
         timerGrapple += Time.deltaTime;
         timerJump += Time.deltaTime;
         timerMagnet += Time.deltaTime;
+
+        if (alreadySpinned)
+        {
+            timerSpin += Time.deltaTime;
+        }
 
         if (Input.GetMouseButtonDown(0) && GM.isPlaying() && PM.CanHook())
         {
@@ -101,6 +111,18 @@ public class ThrowHook : MonoBehaviour
         {
             MoveMagnet(magnetTarget);
         }
+
+        if(!PM.IsState(States.STATE_NORMAL) || (alreadySpinned && timerSpin > durationOfSpin) || rb.velocity.y < 0)
+        {
+            timerSpin = 0;
+            alreadySpinned = false;
+            PM.SetColor(Color.white);
+        }
+        /*if (rb.velocity.magnitude < previousVelocity && alreadySpinned)
+        {
+            alreadySpinned = false;
+            PM.SetColor(Color.white);
+        }*/
 
     }
 
@@ -155,6 +177,13 @@ public class ThrowHook : MonoBehaviour
         rb.gravityScale = PM.gravityUnhooked;
         isPressingButton = false;
         currentHook = null;
+
+        if(rb.velocity.y > 0 && !alreadySpinned)
+        {
+            alreadySpinned = true;
+            PM.SetColor(Color.red);
+            //StartCoroutine(PM.ChangeColor(2f));
+        }
         switch (PM.playerPower)
         {
             case Power.POWER_ROPE:
@@ -207,6 +236,7 @@ public class ThrowHook : MonoBehaviour
                 /*Vector3 vel = rb.velocity;
                 rb.velocity = vel /2;*/
                 magnetTarget = target;
+                //rb.velocity = Vector2
                 /*Vector3 dir = target.transform.position - transform.position;
                 dir.Normalize();
                 rb.AddForce(dir * 50f, ForceMode2D.Impulse);*/
@@ -224,7 +254,8 @@ public class ThrowHook : MonoBehaviour
         isPressingButton = true;
         rb.gravityScale = PM.gravityHooked;
         currentTarget = PM.GetCurrentGrabbableObject();
-
+        previousVelocity = rb.velocity.magnitude;
+        alreadySpinned = false;
         if (currentTarget != null)
         {
             CreateHookOnTarget(currentTarget);
@@ -322,19 +353,17 @@ public class ThrowHook : MonoBehaviour
             Vector3 dir = target.transform.position - transform.position;
             //dir.Normalize();
             
-            rb.AddForce(dir * 10f);
+            rb.AddForce(dir * 5f);
             //Debug.DrawRay(transform.position, dir * 20f);
         }
         
     }
 
-
-
     /*private void DestroyMagnet()
     {
         /*if (magnetScript != null)
-            magnetScript.DestroyGrapple();*/
-    //}
+            magnetScript.DestroyGrapple();
+    }*/
 
     /*public static float CalculateAngle(Vector3 from, Vector3 to)
     {

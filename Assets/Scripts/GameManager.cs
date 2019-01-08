@@ -19,6 +19,7 @@ public class GameManager : MonoBehaviour
     [Header("Public Variables")]
     public TextMeshProUGUI textScore;
     public TextMeshProUGUI inGameComboText;
+    //public Slider pointsSlider;
 
     [Space(10)]
     [Header("Public Objects")]
@@ -234,6 +235,7 @@ public class GameManager : MonoBehaviour
         player.SetActive(false);
         textScore.gameObject.SetActive(false);
         inGameComboText.gameObject.SetActive(false);
+        //pointsSlider.gameObject.SetActive(false);
     }
 
     private void ShowPlayer()
@@ -241,6 +243,7 @@ public class GameManager : MonoBehaviour
         player.SetActive(true);
         textScore.gameObject.SetActive(true);
         inGameComboText.gameObject.SetActive(true);
+        //pointsSlider.gameObject.SetActive(true);
     }
 
     private void ShowMainMenu()
@@ -403,8 +406,6 @@ public class GameManager : MonoBehaviour
      }*/
 
    
-
-
     public void IncrementScore(int newScore, Transform pos)
     {
         score += newScore;

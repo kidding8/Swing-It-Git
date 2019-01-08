@@ -35,7 +35,6 @@ public class SpringScript : MonoBehaviour
         player = aux.GetPlayer();
         playerRb = player.GetComponent<Rigidbody2D>();
         spring.enabled = false;
-        //targetToDraw = player;
         rb = GetComponent<Rigidbody2D>();
     }
 
@@ -92,7 +91,15 @@ public class SpringScript : MonoBehaviour
         if (renderSpring)
         {
             line.positionCount = 2;
-            line.SetPosition(0, targetToDraw.transform.position);
+            if(targetToDraw != null)
+            {
+                line.SetPosition(0, targetToDraw.transform.position);
+            }
+            else
+            {
+                line.SetPosition(0, player.transform.position);
+            }
+            
             line.SetPosition(1, transform.position);
         }
 
@@ -105,7 +112,7 @@ public class SpringScript : MonoBehaviour
             isAttachedToPlayer = true;
             destinyGrabber = grabber;
             destiny = grabber.transform.position;
-            targetToDraw = player;
+            targetToDraw = null;
             renderSpring = true;
             alreadyJumped = false;
             targetGrabber = destinyGrabber.GetComponent<Grabber>();
@@ -135,5 +142,34 @@ public class SpringScript : MonoBehaviour
         //spring.frequency = 1f;
         spring.dampingRatio = 0.2f;
         spring.connectedBody = newEmptyObj.GetComponent<Rigidbody2D>();
+    }
+
+    private void OnTriggerEnter2D(Collider2D other)
+    {
+        if (other.CompareTag("Enemy") && isAttachedToPlayer)
+        {
+            other.gameObject.SetActive(false);
+        }
+        else if (other.CompareTag("Wall"))
+        {
+            OnDeath();
+        }
+       
+    }
+
+    private void OnDeath()
+    {
+        isAttachedToPlayer = false;
+        renderSpring = false;
+        retractSpring = false;
+        spring.enabled = false;
+        isDone = false;
+        rb.isKinematic = true;
+        if (targetToDraw != null)
+        {
+            targetToDraw.gameObject.SetActive(false);
+            targetToDraw = null;
+        }
+        gameObject.SetActive(false);
     }
 }

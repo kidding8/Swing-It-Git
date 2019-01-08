@@ -231,4 +231,10 @@ public class AuxManager : MonoBehaviour {
     {
         return (a - b).sqrMagnitude >= dist * dist;
     }
+
+    public static float KineticEnergy(Rigidbody2D rb)
+    {
+        // mass in kg, velocity in meters per second, result is joules
+        return 0.5f * rb.mass * Mathf.Pow(rb.velocity.magnitude, 2);
+    }
 }

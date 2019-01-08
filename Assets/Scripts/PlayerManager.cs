@@ -223,6 +223,15 @@ public class PlayerManager : MonoBehaviour
             Debug.Log("Reached Max Speed");
         }
 
+        /*if(rb.velocity.magnitude > 30f)
+        {
+            GetComponent<SpriteRenderer>().color = Color.red;
+        }
+        else
+        {
+            GetComponent<SpriteRenderer>().color = Color.white;
+        }*/
+
         if(playerState == States.STATE_HOOKED)
         {
             HookedVelocity();
@@ -238,7 +247,7 @@ public class PlayerManager : MonoBehaviour
         else
         {
 
-            if (rb.velocity.y < maxYVelocity)
+            if (IsState(States.STATE_NORMAL) && rb.velocity.y < maxYVelocity)
             {
                 rb.velocity = new Vector2(rb.velocity.x, maxYVelocity);
                 Debug.Log("limited falling velocity");
@@ -636,6 +645,16 @@ public class PlayerManager : MonoBehaviour
         rb.velocity = new Vector2(1f, 1f) * 10f;
     }
 
-    
+    public void SetColor(Color color)
+    {
+        GetComponent<SpriteRenderer>().color = color;
+    }
+
+    /*public IEnumerator ChangeColor(float waitTime)
+    {
+        SetColor(Color.red);
+        yield return new WaitForSeconds(waitTime);
+        SetColor(Color.white);
+    }*/
 }
 
