@@ -42,7 +42,7 @@ public class SimpleShooter : MonoBehaviour
         transform.rotation = Quaternion.Slerp(transform.rotation, q, rotationSpeed* Time.deltaTime);
         Debug.DrawRay(transform.position, vectorToTarget.normalized * minDistanceToPlayer);
 
-        if(distanceToPlayer > minDistanceToPlayer && timerToShoot >= timebetweenBullets)
+        if(distanceToPlayer < minDistanceToPlayer && timerToShoot >= timebetweenBullets)
         {
             timerToShoot = 0;
             ShootBullet(q);

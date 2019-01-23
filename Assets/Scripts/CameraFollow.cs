@@ -12,6 +12,7 @@ public class CameraFollow : MonoBehaviour
     
     //public Transform target;
     public Vector3 offset;
+    private Vector3 newOffset;
     public float dampTime = 0.15f;
     public float maxZoom = 14f;
     public float minZoom = 8f;
@@ -66,18 +67,18 @@ public class CameraFollow : MonoBehaviour
     private void Move()
     {
         Vector3 centerPoint = GetCenterPoint();
-        offset.z = 0;
+        newOffset.z = 0;
         if (targets.Count <= 1)
         {
-           offset.y = GetOffsetVertical();
+           newOffset.y = GetOffsetVertical();
         }
-            
+        newOffset.x = offset.x;
         centerPoint.z = transform.position.z;
-        Vector3 newCenter = centerPoint + offset;
+        Vector3 newCenter = centerPoint + newOffset;
         Vector3 newPos;
         if(targets.Count <= 1)
         {
-            newPos = Vector3.SmoothDamp(transform.position, newCenter, ref refVelocity, dampTime - 0.1f);
+            newPos = Vector3.SmoothDamp(transform.position, newCenter, ref refVelocity, dampTime - 0.3f);
         }
         else
         {
@@ -123,7 +124,7 @@ public class CameraFollow : MonoBehaviour
 
     private float GetOffsetVertical()
     {
-        return playerRb.velocity.y > 0 ? 1f : -1f;
+        return playerRb.velocity.y > 0 ? offset.y : offset.y * -1;
         
         
     }

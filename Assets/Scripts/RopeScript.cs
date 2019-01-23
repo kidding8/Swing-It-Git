@@ -45,7 +45,7 @@ public class RopeScript : MonoBehaviour
         cam = aux.GetCamera();
         player = aux.GetPlayer();
         playerThrowHook = player.GetComponent<ThrowHook>();
-        lastNode = transform.gameObject;
+        lastNode = gameObject;
         nodePool = aux.GetNodePool();
         nodeList = new List<GameObject>();
         nodeList.Add(transform.gameObject);
@@ -97,14 +97,27 @@ public class RopeScript : MonoBehaviour
             GM.AddCombo();
         }
 
-        while (Vector2.Distance(player.transform.position, lastNode.transform.position) > PM.ropeDistance)
+       /* while (Vector2.Distance(player.transform.position, lastNode.transform.position) > PM.ropeDistance)
         {
             CreateNode();
-        }
+        }*/
 
         isDone = true;
 
         camFollow.AddTarget(transform);
+
+        /*GameObject node = nodePool.GetPooledObject();
+        node.transform.position = player.transform.position;
+        node.transform.rotation = Quaternion.identity;
+        node.transform.SetParent(transform);
+
+
+        node.SetActive(true);
+        NodeScript nodeScript = lastNode.GetComponent<NodeScript>();
+        if (nodeScript != null)
+        {
+            nodeScript.SetNewLineTarget(player.transform);
+        }*/
 
         HingeJoint2D hingeLastNode = lastNode.GetComponent<HingeJoint2D>();
         hingeLastNode.enabled = true;
@@ -112,7 +125,12 @@ public class RopeScript : MonoBehaviour
         Rigidbody2D playerRb = player.GetComponent<Rigidbody2D>();
         lastNode.GetComponent<HingeJoint2D>().connectedBody = playerRb;
 
-        PM.SetNewLineTarget(lastNode.transform);
+        NodeScript nodeScript = lastNode.GetComponent<NodeScript>();
+        if (nodeScript != null)
+        {
+            nodeScript.SetNewLineTarget(player.transform);
+        }
+        //PM.SetNewLineTarget(lastNode.transform);
 
         PM.SetNewHook(gameObject);
 
@@ -120,20 +138,20 @@ public class RopeScript : MonoBehaviour
         /*if (targetGrabber != null)
             targetGrabber.CheckIfTeleporter();*/
 
-
+        //transform.DetachChildren();
 
     }
 
 
     private void LeftHookBeforeDestination()
     {
-        if (targetGrabber != null)
+        /*if (targetGrabber != null)
         {
             targetGrabber.RemoveRope(this);
-        }
+        }*/
 
         DesattachRopeFromHook();
-
+        //transform.DetachChildren();
         GM.RemoveCombo();
         if (PM.currentJumps > 0)
         {
@@ -154,10 +172,14 @@ public class RopeScript : MonoBehaviour
     public void AddRope(GameObject target)
     {
         isAttachedToPlayer = true;
+        //rb.isKinematic = true;
         attachedHook = target;
+        lastNode = gameObject;
+        isDone = false;
+        useLine = false;
         targetGrabber = attachedHook.GetComponent<Grabber>();
-        if (targetGrabber != null)
-            targetGrabber.AddRope(this);
+        /*if (targetGrabber != null)
+            targetGrabber.AddRope(this);*/
         destiny = target.transform.position;
     }
 
@@ -173,6 +195,8 @@ public class RopeScript : MonoBehaviour
         node.transform.position = pos2Create;
         node.transform.rotation = Quaternion.identity;
         node.transform.SetParent(transform);
+
+        
         node.SetActive(true);
 
         Rigidbody2D nodeRb = node.GetComponent<Rigidbody2D>();
@@ -182,6 +206,7 @@ public class RopeScript : MonoBehaviour
         hingeLastNode.anchor = Vector2.zero;
         hingeLastNode.connectedBody = nodeRb;
 
+        
         if (!useLine)
         {
             useLine = true;
@@ -215,12 +240,23 @@ public class RopeScript : MonoBehaviour
 
         if (PM != null)
             PM.RemoveHook();
-        if (camFollow != null)
+       if (camFollow != null)
             camFollow.RemoveTarget(transform);
         if (lastNode != null)
             lastNode.GetComponent<HingeJoint2D>().enabled = false;
+        NodeScript nodeScript = lastNode.GetComponent<NodeScript>();
+        if (nodeScript != null)
+        {
+            nodeScript.RemoveLineTarget();
+        }
+        /*else
+        {
+            Debug.Log("Unhook without removing linee:" + lastNode.name);
+        }*/
+
         isAttachedToPlayer = false;
         isDone = true;
+       // transform.DetachChildren();
     }
 
 
@@ -229,19 +265,48 @@ public class RopeScript : MonoBehaviour
     {
         /*for (int i = 1; i < nodeList.Count; i++)
         {
-            nodeList[i].gameObject.SetActive(false);
-            nodeList[i].transform.parent = aux.GetSpawnTransform();
 
+            nodeList[i].GetComponent<NodeScript>().DestroyNode();
+            //nodeList[i].transform.parent = null;
+            //nodeList[i].gameObject.SetActive(false);
+            
         }*/
-        rb.isKinematic = true;
-        if (lastNode != null)
+
+        /*foreach(Transform child in transform)
+        {
+
+            NodeScript node = child.GetComponent<NodeScript>();
+            if(node != null)
+            {
+                node.RemoveLineTarget();
+            }
+            child.transform.parent = null;
+            child.gameObject.SetActive(false);
+        }*/
+        //int i = 0;
+        /*while(nodeList.Count > 1)
+        {
+            
+            nodeList[i].GetComponent<NodeScript>().RemoveLineTarget();
+            nodeList.RemoveAt(i);
+            i++;
+        }*/
+        nodeList.Clear();
+        // rb.isKinematic = true;
+        /*if (lastNode != null)
             lastNode.GetComponent<HingeJoint2D>().connectedBody = null;
         particlesDone = false;
         isAttachedToPlayer = false;
         isDone = false;
+        line.positionCount = 0;
         useLine = false;
+        firstNode = null;*/
+        //lastNode = gameObject;
+        //isDone = false;
+        transform.DetachChildren();
+         rb.isKinematic = true;
         gameObject.SetActive(false);
-
+        
 
     }
 

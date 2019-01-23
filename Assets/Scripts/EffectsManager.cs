@@ -11,7 +11,7 @@ public class EffectsManager : MonoBehaviour {
     public ObjectPooler DisappearingCirclePool;
     public ObjectPooler HookGrabParticles;
     private Camera cam;
-    private Canvas canvas;
+    public Canvas inGameCanvas;
     private float shakeDuration = 0f;
     // Amplitude of the shake. A larger value shakes the camera harder.
     public float shakeAmount = 0.7f;
@@ -37,7 +37,6 @@ public class EffectsManager : MonoBehaviour {
     void Start () {
         aux = AuxManager.instance;
         cam = aux.GetCamera();
-        canvas = aux.GetCanvas();
 	}
 	
 	public void CreateCameraShake(float time)
@@ -89,7 +88,7 @@ public class EffectsManager : MonoBehaviour {
         //main.startColor = color;
     }
 
-    public void GenerateText(string text, Transform otherTransform)
+    public void GenerateText(string text, Vector3 otherPos)
     {
         GameObject newTransform = CloseCallTxtPooler.GetPooledObject();
         PopupText popup = newTransform.GetComponentInChildren<PopupText>();
@@ -106,9 +105,11 @@ public class EffectsManager : MonoBehaviour {
                 popup.SetColor(new Color(243, 121, 52));
                 break;
         }*/
-        newTransform.transform.SetParent(canvas.transform, false);
+        newTransform.transform.SetParent(inGameCanvas.transform, false);
+        /*Vector2 canvasPos;
         Vector3 newPos = cam.WorldToScreenPoint(otherTransform.position);
-        newTransform.transform.position = newPos;
+        RectTransformUtility.ScreenPointToLocalPointInRectangle(inGameCanvas.GetComponent<RectTransform>(), newPos, null, out canvasPos);*/
+        newTransform.transform.position = worldToUISpace(inGameCanvas, otherPos);
         newTransform.transform.rotation = Quaternion.identity;
         newTransform.gameObject.SetActive(true);
     }
@@ -142,5 +143,17 @@ public class EffectsManager : MonoBehaviour {
 
         smokeParticle.transform.rotation = Quaternion.Euler(new Vector3(0, 0, angleBetween ));
         smokeParticle.gameObject.SetActive(true);*/
+    }
+
+    public Vector3 worldToUISpace(Canvas parentCanvas, Vector3 worldPos)
+    {
+        //Convert the world for screen point so that it can be used with ScreenPointToLocalPointInRectangle function
+        Vector3 screenPos = Camera.main.WorldToScreenPoint(worldPos);
+        Vector2 movePos;
+
+        //Convert the screenpoint to ui rectangle local point
+        RectTransformUtility.ScreenPointToLocalPointInRectangle(parentCanvas.transform as RectTransform, screenPos, parentCanvas.worldCamera, out movePos);
+        //Convert the local point to world point
+        return parentCanvas.transform.TransformPoint(movePos);
     }
 }

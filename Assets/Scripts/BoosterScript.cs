@@ -8,12 +8,22 @@ public class BoosterScript : MonoBehaviour {
     private AuxManager aux;
     public float radiusToDestroy = 300f;
     private EffectsManager EM;
+    public bool useRotation = false;
 
     private void Start()
     {
         aux = AuxManager.instance;
         EM = EffectsManager.instance;
     }
+
+   private void Update()
+   {
+        if (useRotation)
+        {
+            transform.localEulerAngles = new Vector3(0, 0, -Mathf.PingPong(Time.time * 20, 30));
+            transform.Translate(Vector3.up * 2 * Time.deltaTime);
+        }
+   }
 
     private void OnTriggerEnter2D(Collider2D other)
     {
@@ -40,6 +50,7 @@ public class BoosterScript : MonoBehaviour {
     {
         EM.SetCoinPickUpParticles(transform.position);
         EM.CreateDisappearingCircle(transform.position);
+        EM.GenerateText("Destruction 25", transform.position);
         gameObject.SetActive(false);
     }
 }

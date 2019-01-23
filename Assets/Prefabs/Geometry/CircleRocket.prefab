@@ -12,6 +12,7 @@ GameObject:
   - component: {fileID: 3821135350360581472}
   - component: {fileID: 3821135350360581473}
   - component: {fileID: 3821135350360581474}
+  - component: {fileID: 6641948807023889833}
   m_Layer: 0
   m_Name: CircleRocket
   m_TagString: Untagged
@@ -28,7 +29,7 @@ Transform:
   m_GameObject: {fileID: 3821135350360581475}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: -2.2390025, y: 2.2363791, z: 0}
-  m_LocalScale: {x: 1.7, y: 1.7, z: 1}
+  m_LocalScale: {x: 0.8, y: 0.8, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
   m_RootOrder: 0
@@ -70,8 +71,8 @@ SpriteRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
-  m_Sprite: {fileID: 21300000, guid: 40ae4ea49c9cd3d499c272e25b787f32, type: 3}
-  m_Color: {r: 0.035294127, g: 0.6901961, b: 0.5312702, a: 1}
+  m_Sprite: {fileID: 21300000, guid: 6646a36e353304d4ea3fe93186b7ff82, type: 3}
+  m_Color: {r: 0.17254902, g: 0.16078432, b: 0.14117648, a: 1}
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
@@ -96,7 +97,7 @@ CircleCollider2D:
   m_UsedByComposite: 0
   m_Offset: {x: 0, y: 0}
   serializedVersion: 2
-  m_Radius: 0.41499996
+  m_Radius: 2.16
 --- !u!114 &3821135350360581474
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -104,11 +105,27 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 3821135350360581475}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 95287d9688264a74984168619d7e3a08, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  speed: 3
+  useSpeed: 1
   maxDistance: 100
   rocketSpeed: 60
   destroyRadius: 10
+--- !u!114 &6641948807023889833
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3821135350360581475}
+  m_Enabled: 0
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 154d7bd825fdb9c458c307fb69fa0778, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  boost: 20
+  radiusToDestroy: 100

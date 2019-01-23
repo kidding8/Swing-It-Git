@@ -74,14 +74,16 @@ public class Missile : MonoBehaviour {
         RemoveCamTarget();
         EM.SetCoinPickUpParticles(transform.position);
         EM.CreateDisappearingCircle(transform.position);
+        EM.GenerateText("Missile 100", transform.position);
         gameObject.SetActive(false);
     }
 
     private void OnTriggerEnter2D(Collider2D other)
     {
-        if(other.CompareTag("Player") || other.CompareTag("Enemy") || other.CompareTag("Hook") || other.CompareTag("Ground"))
+        OnDeath();
+        /*if(other.CompareTag("Player") || other.CompareTag("Enemy") || other.CompareTag("Hook") || other.CompareTag("Ground"))
         {
             OnDeath();
-        }
+        }*/
     }
 }

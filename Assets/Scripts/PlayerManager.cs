@@ -72,7 +72,7 @@ public class PlayerManager : MonoBehaviour
     private CameraFollow camFollow;
     private ThrowHook throwHook;
     private Rigidbody2D rb;
-
+    private HingeJoint2D hinge;
     //private gameObjects
     private List<GameObject> grabbableObjectsList;
     private GameObject currentHook;
@@ -117,7 +117,8 @@ public class PlayerManager : MonoBehaviour
         line = GetComponent<LineRenderer>();
         camFollow = aux.GetCamera().GetComponent<CameraFollow>();
         throwHook = GetComponent<ThrowHook>();
-        switch (powerss) {
+        hinge = GetComponent<HingeJoint2D>();
+        /*switch (powerss) {
             case powers.Hook:
                 playerPower = Power.POWER_ROPE;
                 break;
@@ -133,7 +134,7 @@ public class PlayerManager : MonoBehaviour
             case powers.Magnet:
                 playerPower = Power.POWER_MAGNET;
                 break;
-        }
+        }*/
 
     }
 
@@ -148,7 +149,7 @@ public class PlayerManager : MonoBehaviour
             if (hookTemp != null)
             {
                 grabObjectIndicator.SetActive(true);
-                grabObjectIndicator.GetComponent<SpriteRenderer>().color = Color.white;
+                grabObjectIndicator.GetComponent<SpriteRenderer>().color = Color.red;
                 grabObjectIndicator.transform.position = hookTemp.transform.position;
                 //AddTargetHookToCamera(hookTemp);
             }
@@ -158,7 +159,7 @@ public class PlayerManager : MonoBehaviour
                 hookTemp = GetClosestGrabbableObjectInRadius();
                 if (hookTemp != null)
                 {
-                    grabObjectIndicator.GetComponent<SpriteRenderer>().color = Color.red;
+                    //grabObjectIndicator.GetComponent<SpriteRenderer>().color = Color.red;
                     grabObjectIndicator.SetActive(true);
                     grabObjectIndicator.transform.position = hookTemp.transform.position;
                     //AddTargetHookToCamera(hookTemp);
@@ -292,11 +293,11 @@ public class PlayerManager : MonoBehaviour
     {
         if (backFlips > 0)
         {
-            EM.GenerateText("Backflip x" + backFlips, transform);
+            EM.GenerateText("Backflip x" + backFlips, transform.position);
         }
         else if (frontFlips > 0)
         {
-            EM.GenerateText("Frontflip x" + frontFlips, transform);
+            EM.GenerateText("Frontflip x" + frontFlips, transform.position);
         }
         SetRotationMinMax();
         alreadyCountedFlips = true;
@@ -332,6 +333,9 @@ public class PlayerManager : MonoBehaviour
             {
                     playerState = States.STATE_GROUNDED;
             }
+        }else if (other.gameObject.CompareTag("Rocks"))
+        {
+            EM.GenerateText("Bounce 500", transform.position);
         }
     }
 
@@ -400,6 +404,7 @@ public class PlayerManager : MonoBehaviour
     {
         rb.velocity = dir * amount;
     }
+
     public void JumpXY(float jumpHeight)
     {
         Vector2 velocityVector = rb.velocity;
@@ -442,6 +447,7 @@ public class PlayerManager : MonoBehaviour
 
         rb.velocity = velocityVector;
     }
+
     public void SetNewHook(GameObject hook)
     {
         SetNewPlayerState(States.STATE_HOOKED);
@@ -470,6 +476,8 @@ public class PlayerManager : MonoBehaviour
         line.positionCount = 2;
         lastNode = target;
         useLine = true;
+        hinge.enabled = true;
+        hinge.connectedBody = target.GetComponent<Rigidbody2D>();
     }
 
     public void RemoveLineTarget()
@@ -478,6 +486,7 @@ public class PlayerManager : MonoBehaviour
         line.enabled = false;
         useLine = false;
         lastNode = null;
+        hinge.enabled = false;
     }
 
     public void RemoveHook()
@@ -626,10 +635,12 @@ public class PlayerManager : MonoBehaviour
     {
         return playerState == state;
     }
+
     public bool isPower(int power)
     {
         return powerss.Equals(power);
     }
+
     void SetRotationMinMax()
     {
         rotMin = rb.rotation - 360f;

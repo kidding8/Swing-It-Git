@@ -51,6 +51,10 @@ public class CloudScript : MonoBehaviour {
         {
             gameObject.SetActive(false);
         }*/
+        if(transform.position.x <= aux.wall.transform.position.x)
+        {
+            gameObject.SetActive(false);
+        }
     }
 
     public void Reset(Vector3 pos)

@@ -47,12 +47,15 @@ public class AuxManager : MonoBehaviour {
     public ObjectPooler groundBulletPool;
     public ObjectPooler emptyRbPool;
     public Sprite[] backgroundSprites;
+    public Sprite[] grabberSprites;
     public Material shadowMaterial;
     public Color shadowColor;
+    public Color foreGroundColor;
+    public Color enemyColor;
     public Sprite availableHook;
     public Sprite unavailableHook;
     public GameObject grabObjectIndicator;
-
+    public GameObject wall;
     public LayerMask layerMaskOtherObjectsAround;
     public float radiusOtherObjectsAround = 5f;
 
@@ -166,6 +169,10 @@ public class AuxManager : MonoBehaviour {
         return backgroundSprites[Random.Range(0, backgroundSprites.Length)];
     }
 
+    public Sprite GetGrabberSprite()
+    {
+        return grabberSprites[Random.Range(0, grabberSprites.Length)];
+    }
     public Vector3 GetLowerRightCorner()
     {
         Vector3 lowerRightScreen = new Vector3(Screen.width, 0, 1);

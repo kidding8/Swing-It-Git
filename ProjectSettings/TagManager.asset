@@ -9,6 +9,7 @@ TagManager:
   - Hook
   - Ground
   - Wall
+  - Rocks
   layers:
   - Default
   - TransparentFX

@@ -16,12 +16,13 @@ public class SpawnFloorManager : MonoBehaviour {
     private AuxManager aux;
     private PlayerManager PM;
 
-    public FloorEnemies[] floorEnemiesList;
+    //public FloorEnemies[] floorEnemiesList;
 
     public ObjectPooler[] floorObstacles;
     
     public Transform spawnPoint;
     public Vector2 xOffset;
+    public Vector2 yOffset;
     private void Awake()
     {
         if (instance == null)
@@ -42,11 +43,14 @@ public class SpawnFloorManager : MonoBehaviour {
         aux = AuxManager.instance;
     }
 
-    private float GetRandomHookX()
+    private float GetRandomX()
     {
         return Random.Range(xOffset.x, xOffset.y);
     }
-
+    private float GetRandomY()
+    {
+        return Random.Range(yOffset.x, yOffset.y);
+    }
     // Update is called once per frame
     void Update () {
         if (transform.position.x < spawnPoint.position.x && GM.isPlaying() && PM.canSpawnEnemies)
@@ -55,7 +59,7 @@ public class SpawnFloorManager : MonoBehaviour {
         }
     }
 
-    private int GetObstacle()
+   /* private int GetObstacle()
     {
        
         int itemWeight = 0;
@@ -76,14 +80,19 @@ public class SpawnFloorManager : MonoBehaviour {
             randomValue -= floorEnemiesList[j].probability;
         }
         return 0;
+    }*/
+
+    private int RandomObstacle()
+    {
+        return Random.Range(0, floorObstacles.Length);
     }
 
     void CreateObstacle()
     {
-        int obsIndex = GetObstacle();
-        GameObject obstacle = floorEnemiesList[obsIndex].ObstaclePool.GetPooledObject();
+        int obsIndex = RandomObstacle();
+        GameObject obstacle = floorObstacles[obsIndex].GetPooledObject();
         obstacle.SetActive(true);
-        Vector3 newPos = new Vector3(transform.position.x + GetRandomHookX(), transform.position.y, transform.position.z);
+        Vector3 newPos = new Vector3(transform.position.x + GetRandomX(), transform.position.y + GetRandomY(), transform.position.z);
         /*int safetyNet = 0;
         while (aux.IsOtherObjectsAround(newPos))
         {

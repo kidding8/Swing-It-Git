@@ -22,7 +22,8 @@ public class SmallPlayerRadius : MonoBehaviour {
     {
         if (other.CompareTag("Enemy"))
         {
-            EM.GenerateText("Close Call", other.transform);
+            //other.
+            EM.GenerateText("Close Call 1000", other.transform.position);
         }
     }
 }

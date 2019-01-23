@@ -8,6 +8,8 @@ public class RocketScript : MonoBehaviour
     private EffectsManager EM;
     private PlayerManager PM;
     private GameObject player;
+    public float speed = 10f;
+    public bool useSpeed = true;
     private bool activateRocket = false;
     private Vector3 initialPos;
     public float maxDistance = 30f;
@@ -38,6 +40,11 @@ public class RocketScript : MonoBehaviour
                 ReachedDistination();
             }
         }
+        else if(useSpeed)
+        {
+            transform.Translate(Vector3.right * speed * Time.deltaTime);
+        }
+
     }
 
     private void OnTriggerEnter2D(Collider2D other)

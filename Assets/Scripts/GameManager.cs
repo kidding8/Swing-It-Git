@@ -230,6 +230,31 @@ public class GameManager : MonoBehaviour
         UpdateComboText();
     }
 
+    public void StartRopeGame()
+    {
+        StartNormalGame();
+        PM.playerPower = Power.POWER_ROPE;
+    }
+    public void StartSpringGame()
+    {
+        StartNormalGame();
+        PM.playerPower = Power.POWER_SPRING;
+    }
+    public void StartGrappleGame()
+    {
+        StartNormalGame();
+        PM.playerPower = Power.POWER_GRAPPLE;
+    }
+    public void StartTeleporterGame()
+    {
+        StartNormalGame();
+        PM.playerPower = Power.POWER_TELEPORT;
+    }
+    public void StartMagnetGame()
+    {
+        StartNormalGame();
+        PM.playerPower = Power.POWER_MAGNET;
+    }
     private void HidePlayer()
     {
         player.SetActive(false);

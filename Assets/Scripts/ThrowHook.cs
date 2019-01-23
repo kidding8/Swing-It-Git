@@ -283,7 +283,6 @@ public class ThrowHook : MonoBehaviour
 
     private void DestroyRope()
     {
-        //isPressingButton = false;
         if (ropeScript != null)
             ropeScript.UnhookRope();
         EM.CreateCameraShake(0.05f);
