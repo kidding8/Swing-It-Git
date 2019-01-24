@@ -59,11 +59,7 @@ public class MagnetScript : MonoBehaviour
 
     private void LeftHookBeforeDestination()
     {
-        if (PM.currentJumps > 0)
-        {
-            PM.BigJump();
-            PM.currentJumps--;
-        }
+        PM.DoAirBoost();
 
     }
 

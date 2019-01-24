@@ -39,6 +39,7 @@ public class BoosterScript : MonoBehaviour {
             rb.velocity = velocity;
             aux.DestroyInRadius(transform.position, radiusToDestroy);
             onDeath();
+            GameManager.instance.AddCombo(50);
         }
         else if (other.CompareTag("Wall"))
         {
@@ -48,9 +49,10 @@ public class BoosterScript : MonoBehaviour {
 
     private void onDeath()
     {
-        EM.SetCoinPickUpParticles(transform.position);
+        /*EM.SetCoinPickUpParticles(transform.position);
         EM.CreateDisappearingCircle(transform.position);
-        EM.GenerateText("Destruction 25", transform.position);
+        EM.GenerateText("Destruction 25", transform.position);*/
+        EM.CreateEnemyEffects(transform.position);
         gameObject.SetActive(false);
     }
 }

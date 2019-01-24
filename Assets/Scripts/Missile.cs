@@ -72,18 +72,22 @@ public class Missile : MonoBehaviour {
     private void OnDeath()
     {
         RemoveCamTarget();
+        /*
         EM.SetCoinPickUpParticles(transform.position);
         EM.CreateDisappearingCircle(transform.position);
-        EM.GenerateText("Missile 100", transform.position);
+        EM.GenerateText("Missile 100", transform.position);*/
+        GameManager.instance.AddCombo(50);
+        EM.CreateEnemyEffects(transform.position);
         gameObject.SetActive(false);
     }
 
     private void OnTriggerEnter2D(Collider2D other)
     {
-        OnDeath();
-        /*if(other.CompareTag("Player") || other.CompareTag("Enemy") || other.CompareTag("Hook") || other.CompareTag("Ground"))
+        
+        if(other.CompareTag("Player") || other.CompareTag("Enemy") || other.CompareTag("Grabber") || other.CompareTag("Rocks") || other.CompareTag("Skull"))
         {
+
             OnDeath();
-        }*/
+        }
     }
 }

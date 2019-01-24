@@ -10,6 +10,8 @@ TagManager:
   - Ground
   - Wall
   - Rocks
+  - Grabber
+  - Skull
   layers:
   - Default
   - TransparentFX

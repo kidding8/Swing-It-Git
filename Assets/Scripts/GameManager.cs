@@ -18,7 +18,8 @@ public class GameManager : MonoBehaviour
     [Space(10)]
     [Header("Public Variables")]
     public TextMeshProUGUI textScore;
-    public TextMeshProUGUI inGameComboText;
+    public Image airBoost1Image;
+    public Image airBoost2Image;
     //public Slider pointsSlider;
 
     [Space(10)]
@@ -46,20 +47,30 @@ public class GameManager : MonoBehaviour
 
     [Space(10)]
     [Header("Mission Menu")]
-    public GameObject MissionIngameMenu;
+    public GameObject missionIngameMenu;
+
+    [Space(10)]
+    [Header("Combo")]
+    public TextMeshProUGUI comboCountText;
+    public TextMeshProUGUI comboScoreText;
+    public Slider comboTimerSlider;
+    private int comboCount = 0;
+    private int comboScore = 0;
+    public float comboTimeToDie = 2f;
+    private float comboTimer;
+    Coroutine comboCoroutine;
+
 
     int coins = 0;
     int coinsGained = 0;
     int score = 0;
     int lifes = 3;
 
-    Coroutine myCoroutine;
+    //Coroutine myCoroutine;
     private SpawnHookManager SHM;
     private AuxManager AM;
     private PlayerManager PM;
-    private int combo = 0;
-    public float comboTimeToDie = 2f;
-    private float comboTimer;
+   
 
     public bool invincible = false;
     public bool destroyRope = true;
@@ -101,50 +112,62 @@ public class GameManager : MonoBehaviour
             textScore.text = distance.ToString();
         }
 
-        comboTimer -= Time.deltaTime;
+       // comboTimer -= Time.deltaTime;
         
     }
 
     public void CheckIfCombo()
     {
-        if(comboTimer > 0 || combo <= 1)
+        comboCount++;
+        UpdateComboText();
+        /*
+        if(comboCount <= 1)
         {
-            combo++;
-            comboTimer = comboTimeToDie;
+            comboCount++;
+            //comboTimer = comboTimeToDie;
             UpdateComboText();
         }
         else
         {
-            combo = 1;
+            comboCount = 1;
             UpdateComboText();
-        }
+        }*/
     }
 
-    public void AddCombo()
+    public void AddCombo(int amount)
     {
-        combo++;
-        comboTimer = comboTimeToDie;
+        comboCount++;
+        comboScore += amount * comboCount;
+        comboScoreText.text = comboScore.ToString();
+        //comboTimer = comboTimeToDie;
         UpdateComboText();
     }
 
     public void RemoveCombo()
     {
-        combo = 1;
+        comboCount = 0;
         UpdateComboText();
+        if (comboCoroutine != null)
+            StopCoroutine(comboCoroutine);
+        comboTimerSlider.gameObject.SetActive(false);
     }
 
 
     private void UpdateComboText()
     {
         //Debug.Log("COMBO " + combo);
-        if(combo >= 2)
+        if(comboCount >= 2)
         {
-            inGameComboText.gameObject.SetActive(true);
-            inGameComboText.text = combo + "X";
+            comboCountText.gameObject.SetActive(true);
+            comboCountText.text = comboCount + "x";
+            if(comboCoroutine != null)
+            StopCoroutine(comboCoroutine);
+            comboCoroutine = StartCoroutine(ComboSliderOverTime(comboTimeToDie));
         }
         else
         {
-            inGameComboText.gameObject.SetActive(false);
+            comboCountText.gameObject.SetActive(false);
+            comboTimerSlider.gameObject.SetActive(false);
         }
             
             
@@ -197,7 +220,7 @@ public class GameManager : MonoBehaviour
 
     public void RemoveLife()
     {
-        if (invincible)
+        if (PM.invincible)
         {
            
             return;
@@ -215,6 +238,19 @@ public class GameManager : MonoBehaviour
             Debug.Log("Removed life: " + lifes);
             RemoveHeartImage();
             StartCoroutine(InvicibleTimer(invinsibleTime));
+        }
+    }
+
+   
+    public void AirBoostImage(bool isFirst, bool isActive)
+    {
+        if (isFirst)
+        {
+            airBoost1Image.color = new Color(1f, 1f, 1f, isActive? 1f : .5f);
+        }
+        else
+        {
+            airBoost2Image.color = new Color(1f, 1f, 1f, isActive ? 1f : .5f);
         }
     }
 
@@ -259,7 +295,7 @@ public class GameManager : MonoBehaviour
     {
         player.SetActive(false);
         textScore.gameObject.SetActive(false);
-        inGameComboText.gameObject.SetActive(false);
+        comboScoreText.gameObject.SetActive(false);
         //pointsSlider.gameObject.SetActive(false);
     }
 
@@ -267,7 +303,7 @@ public class GameManager : MonoBehaviour
     {
         player.SetActive(true);
         textScore.gameObject.SetActive(true);
-        inGameComboText.gameObject.SetActive(true);
+        comboScoreText.gameObject.SetActive(true);
         //pointsSlider.gameObject.SetActive(true);
     }
 
@@ -291,12 +327,12 @@ public class GameManager : MonoBehaviour
 
     private void ShowMissionMenuIngame()
     {
-        MissionIngameMenu.SetActive(true);
+        missionIngameMenu.SetActive(true);
     }
 
     private void HideMissionMenuIngame()
     {
-        MissionIngameMenu.SetActive(false);
+        missionIngameMenu.SetActive(false);
     }
 
     private void HideMainMenu()
@@ -344,11 +380,11 @@ public class GameManager : MonoBehaviour
             SetNewHighScore(score);
         }
         ShowDeathMenu();*/
-        if (invincible)
+        /*if (invincible)
         {
             Debug.Log("Invicible noob");
             return;
-        }
+        }*/
         gameState = STOPPED;
         ShowContinueMenu();
         Time.timeScale = 0f;
@@ -381,14 +417,6 @@ public class GameManager : MonoBehaviour
         return score;
     }
 
-  
-
-   
-
-    public void StopCoroutineTime()
-    {
-        StopCoroutine(myCoroutine);
-    }
 
     public int GetGameState()
     {
@@ -408,7 +436,24 @@ public class GameManager : MonoBehaviour
         OnDeath();
     }
 
-    
+    IEnumerator ComboSliderOverTime(float seconds)
+    {
+        comboTimerSlider.gameObject.SetActive(true);
+        float animationTime = 0f;
+        while (animationTime < seconds)
+        {
+            animationTime += Time.deltaTime;
+            float lerpValue = animationTime / seconds;
+            comboTimerSlider.value = Mathf.Lerp(100f, 0f, lerpValue);
+            yield return null;
+        }
+
+        RemoveCombo();
+        
+        //comboCount = 0;
+        //DeathMenu();
+
+    }
 
     public void Reset()
     {
@@ -444,43 +489,48 @@ public class GameManager : MonoBehaviour
         coins += coin;
     }
 
-   /* public int incrementCoins()
-    {
-        int newcoins = Random.Range((int)coinsMax.x, (int)coinsMax.y);
-        coins += newcoins;
-        coinsGained += newcoins;
-        PlayerPrefs.SetInt("coins", coins);
-        return newcoins;
-    }
+    /* public int incrementCoins()
+     {
+         int newcoins = Random.Range((int)coinsMax.x, (int)coinsMax.y);
+         coins += newcoins;
+         coinsGained += newcoins;
+         PlayerPrefs.SetInt("coins", coins);
+         return newcoins;
+     }
 
-    public bool removeCoins(int numCoins)
+     public bool removeCoins(int numCoins)
+     {
+         if (coins - numCoins <= 0)
+             return false;
+         coins -= numCoins;
+         PlayerPrefs.SetInt("coins", coins);
+         return true;
+     }*/
+
+
+    /* IEnumerator AnimateSliderOverTime(float seconds)
+     {
+         mainSlider.gameObject.SetActive(true);
+         float animationTime = 0f;
+         while (animationTime < seconds)
+         {
+             animationTime += Time.deltaTime;
+             float lerpValue = animationTime / seconds;
+             mainSlider.value = Mathf.Lerp(100f, 0f, lerpValue);
+             yield return null;
+         }
+
+         OnDeath();
+         //DeathMenu();
+
+     }*/
+
+    /*public void StopCoroutineTime()
     {
-        if (coins - numCoins <= 0)
-            return false;
-        coins -= numCoins;
-        PlayerPrefs.SetInt("coins", coins);
-        return true;
+        StopCoroutine(myCoroutine);
     }*/
 
-
-   /* IEnumerator AnimateSliderOverTime(float seconds)
-    {
-        mainSlider.gameObject.SetActive(true);
-        float animationTime = 0f;
-        while (animationTime < seconds)
-        {
-            animationTime += Time.deltaTime;
-            float lerpValue = animationTime / seconds;
-            mainSlider.value = Mathf.Lerp(100f, 0f, lerpValue);
-            yield return null;
-        }
-
-        OnDeath();
-        //DeathMenu();
-
-    }*/
-
-     
+   
 
 
 }

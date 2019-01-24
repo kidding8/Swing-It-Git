@@ -52,7 +52,7 @@ public class PlayerManager : MonoBehaviour
     public bool limitRopeJump = true;
     public int maxRopeJumps = 2;
     [HideInInspector]
-    public int currentJumps = 0;
+    public int currentAirJumps = 0;
 
     [Header("Enemies")]
     [Space(3)]
@@ -79,7 +79,7 @@ public class PlayerManager : MonoBehaviour
     private GameObject currentGrababbleObject;
     private GameObject grabObjectIndicator;
     private GameObject previousTargetHook;
-    private GameObject currentFlyingPlane;
+    //private GameObject currentFlyingPlane;
 
 
     //bools
@@ -111,7 +111,7 @@ public class PlayerManager : MonoBehaviour
         GM = GameManager.instance;
         EM = EffectsManager.instance;
         rb = GetComponent<Rigidbody2D>();
-        currentJumps = maxRopeJumps;
+        currentAirJumps = maxRopeJumps;
         grabbableObjectsList = new List<GameObject>();
         grabObjectIndicator = aux.GetGrabObjectIndicator();
         line = GetComponent<LineRenderer>();
@@ -251,7 +251,7 @@ public class PlayerManager : MonoBehaviour
             if (IsState(States.STATE_NORMAL) && rb.velocity.y < maxYVelocity)
             {
                 rb.velocity = new Vector2(rb.velocity.x, maxYVelocity);
-                Debug.Log("limited falling velocity");
+               // Debug.Log("limited falling velocity");
             }
 
             if (useFallMultiplier)
@@ -317,10 +317,7 @@ public class PlayerManager : MonoBehaviour
         if (other.CompareTag("Enemy") || other.CompareTag("Wall"))
         {
             // other.gameObject.SetActive(false);
-            if (!CanDie())
-            {
-                GM.RemoveLife();
-            }
+            GM.RemoveLife();
 
         }
     }
@@ -335,8 +332,50 @@ public class PlayerManager : MonoBehaviour
             }
         }else if (other.gameObject.CompareTag("Rocks"))
         {
-            EM.GenerateText("Bounce 500", transform.position);
+            //EM.GenerateText("Bounce 500", transform.position);
+            EM.CreateEnemyEffects(transform.position);
+            GM.AddCombo(50);
+            ResetAirJump();
         }
+    }
+
+    public void DoAirBoost()
+    {
+        if (currentAirJumps >= 2)
+            return;
+        if(currentAirJumps == 0)
+        {
+            AirJump();
+            EM.CreateAirJump(transform.position);
+            currentAirJumps++;
+            GM.AirBoostImage(false, false);
+        }
+        else if(currentAirJumps == 1)
+        {
+            AirJump();
+            currentAirJumps++;
+            EM.CreateAirJump(transform.position);
+            GM.AirBoostImage(true, false);
+        }
+    }
+
+    public void ResetAirJump()
+    {
+        currentAirJumps = 0;
+        if(currentAirJumps == 0)
+        {
+            GM.AirBoostImage(true, true);
+            GM.AirBoostImage(false, true);
+        }/*else if(currentAirJumps == 1)
+        {
+            GM.AirBoostImage(true, true);
+            GM.AirBoostImage(false, false);
+        }else if(currentAirJumps == 2)
+        {
+            GM.AirBoostImage(true, false);
+            GM.AirBoostImage(false, false);
+        }*/
+
     }
 
     private bool CheckIfGrounded()
@@ -361,7 +400,7 @@ public class PlayerManager : MonoBehaviour
         //rb.velocity = new Vector2(rb.velocity.x, Mathf.Sqrt(-2.0f * Physics2D.gravity.y * jumpHeight));
     }
 
-    public void BigJump()
+    public void AirJump()
     {
         Vector2 velocityVector = rb.velocity;
         //velocityVector.y = jumpForce;

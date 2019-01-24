@@ -90,7 +90,7 @@ public class ThrowHook : MonoBehaviour
         {
             if (PM.IsState(States.STATE_CLOSE_TO_GROUND))
             {
-                PM.BigJump();
+                PM.AirJump();
             }
             else
             {
@@ -104,7 +104,7 @@ public class ThrowHook : MonoBehaviour
 
         else if (Input.GetMouseButtonDown(1) && GM.isPlaying())
         {
-            PM.BigJump();
+            PM.AirJump();
         }
 
         if (PM.IsState(States.STATE_MAGNET))
@@ -263,11 +263,7 @@ public class ThrowHook : MonoBehaviour
         }
         else
         {
-            if (PM.currentJumps > 0)
-            {
-                PM.BigJump();
-                PM.currentJumps--;
-            }
+            PM.DoAirBoost();
         }
     }
 

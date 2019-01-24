@@ -10,6 +10,7 @@ public class EffectsManager : MonoBehaviour {
     public ObjectPooler CloseCallTxtPooler;
     public ObjectPooler DisappearingCirclePool;
     public ObjectPooler HookGrabParticles;
+    public ObjectPooler ExplosionPool;
     private Camera cam;
     public Canvas inGameCanvas;
     private float shakeDuration = 0f;
@@ -88,6 +89,13 @@ public class EffectsManager : MonoBehaviour {
         //main.startColor = color;
     }
 
+    public void CreateExplosion(Vector3 pos)
+    {
+        GameObject explosion = ExplosionPool.GetPooledObject();
+        explosion.transform.position = pos;
+        explosion.SetActive(true);
+    }
+
     public void GenerateText(string text, Vector3 otherPos)
     {
         GameObject newTransform = CloseCallTxtPooler.GetPooledObject();
@@ -155,5 +163,18 @@ public class EffectsManager : MonoBehaviour {
         RectTransformUtility.ScreenPointToLocalPointInRectangle(parentCanvas.transform as RectTransform, screenPos, parentCanvas.worldCamera, out movePos);
         //Convert the local point to world point
         return parentCanvas.transform.TransformPoint(movePos);
+    }
+
+    public void CreateEnemyEffects(Vector3 pos)
+    {
+        GenerateText("50", pos);
+        CreateExplosion(pos);
+        CreateCameraShake(0.5f);
+    }
+
+    public void CreateAirJump(Vector3 pos)
+    {
+        CreateExplosion(pos);
+        CreateCameraShake(0.5f);
     }
 }

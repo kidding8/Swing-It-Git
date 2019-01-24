@@ -160,7 +160,7 @@ CircleCollider2D:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1743236194027458}
-  m_Enabled: 1
+  m_Enabled: 0
   m_Density: 1
   m_Material: {fileID: 0}
   m_IsTrigger: 0
@@ -272,7 +272,7 @@ LineRenderer:
       m_RotationOrder: 4
     colorGradient:
       serializedVersion: 2
-      key0: {r: 0.54901963, g: 0.44313726, b: 0.3372549, a: 1}
+      key0: {r: 0.3372549, g: 0.3019608, b: 0.26666668, a: 1}
       key1: {r: 0.54901963, g: 0.44313726, b: 0.3372549, a: 1}
       key2: {r: 0, g: 0, b: 0, a: 0}
       key3: {r: 0, g: 0, b: 0, a: 0}

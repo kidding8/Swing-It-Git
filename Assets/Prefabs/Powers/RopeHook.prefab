@@ -18,7 +18,7 @@ GameObject:
   - component: {fileID: 68156516273073166}
   - component: {fileID: 6223388644026031373}
   m_Layer: 9
-  m_Name: Hook
+  m_Name: RopeHook
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -160,7 +160,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   disToDestroyX: 300
-  goTowardsHook: 0
+  goTowardsTarget: 0
 --- !u!120 &120160900409319476
 LineRenderer:
   m_ObjectHideFlags: 0
@@ -221,7 +221,7 @@ LineRenderer:
       m_RotationOrder: 4
     colorGradient:
       serializedVersion: 2
-      key0: {r: 1, g: 1, b: 1, a: 1}
+      key0: {r: 0.3372549, g: 0.3019608, b: 0.26666668, a: 1}
       key1: {r: 1, g: 1, b: 1, a: 1}
       key2: {r: 0, g: 0, b: 0, a: 0}
       key3: {r: 0, g: 0, b: 0, a: 0}

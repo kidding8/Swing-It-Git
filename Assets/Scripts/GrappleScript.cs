@@ -92,7 +92,7 @@ public class GrappleScript : MonoBehaviour
             PM.BigJump();
             PM.currentJumps--;
         }*/
-        PM.BigJump();
+        PM.AirJump();
         alreadyJumped = true;
     }
 
