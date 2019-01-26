@@ -59,7 +59,7 @@ public class MagnetScript : MonoBehaviour
 
     private void LeftHookBeforeDestination()
     {
-        PM.DoAirBoost();
+        PM.DoHability();
 
     }
 

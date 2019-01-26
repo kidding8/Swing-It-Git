@@ -270,6 +270,7 @@ public class GameManager : MonoBehaviour
     {
         StartNormalGame();
         PM.playerPower = Power.POWER_ROPE;
+        PM.playerHability = Hability.HABILITY_JUMP;
     }
     public void StartSpringGame()
     {
@@ -291,6 +292,14 @@ public class GameManager : MonoBehaviour
         StartNormalGame();
         PM.playerPower = Power.POWER_MAGNET;
     }
+
+    public void StartDashingGame()
+    {
+        StartNormalGame();
+        PM.playerPower = Power.POWER_ROPE;
+        PM.playerHability = Hability.HABILITY_DASH;
+    }
+
     private void HidePlayer()
     {
         player.SetActive(false);

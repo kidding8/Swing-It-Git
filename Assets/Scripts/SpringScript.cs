@@ -77,7 +77,7 @@ public class SpringScript : MonoBehaviour
     private void LeftHookBeforeDestination()
     {
         rb.isKinematic = false;
-        PM.DoAirBoost();
+        PM.DoHability();
 
         alreadyJumped = true;
     }

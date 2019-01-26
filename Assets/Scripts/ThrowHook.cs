@@ -45,6 +45,9 @@ public class ThrowHook : MonoBehaviour
     public float timeToNextJump = 1f;
     private float timerJump;
 
+    [Header("Misc")]
+    [Space(4)]
+    public GameObject playerFire;
 
     private GameObject currentHook;
     private GameObject currentTarget;
@@ -64,6 +67,11 @@ public class ThrowHook : MonoBehaviour
     private bool alreadySpinned = false;
     private float durationOfSpin = 1f;
     private float timerSpin;
+
+    public float tappingTimerOffset = 2f;
+    private float tappingTimer;
+    private bool canTap = false;
+
     void Start()
     {
         GM = GameManager.instance;
@@ -71,6 +79,7 @@ public class ThrowHook : MonoBehaviour
         PM = PlayerManager.instance;
         rb = GetComponent<Rigidbody2D>();
         disJoint = GetComponent<DistanceJoint2D>();
+        playerFire.SetActive(false);
     }
     private void Update()
     {
@@ -80,6 +89,9 @@ public class ThrowHook : MonoBehaviour
         timerGrapple += Time.deltaTime;
         timerJump += Time.deltaTime;
         timerMagnet += Time.deltaTime;
+
+        if(canTap)
+            tappingTimer += Time.deltaTime;
 
         if (alreadySpinned)
         {
@@ -102,32 +114,37 @@ public class ThrowHook : MonoBehaviour
             UnhookHook();
         }
 
-        else if (Input.GetMouseButtonDown(1) && GM.isPlaying())
+        /*else if (Input.GetMouseButtonDown(1) && GM.isPlaying())
         {
             PM.AirJump();
-        }
+        }*/
 
         if (PM.IsState(States.STATE_MAGNET))
         {
             MoveMagnet(magnetTarget);
         }
 
-        if(!PM.IsState(States.STATE_NORMAL) || (alreadySpinned && timerSpin > durationOfSpin) || rb.velocity.y < 0)
+        if(PM.IsState(States.STATE_ON_FIRE) && alreadySpinned && timerSpin > durationOfSpin && rb.velocity.y < 0)
         {
             timerSpin = 0;
             alreadySpinned = false;
-            PM.SetColor(Color.white);
+            playerFire.gameObject.SetActive(false);
+            PM.SetNewPlayerState(States.STATE_NORMAL);
         }
+
+        
         /*if (rb.velocity.magnitude < previousVelocity && alreadySpinned)
         {
             alreadySpinned = false;
             PM.SetColor(Color.white);
         }*/
-
+        playerFire.transform.position = transform.position;
     }
 
     public void Hook()
     {
+        canTap = true;
+        tappingTimer = 0;
         switch (PM.playerPower)
         {
             case Power.POWER_ROPE:
@@ -178,12 +195,12 @@ public class ThrowHook : MonoBehaviour
         isPressingButton = false;
         currentHook = null;
 
-        if(rb.velocity.y > 0 && !alreadySpinned)
+        if(canTap && tappingTimer <= tappingTimerOffset)
         {
-            alreadySpinned = true;
-            PM.SetColor(Color.red);
-            //StartCoroutine(PM.ChangeColor(2f));
+            PM.DoHability();
+            canTap = false;
         }
+
         switch (PM.playerPower)
         {
             case Power.POWER_ROPE:
@@ -208,6 +225,15 @@ public class ThrowHook : MonoBehaviour
             default:
                 Debug.Log("No power selected to destroy");
                 break;
+        }
+
+        if (rb.velocity.y > 0 && !alreadySpinned)
+        {
+            alreadySpinned = true;
+            playerFire.gameObject.SetActive(true);
+            PM.SetNewPlayerState(States.STATE_ON_FIRE);
+            //PM.SetColor(Color.red);
+            //StartCoroutine(PM.ChangeColor(2f));
         }
     }
 
@@ -263,7 +289,7 @@ public class ThrowHook : MonoBehaviour
         }
         else
         {
-            PM.DoAirBoost();
+            PM.DoHability();
         }
     }
 
@@ -354,6 +380,7 @@ public class ThrowHook : MonoBehaviour
         
     }
 
+    #region ExtraFunctions
     /*private void DestroyMagnet()
     {
         /*if (magnetScript != null)
@@ -427,6 +454,7 @@ public class ThrowHook : MonoBehaviour
         }
     }*/
 
+    #endregion
 }
 
 

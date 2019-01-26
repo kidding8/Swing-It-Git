@@ -16,6 +16,7 @@ public class States
     public const int STATE_GRAPPLE = 8;
     public const int STATE_TELEPORT = 9;
     public const int STATE_MAGNET = 10;
+    public const int STATE_ON_FIRE = 11;
 }
 
 public class Power
@@ -27,7 +28,15 @@ public class Power
     public const int POWER_MAGNET = 4;
 }
 
-
+public class Hability
+{
+    //Jump, Dash, Teleport, Tornado, Shooting, Barrel, Decoy
+    public const int HABILITY_JUMP = 0;
+    public const int HABILITY_DASH = 1;
+    public const int HABILITY_TELEPORT = 2;
+    public const int HABILITY_TORNADO = 3;
+    public const int HABILITY_SHOOTING = 4;
+}
 
 public class AuxManager : MonoBehaviour {
 

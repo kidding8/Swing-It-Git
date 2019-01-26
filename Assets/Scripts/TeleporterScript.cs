@@ -55,7 +55,7 @@ public class TeleporterScript : MonoBehaviour
 
     private void LeftHookBeforeDestination()
     {
-        PM.DoAirBoost();
+        PM.DoHability();
     }
 
     public void CreateTeleporterDestiny(GameObject grabber)

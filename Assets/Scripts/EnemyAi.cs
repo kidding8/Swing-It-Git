@@ -118,6 +118,10 @@ public class EnemyAi : MonoBehaviour
             else
             {
                 EM.CreateEnemyEffects(transform.position);
+                if(PlayerManager.instance.playerState == States.STATE_ON_FIRE)
+                {
+                    OnDeath();
+                }
             }
 
         }/*else if (other.gameObject.CompareTag("Enemy"))

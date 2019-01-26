@@ -153,8 +153,8 @@ public class RopeScript : MonoBehaviour
 
         DesattachRopeFromHook();
         //transform.DetachChildren();
-        GM.RemoveCombo();
-        PM.DoAirBoost();
+        /*GM.RemoveCombo();
+        PM.DoHability();*/
         /*if (PM.currentAirJumps > 0)
         {
             PM.AirJump();

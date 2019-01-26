@@ -4,13 +4,19 @@ using UnityEngine;
 
 public class PlayerManager : MonoBehaviour
 {
-    public enum powers
+    /*public enum powers
     {
         Hook,Spring,Teleport,Grapple,Magnet
     }
 
+    public enum habilities
+    {
+        Jump, Dash, Teleport, Tornado, Shooting, Barrel, Decoy
+    }*/
+
     public int playerState = States.STATE_HIDDEN;
     public int playerPower = Power.POWER_ROPE;
+    public int playerHability = Hability.HABILITY_JUMP;
 
 
     public static PlayerManager instance;
@@ -27,7 +33,7 @@ public class PlayerManager : MonoBehaviour
     public float fallMultiplier = 1.4f;
     public float maxYVelocity = -20;
     public bool invincible = false;
-    public powers powerss;
+    //public powers powerss;
     [Header("Rope")]
     [Space(3)]
     public float xVelocityMultiplierHooked = 15;
@@ -59,13 +65,22 @@ public class PlayerManager : MonoBehaviour
     public bool canSpawnEnemies = true;
     public bool canShootMissiles = true;
     public bool canShootGuidedMissiles = true;
+    
 
     [Header("Ground")]
     [Space(3)]
     public float distanceToGround = 3f;
     public float dragGrounded = 0.8f;
     public LayerMask whatIsGround;
-    
+
+    [Header("Dashing")]
+    [Space(3)]
+
+    public float timeToDash = 1f;
+    private float dashingTime = 0;
+    public float dashingSpeed = 10f;
+    private bool isDashing = false;
+    private bool stoppedDashing = true;
     //components
     private LineRenderer line;
     private Transform lastNode;
@@ -184,7 +199,6 @@ public class PlayerManager : MonoBehaviour
 
         }
 
-
         if (useLine && lastNode != null)
         {
             line.SetPosition(0, transform.position);
@@ -204,6 +218,7 @@ public class PlayerManager : MonoBehaviour
                 GM.OnDeath();
             }
         }
+
         else
         {
             if (playerState == States.STATE_CLOSE_TO_GROUND || playerState == States.STATE_GROUNDED)
@@ -214,6 +229,18 @@ public class PlayerManager : MonoBehaviour
             rb.angularDrag = 0f;
         }
 
+        if (isDashing)
+        {
+            dashingTime += Time.deltaTime;
+            stoppedDashing = false;
+            rb.velocity = Vector2.right * dashingSpeed;
+        }
+        if (dashingTime >= timeToDash && !stoppedDashing)
+        {
+            isDashing = false;
+            rb.velocity = Vector2.right * 20f;
+            stoppedDashing = true;
+        }
     }
 
     private void FixedUpdate()
@@ -317,7 +344,8 @@ public class PlayerManager : MonoBehaviour
         if (other.CompareTag("Enemy") || other.CompareTag("Wall"))
         {
             // other.gameObject.SetActive(false);
-            GM.RemoveLife();
+            if(playerState != States.STATE_ON_FIRE)
+                GM.RemoveLife();
 
         }
     }
@@ -339,23 +367,46 @@ public class PlayerManager : MonoBehaviour
         }
     }
 
-    public void DoAirBoost()
+    public void DoHability()
     {
         if (currentAirJumps >= 2)
             return;
         if(currentAirJumps == 0)
         {
-            AirJump();
+            //AirJump();
+            SelectHability();
             EM.CreateAirJump(transform.position);
             currentAirJumps++;
             GM.AirBoostImage(false, false);
         }
         else if(currentAirJumps == 1)
         {
-            AirJump();
+            SelectHability();
             currentAirJumps++;
             EM.CreateAirJump(transform.position);
             GM.AirBoostImage(true, false);
+        }
+    }
+
+    private void SelectHability()
+    {
+        switch (playerHability)
+        {
+            case Hability.HABILITY_JUMP:
+                AirJump();
+                break;
+            case Hability.HABILITY_DASH:
+                AirDash();
+                break;
+            case Hability.HABILITY_TELEPORT:
+
+                break;
+            case Hability.HABILITY_TORNADO:
+
+                break;
+            case Hability.HABILITY_SHOOTING:
+
+                break;
         }
     }
 
@@ -419,6 +470,13 @@ public class PlayerManager : MonoBehaviour
         }
         //  velocityVector.y += 0.5f;
         rb.velocity = velocityVector;
+    }
+
+    public void AirDash()
+    {
+        isDashing = true;
+        dashingTime = 0;
+        
     }
 
     public void JumpUpwards(float amount)
@@ -652,17 +710,17 @@ public class PlayerManager : MonoBehaviour
 
     public bool CanCollectCoins()
     {
-        return playerState == States.STATE_FLYING || playerState == States.STATE_HOOKED || playerState == States.STATE_NORMAL || playerState == States.STATE_ROCKET;
+        return playerState == States.STATE_FLYING || playerState == States.STATE_ON_FIRE ||playerState == States.STATE_HOOKED || playerState == States.STATE_NORMAL || playerState == States.STATE_ROCKET;
     }
 
     public bool CanCollectObjects()
     {
-        return playerState == States.STATE_HOOKED || playerState == States.STATE_NORMAL;
+        return playerState == States.STATE_ON_FIRE || playerState == States.STATE_HOOKED || playerState == States.STATE_NORMAL;
     }
 
     public bool CanHook()
     {
-        return playerState == States.STATE_NORMAL;
+        return playerState == States.STATE_NORMAL || playerState == States.STATE_ON_FIRE;
     }
 
     public bool CanDie()
@@ -675,10 +733,10 @@ public class PlayerManager : MonoBehaviour
         return playerState == state;
     }
 
-    public bool isPower(int power)
+    /*public bool isPower(int power)
     {
         return powerss.Equals(power);
-    }
+    }*/
 
     void SetRotationMinMax()
     {
