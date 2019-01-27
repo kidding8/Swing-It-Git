@@ -3928,6 +3928,11 @@ MonoBehaviour:
   magnetPool: {fileID: 0}
   timeToNextMagnet: 0.5
   timeToNextJump: 1
+  timeToDash: 1
+  dashingSpeed: 10
+  limitRopeJump: 1
+  maxRopeJumps: 2
+  currentAirJumps: 0
   playerFire: {fileID: 1484098440}
   tappingTimerOffset: 0.3
 --- !u!50 &685057415
@@ -4040,9 +4045,6 @@ MonoBehaviour:
   useGrabberJump: 0
   grabberJumpForce: 10
   radiusToGrab: 180
-  limitRopeJump: 1
-  maxRopeJumps: 2
-  currentAirJumps: 0
   canSpawnEnemies: 1
   canShootMissiles: 1
   canShootGuidedMissiles: 1
@@ -4051,8 +4053,6 @@ MonoBehaviour:
   whatIsGround:
     serializedVersion: 2
     m_Bits: 8192
-  timeToDash: 0.5
-  dashingSpeed: 100
 --- !u!120 &685057421
 LineRenderer:
   m_ObjectHideFlags: 0
@@ -4310,7 +4310,6 @@ MonoBehaviour:
   - {fileID: 593324778}
   - {fileID: 673734843}
   - {fileID: 1697675476}
-  - {fileID: 1332308554}
   spawnPoint: {fileID: 1594282531}
   xOffset: {x: 5, y: 15}
   yOffset: {x: -15, y: 30}
@@ -18903,6 +18902,11 @@ MonoBehaviour:
   magnetPool: {fileID: 0}
   timeToNextMagnet: 0.5
   timeToNextJump: 1
+  timeToDash: 1
+  dashingSpeed: 10
+  limitRopeJump: 1
+  maxRopeJumps: 2
+  currentAirJumps: 0
   playerFire: {fileID: 0}
   tappingTimerOffset: 2
 --- !u!1 &1594282530

@@ -45,6 +45,22 @@ public class ThrowHook : MonoBehaviour
     public float timeToNextJump = 1f;
     private float timerJump;
 
+    [Header("Dashing")]
+    [Space(3)]
+
+    public float timeToDash = 1f;
+    private float dashingTime = 0;
+    public float dashingSpeed = 10f;
+    private bool isDashing = false;
+    private bool stoppedDashing = true;
+
+    [Header("Jumps")]
+    [Space(3)]
+    public bool limitRopeJump = true;
+    public int maxRopeJumps = 2;
+    [HideInInspector]
+    public int currentAirJumps = 0;
+
     [Header("Misc")]
     [Space(4)]
     public GameObject playerFire;
@@ -80,6 +96,7 @@ public class ThrowHook : MonoBehaviour
         rb = GetComponent<Rigidbody2D>();
         disJoint = GetComponent<DistanceJoint2D>();
         playerFire.SetActive(false);
+        currentAirJumps = maxRopeJumps;
     }
     private void Update()
     {
@@ -100,16 +117,20 @@ public class ThrowHook : MonoBehaviour
 
         if (Input.GetMouseButtonDown(0) && GM.isPlaying() && PM.CanHook())
         {
-            if (PM.IsState(States.STATE_CLOSE_TO_GROUND))
+            Hook();
+            
+            /*if (PM.IsState(States.STATE_CLOSE_TO_GROUND))
             {
-                PM.AirJump();
+                AirJump();
             }
             else
             {
                 Hook();
-            }
-            
-        }else if (Input.GetMouseButtonUp(0) && isPressingButton)
+            }*/
+
+        }
+
+        else if (Input.GetMouseButtonUp(0) && isPressingButton)
         {
             UnhookHook();
         }
@@ -124,7 +145,7 @@ public class ThrowHook : MonoBehaviour
             MoveMagnet(magnetTarget);
         }
 
-        if(PM.IsState(States.STATE_ON_FIRE) && alreadySpinned && timerSpin > durationOfSpin && rb.velocity.y < 0)
+        if (PM.IsState(States.STATE_ON_FIRE) && alreadySpinned && timerSpin > durationOfSpin && rb.velocity.y < 0)
         {
             timerSpin = 0;
             alreadySpinned = false;
@@ -132,7 +153,20 @@ public class ThrowHook : MonoBehaviour
             PM.SetNewPlayerState(States.STATE_NORMAL);
         }
 
-        
+        if (isDashing)
+        {
+            dashingTime += Time.deltaTime;
+            stoppedDashing = false;
+            rb.velocity = Vector2.right * dashingSpeed;
+        }
+
+        if (dashingTime >= timeToDash && !stoppedDashing)
+        {
+            isDashing = false;
+            rb.velocity = Vector2.right * 20f;
+            stoppedDashing = true;
+        }
+
         /*if (rb.velocity.magnitude < previousVelocity && alreadySpinned)
         {
             alreadySpinned = false;
@@ -188,7 +222,6 @@ public class ThrowHook : MonoBehaviour
         }
     }
 
-
     public void UnhookHook()
     {
         rb.gravityScale = PM.gravityUnhooked;
@@ -197,7 +230,7 @@ public class ThrowHook : MonoBehaviour
 
         if(canTap && tappingTimer <= tappingTimerOffset)
         {
-            PM.DoHability();
+            DoHability();
             canTap = false;
         }
 
@@ -237,6 +270,49 @@ public class ThrowHook : MonoBehaviour
         }
     }
 
+    public void DoHability()
+    {
+        if (currentAirJumps >= 2)
+            return;
+        if (currentAirJumps == 0)
+        {
+            //AirJump();
+            SelectPower();
+            EM.CreateAirJump(transform.position);
+            currentAirJumps++;
+            GM.AirBoostImage(false, false);
+        }
+        else if (currentAirJumps == 1)
+        {
+            SelectPower();
+            currentAirJumps++;
+            EM.CreateAirJump(transform.position);
+            GM.AirBoostImage(true, false);
+        }
+    }
+
+    private void SelectPower()
+    {
+        switch (PM.playerHability)
+        {
+            case Hability.HABILITY_JUMP:
+                AirJump();
+                break;
+            case Hability.HABILITY_DASH:
+                AirDash();
+                break;
+            case Hability.HABILITY_TELEPORT:
+
+                break;
+            case Hability.HABILITY_TORNADO:
+
+                break;
+            case Hability.HABILITY_SHOOTING:
+
+                break;
+        }
+    }
+
     private void CreateHookOnTarget(GameObject target)
     {
         switch (PM.playerPower)
@@ -273,7 +349,6 @@ public class ThrowHook : MonoBehaviour
         }
     }
 
-    
     private void CreateNewHook()
     {
         timerRope = 0;
@@ -289,7 +364,17 @@ public class ThrowHook : MonoBehaviour
         }
         else
         {
-            PM.DoHability();
+            DoHability();
+        }
+    }
+
+    public void ResetAirPower()
+    {
+        currentAirJumps = 0;
+        if (currentAirJumps == 0)
+        {
+            GM.AirBoostImage(true, true);
+            GM.AirBoostImage(false, true);
         }
     }
 
@@ -378,6 +463,34 @@ public class ThrowHook : MonoBehaviour
             //Debug.DrawRay(transform.position, dir * 20f);
         }
         
+    }
+
+    public void AirJump()
+    {
+        Vector2 velocityVector = rb.velocity;
+        //velocityVector.y = jumpForce;
+        if (velocityVector.y < PM.jumpForce - 5)
+        {
+            velocityVector.y = PM.jumpForce;
+        }
+        else
+        {
+            velocityVector.y += PM.jumpForce / 2;
+        }
+
+        if (velocityVector.x <= PM.jumpForce / 2)
+        {
+            velocityVector.x = PM.jumpForce / 2;
+        }
+        //  velocityVector.y += 0.5f;
+        rb.velocity = velocityVector;
+    }
+
+    public void AirDash()
+    {
+        isDashing = true;
+        dashingTime = 0;
+
     }
 
     #region ExtraFunctions

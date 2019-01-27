@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -53,12 +54,7 @@ public class PlayerManager : MonoBehaviour
     public float grabberJumpForce = 10f;
     public float radiusToGrab = 200f;
 
-    [Header("Jumps")]
-    [Space(3)]
-    public bool limitRopeJump = true;
-    public int maxRopeJumps = 2;
-    [HideInInspector]
-    public int currentAirJumps = 0;
+    
 
     [Header("Enemies")]
     [Space(3)]
@@ -73,14 +69,8 @@ public class PlayerManager : MonoBehaviour
     public float dragGrounded = 0.8f;
     public LayerMask whatIsGround;
 
-    [Header("Dashing")]
-    [Space(3)]
+    
 
-    public float timeToDash = 1f;
-    private float dashingTime = 0;
-    public float dashingSpeed = 10f;
-    private bool isDashing = false;
-    private bool stoppedDashing = true;
     //components
     private LineRenderer line;
     private Transform lastNode;
@@ -92,6 +82,9 @@ public class PlayerManager : MonoBehaviour
     private List<GameObject> grabbableObjectsList;
     private GameObject currentHook;
     private GameObject currentGrababbleObject;
+
+    
+
     private GameObject grabObjectIndicator;
     private GameObject previousTargetHook;
     //private GameObject currentFlyingPlane;
@@ -126,7 +119,6 @@ public class PlayerManager : MonoBehaviour
         GM = GameManager.instance;
         EM = EffectsManager.instance;
         rb = GetComponent<Rigidbody2D>();
-        currentAirJumps = maxRopeJumps;
         grabbableObjectsList = new List<GameObject>();
         grabObjectIndicator = aux.GetGrabObjectIndicator();
         line = GetComponent<LineRenderer>();
@@ -158,7 +150,7 @@ public class PlayerManager : MonoBehaviour
         timerHookIndicator += Time.deltaTime;
         GameObject hookTemp = GetFarthestGrabbableObjectInRadius();
         
-        if (timerHookIndicator >= timerForNextHookIndicator && playerState == States.STATE_NORMAL)
+        if (timerHookIndicator >= timerForNextHookIndicator && CanHook())
         {
             timerHookIndicator = 0;
             if (hookTemp != null)
@@ -229,18 +221,7 @@ public class PlayerManager : MonoBehaviour
             rb.angularDrag = 0f;
         }
 
-        if (isDashing)
-        {
-            dashingTime += Time.deltaTime;
-            stoppedDashing = false;
-            rb.velocity = Vector2.right * dashingSpeed;
-        }
-        if (dashingTime >= timeToDash && !stoppedDashing)
-        {
-            isDashing = false;
-            rb.velocity = Vector2.right * 20f;
-            stoppedDashing = true;
-        }
+       
     }
 
     private void FixedUpdate()
@@ -367,57 +348,16 @@ public class PlayerManager : MonoBehaviour
         }
     }
 
+
     public void DoHability()
     {
-        if (currentAirJumps >= 2)
-            return;
-        if(currentAirJumps == 0)
-        {
-            //AirJump();
-            SelectHability();
-            EM.CreateAirJump(transform.position);
-            currentAirJumps++;
-            GM.AirBoostImage(false, false);
-        }
-        else if(currentAirJumps == 1)
-        {
-            SelectHability();
-            currentAirJumps++;
-            EM.CreateAirJump(transform.position);
-            GM.AirBoostImage(true, false);
-        }
-    }
-
-    private void SelectHability()
-    {
-        switch (playerHability)
-        {
-            case Hability.HABILITY_JUMP:
-                AirJump();
-                break;
-            case Hability.HABILITY_DASH:
-                AirDash();
-                break;
-            case Hability.HABILITY_TELEPORT:
-
-                break;
-            case Hability.HABILITY_TORNADO:
-
-                break;
-            case Hability.HABILITY_SHOOTING:
-
-                break;
-        }
+        throwHook.DoHability();
     }
 
     public void ResetAirJump()
     {
-        currentAirJumps = 0;
-        if(currentAirJumps == 0)
-        {
-            GM.AirBoostImage(true, true);
-            GM.AirBoostImage(false, true);
-        }/*else if(currentAirJumps == 1)
+        throwHook.ResetAirPower();
+       /*else if(currentAirJumps == 1)
         {
             GM.AirBoostImage(true, true);
             GM.AirBoostImage(false, false);
@@ -451,33 +391,7 @@ public class PlayerManager : MonoBehaviour
         //rb.velocity = new Vector2(rb.velocity.x, Mathf.Sqrt(-2.0f * Physics2D.gravity.y * jumpHeight));
     }
 
-    public void AirJump()
-    {
-        Vector2 velocityVector = rb.velocity;
-        //velocityVector.y = jumpForce;
-        if (velocityVector.y < jumpForce - 5)
-        {
-            velocityVector.y = jumpForce;
-        }
-        else
-        {
-            velocityVector.y += jumpForce / 2;
-        }
-
-        if(velocityVector.x <= jumpForce/2)
-        {
-            velocityVector.x = jumpForce/2;
-        }
-        //  velocityVector.y += 0.5f;
-        rb.velocity = velocityVector;
-    }
-
-    public void AirDash()
-    {
-        isDashing = true;
-        dashingTime = 0;
-        
-    }
+    
 
     public void JumpUpwards(float amount)
     {
