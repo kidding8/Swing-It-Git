@@ -46,7 +46,7 @@ public class MagnetScript : MonoBehaviour
 
     private void TeleportPlayer()
     {
-        PM.SetNewPlayerState(States.STATE_TELEPORT);
+        PM.SetPlayerState(States.STATE_TELEPORT);
         isDone = true;
 
         //playerRb.velocity = new Vector3(0.5f, 0.8f, 0f) * 20f;
@@ -59,7 +59,7 @@ public class MagnetScript : MonoBehaviour
 
     private void LeftHookBeforeDestination()
     {
-        PM.DoHability();
+        PM.DoAirPower();
 
     }
 
@@ -76,7 +76,7 @@ public class MagnetScript : MonoBehaviour
 
     public void DestroyTeleporter()
     {
-        PM.SetNewPlayerState(States.STATE_NORMAL);
+        PM.SetPlayerState(States.STATE_NORMAL);
         isAttachedToPlayer = false;
         //gameObject.SetActive(false);
     }

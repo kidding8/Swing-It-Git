@@ -45,7 +45,7 @@ public class TeleporterScript : MonoBehaviour
 
     private void TeleportPlayer()
     {
-        PM.SetNewPlayerState(States.STATE_TELEPORT);
+        PM.SetPlayerState(States.STATE_TELEPORT);
         isDone = true;
         Vector3 dir = destinyGrabber.transform.position - player.transform.position;
         PM.AddDirectionalVelocity(dir.normalized, 20f);
@@ -55,7 +55,7 @@ public class TeleporterScript : MonoBehaviour
 
     private void LeftHookBeforeDestination()
     {
-        PM.DoHability();
+        PM.DoAirPower();
     }
 
     public void CreateTeleporterDestiny(GameObject grabber)
@@ -71,7 +71,7 @@ public class TeleporterScript : MonoBehaviour
 
     public void DestroyTeleporter()
     {
-        PM.SetNewPlayerState(States.STATE_NORMAL);
+        PM.SetPlayerState(States.STATE_NORMAL);
         isAttachedToPlayer = false;
         isDone = true;
         gameObject.SetActive(false);

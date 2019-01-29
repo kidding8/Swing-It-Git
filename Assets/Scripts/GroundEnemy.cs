@@ -30,7 +30,7 @@ public class GroundEnemy : MonoBehaviour {
     {
         if (other.gameObject.tag == "Player")
         {
-            if(PM.IsState(States.STATE_NORMAL))
+            if(PM.IsPlayerState(States.STATE_NORMAL))
             if (isBouncer)
             {
                 PM.JumpUpwards(bouncerBoost);

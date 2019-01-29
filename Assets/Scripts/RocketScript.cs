@@ -34,7 +34,7 @@ public class RocketScript : MonoBehaviour
             transform.Translate(Vector3.right * Time.deltaTime * rocketSpeed);
             player.transform.position = transform.position + Vector3.up;
             throwHook.UnhookHook();
-            PM.SetNewPlayerState(States.STATE_ROCKET);
+            //PM.SetPlayerState(States.STATE_ROCKET);
             if (Vector3.Distance(initialPos, transform.position) > maxDistance)
             {
                 ReachedDistination();
@@ -71,7 +71,7 @@ public class RocketScript : MonoBehaviour
         activateRocket = false;
         PM.Jump(PM.jumpForce);
         OnDeath();
-        PM.SetNewPlayerState(States.STATE_NORMAL);
+        PM.SetPlayerState(States.STATE_NORMAL);
         aux.DestroyInRadius(transform.position, destroyRadius);
     }
 

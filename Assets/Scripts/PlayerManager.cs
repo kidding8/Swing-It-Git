@@ -16,8 +16,8 @@ public class PlayerManager : MonoBehaviour
     }*/
 
     public int playerState = States.STATE_HIDDEN;
-    public int playerPower = Power.POWER_ROPE;
-    public int playerHability = Hability.HABILITY_JUMP;
+    //public int playerPower = Power.POWER_JUMP;
+    //public int playerHability = Hability.HABILITY_JUMP;
 
 
     public static PlayerManager instance;
@@ -125,23 +125,7 @@ public class PlayerManager : MonoBehaviour
         camFollow = aux.GetCamera().GetComponent<CameraFollow>();
         throwHook = GetComponent<ThrowHook>();
         hinge = GetComponent<HingeJoint2D>();
-        /*switch (powerss) {
-            case powers.Hook:
-                playerPower = Power.POWER_ROPE;
-                break;
-            case powers.Spring:
-                playerPower = Power.POWER_SPRING;
-                break;
-            case powers.Teleport:
-                playerPower = Power.POWER_TELEPORT;
-                break;
-            case powers.Grapple:
-                playerPower = Power.POWER_GRAPPLE;
-                break;
-            case powers.Magnet:
-                playerPower = Power.POWER_MAGNET;
-                break;
-        }*/
+       
 
     }
 
@@ -221,7 +205,7 @@ public class PlayerManager : MonoBehaviour
             rb.angularDrag = 0f;
         }
 
-       
+        //Debug.Log(playerState.ToString());
     }
 
     private void FixedUpdate()
@@ -231,15 +215,6 @@ public class PlayerManager : MonoBehaviour
             rb.velocity = rb.velocity.normalized * maxSpeed;
             Debug.Log("Reached Max Speed");
         }
-
-        /*if(rb.velocity.magnitude > 30f)
-        {
-            GetComponent<SpriteRenderer>().color = Color.red;
-        }
-        else
-        {
-            GetComponent<SpriteRenderer>().color = Color.white;
-        }*/
 
         if(playerState == States.STATE_HOOKED)
         {
@@ -253,10 +228,11 @@ public class PlayerManager : MonoBehaviour
                 CheckIfFlipped();
             }
         }
+
         else
         {
 
-            if (IsState(States.STATE_NORMAL) && rb.velocity.y < maxYVelocity)
+            if (IsPlayerState(States.STATE_NORMAL) && rb.velocity.y < maxYVelocity)
             {
                 rb.velocity = new Vector2(rb.velocity.x, maxYVelocity);
                // Debug.Log("limited falling velocity");
@@ -278,6 +254,7 @@ public class PlayerManager : MonoBehaviour
                 SetRotationMinMax();
             }
         }
+
     }
 
     private void HookedVelocity()
@@ -325,8 +302,9 @@ public class PlayerManager : MonoBehaviour
         if (other.CompareTag("Enemy") || other.CompareTag("Wall"))
         {
             // other.gameObject.SetActive(false);
-            if(playerState != States.STATE_ON_FIRE)
-                GM.RemoveLife();
+            //if(playerState != States.STATE_ON_FIRE)
+
+            GM.RemoveLife();
 
         }
     }
@@ -344,19 +322,23 @@ public class PlayerManager : MonoBehaviour
             //EM.GenerateText("Bounce 500", transform.position);
             EM.CreateEnemyEffects(transform.position);
             GM.AddCombo(50);
-            ResetAirJump();
+            //ResetAirJump();
         }
     }
 
-
-    public void DoHability()
+    public void DoAirPower()
     {
-        throwHook.DoHability();
+        throwHook.DoAirPower();
+    }
+
+    public void GetNewAirPower()
+    {
+        throwHook.GetNewAirPower();
     }
 
     public void ResetAirJump()
     {
-        throwHook.ResetAirPower();
+        //throwHook.ResetAirPower();
        /*else if(currentAirJumps == 1)
         {
             GM.AirBoostImage(true, true);
@@ -390,8 +372,6 @@ public class PlayerManager : MonoBehaviour
         rb.velocity = velocityVector;
         //rb.velocity = new Vector2(rb.velocity.x, Mathf.Sqrt(-2.0f * Physics2D.gravity.y * jumpHeight));
     }
-
-    
 
     public void JumpUpwards(float amount)
     {
@@ -459,15 +439,26 @@ public class PlayerManager : MonoBehaviour
         rb.velocity = velocityVector;
     }
 
-    public void SetNewHook(GameObject hook)
-    {
-        SetNewPlayerState(States.STATE_HOOKED);
-        currentHook = hook;
-    }
+    #region PlayerState
 
-    public void SetNewPlayerState(int state)
+    public void SetPlayerState(int state)
     {
         playerState = state;
+    }
+
+    public bool IsPlayerState(int state)
+    {
+        return playerState == state;
+    }
+
+    #endregion
+
+    #region Hooked
+
+    public void SetNewHook(GameObject hook)
+    {
+        SetPlayerState(States.STATE_HOOKED);
+        currentHook = hook;
     }
 
     private void AddTargetHookToCamera(GameObject hookTemp)
@@ -502,7 +493,7 @@ public class PlayerManager : MonoBehaviour
 
     public void RemoveHook()
     {
-        SetNewPlayerState(States.STATE_NORMAL);
+        //SetPlayerState(States.STATE_NORMAL);
         RemoveLineTarget();
         currentHook = null;
     }
@@ -511,6 +502,10 @@ public class PlayerManager : MonoBehaviour
     {
         return currentHook;
     }
+
+    #endregion
+
+    #region grabbable
 
     public GameObject GetCurrentGrabbableObject()
     {
@@ -617,40 +612,35 @@ public class PlayerManager : MonoBehaviour
         }
     }
 
-    public GameObject GetPlayer()
-    {
-        return gameObject;
-    }
+    #endregion
+    
+    #region verifications
 
     public bool CanCollectCoins()
     {
-        return playerState == States.STATE_FLYING || playerState == States.STATE_ON_FIRE ||playerState == States.STATE_HOOKED || playerState == States.STATE_NORMAL || playerState == States.STATE_ROCKET;
+        return playerState == States.STATE_HOOKED || playerState == States.STATE_NORMAL;
     }
 
     public bool CanCollectObjects()
     {
-        return playerState == States.STATE_ON_FIRE || playerState == States.STATE_HOOKED || playerState == States.STATE_NORMAL;
+        return playerState == States.STATE_HOOKED || playerState == States.STATE_NORMAL;
     }
 
     public bool CanHook()
     {
-        return playerState == States.STATE_NORMAL || playerState == States.STATE_ON_FIRE;
+        return playerState == States.STATE_NORMAL || playerState == States.STATE_SPRING;
     }
 
     public bool CanDie()
     {
-        return playerState != States.STATE_ROCKET || playerState != States.STATE_FLYING; 
+        return true; 
     }
 
-    public bool IsState(int state)
+    public bool CanAirPower()
     {
-        return playerState == state;
+        return playerState == States.STATE_NORMAL;
     }
-
-    /*public bool isPower(int power)
-    {
-        return powerss.Equals(power);
-    }*/
+    #endregion
 
     void SetRotationMinMax()
     {
@@ -678,5 +668,28 @@ public class PlayerManager : MonoBehaviour
         yield return new WaitForSeconds(waitTime);
         SetColor(Color.white);
     }*/
+
+    /*public bool isPower(int power)
+    {
+        return powerss.Equals(power);
+    }*/
+
+    /*switch (powerss) {
+           case powers.Hook:
+               playerPower = Power.POWER_ROPE;
+               break;
+           case powers.Spring:
+               playerPower = Power.POWER_SPRING;
+               break;
+           case powers.Teleport:
+               playerPower = Power.POWER_TELEPORT;
+               break;
+           case powers.Grapple:
+               playerPower = Power.POWER_GRAPPLE;
+               break;
+           case powers.Magnet:
+               playerPower = Power.POWER_MAGNET;
+               break;
+       }*/
 }
 

@@ -69,7 +69,7 @@ public class SpringScript : MonoBehaviour
     {
         spring.enabled = true;
         spring.connectedBody = playerRb;
-        PM.SetNewPlayerState(States.STATE_SPRING);
+        PM.SetPlayerState(States.STATE_SPRING);
         isDone = true;
         isAttachedToPlayer = true;
     }
@@ -122,7 +122,7 @@ public class SpringScript : MonoBehaviour
 
         isAttachedToPlayer = false;
         isDone = true;
-        PM.SetNewPlayerState(States.STATE_NORMAL);
+        //PM.SetPlayerState(States.STATE_NORMAL);
         if (!retractSpring)
             AddNewEmptyRb();
     }

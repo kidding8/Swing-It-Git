@@ -20,7 +20,7 @@ public class FlyingPlane : MonoBehaviour
         EM = EffectsManager.instance;
         PM = PlayerManager.instance;
         joint = GetComponent<HingeJoint2D>();
-        player = PM.GetPlayer();
+        player = AuxManager.instance.GetPlayer();
         playerRb = player.GetComponent<Rigidbody2D>();
         rb = GetComponent<Rigidbody2D>();
         rb.isKinematic = true;
@@ -30,7 +30,7 @@ public class FlyingPlane : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if (PM.playerState == States.STATE_FLYING)
+        /*if (PM.playerState == States.STATE_FLYING)
         {
             //
            
@@ -49,8 +49,8 @@ public class FlyingPlane : MonoBehaviour
                 /*Vector2 velocity = rb.velocity;
                 velocity.y += Physics2D.gravity.y * 70 * Time.deltaTime;
                 rb.velocity = velocity;*/
-            }
-        }
+          //  }
+        //}
     }
 
     void FixedUpdate()
@@ -63,7 +63,7 @@ public class FlyingPlane : MonoBehaviour
     {
         //isAttached = true;
         rb.isKinematic = false;
-        PM.SetNewPlayerState(States.STATE_FLYING);
+        //PM.SetPlayerState(States.STATE_FLYING);
         joint.enabled = true;
         joint.anchor = Vector2.zero;
         joint.connectedBody = playerRb;

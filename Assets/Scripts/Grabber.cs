@@ -21,7 +21,7 @@ public class Grabber : MonoBehaviour
         EM = EffectsManager.instance;
         PM = PlayerManager.instance;
         aux = AuxManager.instance;
-        player = PM.GetPlayer();
+        player = aux.GetPlayer();
         attachedRopes = new List<RopeScript>();
         sRenderer = GetComponent<SpriteRenderer>();
         sRenderer.color = aux.foreGroundColor;

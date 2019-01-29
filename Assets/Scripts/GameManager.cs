@@ -18,14 +18,13 @@ public class GameManager : MonoBehaviour
     [Space(10)]
     [Header("Public Variables")]
     public TextMeshProUGUI textScore;
-    public Image airBoost1Image;
-    public Image airBoost2Image;
     //public Slider pointsSlider;
 
     [Space(10)]
     [Header("Public Objects")]
     public ObjectPooler heartPool;
     public GameObject heartPanel;
+    
     public int maxLifes = 3;
     private GameObject player;
 
@@ -78,6 +77,9 @@ public class GameManager : MonoBehaviour
 
     private int distance = 0;
 
+    private List<GameObject> heartList;
+
+
     private void Start()
     {
         SHM = SpawnHookManager.instance;
@@ -87,6 +89,7 @@ public class GameManager : MonoBehaviour
         transform.position = player.transform.position;
         ShowMainMenu();
         //bestScoreMainMenuText.text = "Best Score: " + GetBestScore();
+        heartList = new List<GameObject>();
         
     }
 
@@ -187,36 +190,30 @@ public class GameManager : MonoBehaviour
     {
         GameObject life = heartPool.GetPooledObject();
         life.SetActive(true);
-        life.transform.SetParent(heartPanel.transform);
+        life.transform.SetParent(heartPanel.transform, false);
+        heartList.Add(life);
     }
 
     private void RemoveHeartImage()
     {
         //int total = heartPanel.transform.childCount;
-        List<Transform> list = new List<Transform>();
-        for (int i = 0; i < heartPanel.transform.childCount; i++)
-        {
-            Transform t = heartPanel.transform.GetChild(i);
-            if (t.gameObject.activeInHierarchy)
-            {
-                list.Add(t);
-            }
-        }
-        GameObject obj = list[list.Count - 1].gameObject;
+        GameObject obj = heartList[heartList.Count - 1];
         obj.gameObject.SetActive(false);
+        heartList.Remove(obj);
     }
+
+
 
     public void AddLife()
     {
-
         if(lifes+1 <= maxLifes)
         {
-            
             lifes++;
             Debug.Log("Added life: " + lifes);
             AddHeartImage();
         }
     }
+
 
     public void RemoveLife()
     {
@@ -241,23 +238,10 @@ public class GameManager : MonoBehaviour
         }
     }
 
-   
-    public void AirBoostImage(bool isFirst, bool isActive)
-    {
-        if (isFirst)
-        {
-            airBoost1Image.color = new Color(1f, 1f, 1f, isActive? 1f : .5f);
-        }
-        else
-        {
-            airBoost2Image.color = new Color(1f, 1f, 1f, isActive ? 1f : .5f);
-        }
-    }
-
     public void StartNormalGame()
     {
         gameState = PLAYING;
-        PM.SetNewPlayerState(States.STATE_NORMAL);
+        PM.SetPlayerState(States.STATE_NORMAL);
         Time.timeScale = 1f;
         SHM.StartGame();
         ShowPlayer();
@@ -269,10 +253,11 @@ public class GameManager : MonoBehaviour
     public void StartRopeGame()
     {
         StartNormalGame();
-        PM.playerPower = Power.POWER_ROPE;
-        PM.playerHability = Hability.HABILITY_JUMP;
+       /* PM.playerPower = Power.POWER_ROPE;
+        PM.playerHability = Hability.HABILITY_JUMP;*/
     }
-    public void StartSpringGame()
+
+    /*public void StartSpringGame()
     {
         StartNormalGame();
         PM.playerPower = Power.POWER_SPRING;
@@ -298,7 +283,7 @@ public class GameManager : MonoBehaviour
         StartNormalGame();
         PM.playerPower = Power.POWER_ROPE;
         PM.playerHability = Hability.HABILITY_DASH;
-    }
+    }*/
 
     private void HidePlayer()
     {

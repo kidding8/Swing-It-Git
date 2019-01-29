@@ -8,27 +8,28 @@ public class States
     public const int STATE_HIDDEN = 0;
     public const int STATE_NORMAL = 1;
     public const int STATE_HOOKED = 2;
-    public const int STATE_ROCKET = 3;
-    public const int STATE_FLYING = 4;
+    public const int STATE_DASHING = 3;
+    public const int STATE_SPRING = 4;
     public const int STATE_CLOSE_TO_GROUND = 5;
     public const int STATE_GROUNDED = 6;
-    public const int STATE_SPRING = 7;
-    public const int STATE_GRAPPLE = 8;
-    public const int STATE_TELEPORT = 9;
-    public const int STATE_MAGNET = 10;
-    public const int STATE_ON_FIRE = 11;
+    public const int STATE_GRAPPLE = 7;
+    public const int STATE_TELEPORT = 8;
+    //public const int STATE_MAGNET = 10;
+   //public const int STATE_ON_FIRE = 11;
 }
 
 public class Power
 {
-    public const int POWER_ROPE = 0;
-    public const int POWER_SPRING = 1;
-    public const int POWER_TELEPORT = 2;
-    public const int POWER_GRAPPLE = 3;
-    public const int POWER_MAGNET = 4;
+    public const int POWER_NONE = 0;
+    public const int POWER_JUMP = 1;
+    public const int POWER_DASH = 2;
+    public const int POWER_TELEPORT = 3;
+    public const int POWER_SPRING = 4;
+    public const int POWER_EXPLOSION = 5;
+    public const int POWER_SHOOTING = 6;
 }
 
-public class Hability
+/*public class Hability
 {
     //Jump, Dash, Teleport, Tornado, Shooting, Barrel, Decoy
     public const int HABILITY_JUMP = 0;
@@ -36,7 +37,7 @@ public class Hability
     public const int HABILITY_TELEPORT = 2;
     public const int HABILITY_TORNADO = 3;
     public const int HABILITY_SHOOTING = 4;
-}
+}*/
 
 public class AuxManager : MonoBehaviour {
 
@@ -66,6 +67,7 @@ public class AuxManager : MonoBehaviour {
     public GameObject grabObjectIndicator;
     public GameObject wall;
     public LayerMask layerMaskOtherObjectsAround;
+    public Canvas inGameCanvas;
     public float radiusOtherObjectsAround = 5f;
 
     private bool canSpawn = false;
@@ -252,5 +254,17 @@ public class AuxManager : MonoBehaviour {
     {
         // mass in kg, velocity in meters per second, result is joules
         return 0.5f * rb.mass * Mathf.Pow(rb.velocity.magnitude, 2);
+    }
+
+    public Vector3 WorldToUISpace(Canvas parentCanvas, Vector3 worldPos)
+    {
+        //Convert the world for screen point so that it can be used with ScreenPointToLocalPointInRectangle function
+        Vector3 screenPos = Camera.main.WorldToScreenPoint(worldPos);
+        Vector2 movePos;
+
+        //Convert the screenpoint to ui rectangle local point
+        RectTransformUtility.ScreenPointToLocalPointInRectangle(parentCanvas.transform as RectTransform, screenPos, parentCanvas.worldCamera, out movePos);
+        //Convert the local point to world point
+        return parentCanvas.transform.TransformPoint(movePos);
     }
 }

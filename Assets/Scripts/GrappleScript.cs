@@ -79,7 +79,7 @@ public class GrappleScript : MonoBehaviour
         disJoint.maxDistanceOnly = false;
         //disJoint.distance = Vector2.Distance(transform.position, destiny);
         disJoint.connectedBody = destinyGrabber.GetComponent<Rigidbody2D>();
-        PM.SetNewPlayerState(States.STATE_GRAPPLE);
+        PM.SetPlayerState(States.STATE_GRAPPLE);
         isDone = true;
         
     }
@@ -127,7 +127,7 @@ public class GrappleScript : MonoBehaviour
 
     public void DestroyGrapple()
     {
-        PM.SetNewPlayerState(States.STATE_NORMAL);
+        PM.SetPlayerState(States.STATE_NORMAL);
         isAttachedToPlayer = false;
         disJoint.enabled = false;
         //renderDisJoint = false;

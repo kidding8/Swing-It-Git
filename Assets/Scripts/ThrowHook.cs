@@ -1,24 +1,83 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
+
+[System.Serializable]
+public struct AirPower
+{
+    public int id;
+    public int maxPowerUses;
+    public Sprite powerSprite;
+}
 
 public class ThrowHook : MonoBehaviour
 {
-
+    
     private GameManager GM;
     private EffectsManager EM;
     private PlayerManager PM;
+    private AuxManager aux;
+    private Canvas canvas;
+
+    [Header("Powers")]
+    [Space(4)]
+    public AirPower[] airPowers;
+    private AirPower currentAirPower;
+    public GameObject airPowerPanel;
+    public ObjectPooler airPowerImagePool;
+    public Slider airPowerTimerSlider;
+    public float powerCooldown = 1f;
+    private float timerPower;
+    private int maxPowerAmmo;
+    private int currentPowerAmmo;
+
+
+    //private bool isUsingPower = false;
+
+    [Header("AirJump")]
+    [Space(3)]
+    public float airJumpForce;
+
+    [Header("Dashing")]
+    [Space(3)]
+    public int maxAirDash = 3;
+    public float timeToDash = 1f;
+    private float dashingTime = 0;
+    public float dashingSpeed = 10f;
+    private bool isDashing = false;
+    private bool stoppedDashing = true;
+
+    [Header("Teleport")]
+    [Space(3)]
+    //public int maxAirTeleport = 3;
+    public float distanceToTeleport = 30f;
+    private RaycastHit2D[] hits;
+    private Vector3 bestPosToTeleport;
+    private bool nearestPoint = true;
+    public float step = 0.5f;
+
+    [Header("Explosion")]
+    [Space(3)]
+    public int maxAirExplosion = 3;
+    public float distanceToExplode = 30f;
+    public float forceToApply = 50f;
+
+    [Header("Spring")]
+    [Space(4)]
+    public ObjectPooler springPool;
+    public float SpringDuration = 5f;
+    private float currentSpringDuration;
+
     [Header("Rope")]
     [Space(4)]
     public ObjectPooler ropePool;
     public float timeToNextRope = 0.4f;
     private float timerRope;
 
-    [Header("Spring")]
-    [Space(4)]
-    public ObjectPooler springPool;
-    public float timeToNextSpring = 0.9f;
-    private float timerSpring;
+
+
+    
 
     [Header("Teleporter")]
     [Space(4)]
@@ -33,7 +92,7 @@ public class ThrowHook : MonoBehaviour
     private float timerGrapple;
 
 
-    [Header("Grapple")]
+    [Header("Magnet")]
     [Space(4)]
     public ObjectPooler magnetPool;
     public float timeToNextMagnet = 0.5f;
@@ -45,25 +104,13 @@ public class ThrowHook : MonoBehaviour
     public float timeToNextJump = 1f;
     private float timerJump;
 
-    [Header("Dashing")]
-    [Space(3)]
-
-    public float timeToDash = 1f;
-    private float dashingTime = 0;
-    public float dashingSpeed = 10f;
-    private bool isDashing = false;
-    private bool stoppedDashing = true;
-
-    [Header("Jumps")]
-    [Space(3)]
-    public bool limitRopeJump = true;
-    public int maxRopeJumps = 2;
-    [HideInInspector]
-    public int currentAirJumps = 0;
+   
 
     [Header("Misc")]
     [Space(4)]
     public GameObject playerFire;
+    
+
 
     private GameObject currentHook;
     private GameObject currentTarget;
@@ -88,20 +135,25 @@ public class ThrowHook : MonoBehaviour
     private float tappingTimer;
     private bool canTap = false;
 
+    private List<GameObject> airPowerList;
+
     void Start()
     {
         GM = GameManager.instance;
+        aux = AuxManager.instance;
         EM = EffectsManager.instance;
         PM = PlayerManager.instance;
         rb = GetComponent<Rigidbody2D>();
         disJoint = GetComponent<DistanceJoint2D>();
         playerFire.SetActive(false);
-        currentAirJumps = maxRopeJumps;
+        canvas = aux.GetCanvas();
+        airPowerList = new List<GameObject>();
+        //currentAirPower = airPowers[0];
+        CreateNewAirPower(3);
     }
     private void Update()
     {
         timerRope += Time.deltaTime;
-        timerSpring += Time.deltaTime;
         timerTeleport += Time.deltaTime;
         timerGrapple += Time.deltaTime;
         timerJump += Time.deltaTime;
@@ -135,37 +187,48 @@ public class ThrowHook : MonoBehaviour
             UnhookHook();
         }
 
-        /*else if (Input.GetMouseButtonDown(1) && GM.isPlaying())
+        else if (Input.GetMouseButtonDown(1) && GM.isPlaying())
         {
-            PM.AirJump();
-        }*/
-
-        if (PM.IsState(States.STATE_MAGNET))
-        {
-            MoveMagnet(magnetTarget);
+            AirSpring();
         }
 
-        if (PM.IsState(States.STATE_ON_FIRE) && alreadySpinned && timerSpin > durationOfSpin && rb.velocity.y < 0)
+        /*if (PM.IsState(States.STATE_MAGNET))
+        {
+            MoveMagnet(magnetTarget);
+        }*/
+
+        /*if (PM.IsState(States.STATE_ON_FIRE) && alreadySpinned && timerSpin > durationOfSpin && rb.velocity.y < 0)
         {
             timerSpin = 0;
             alreadySpinned = false;
             playerFire.gameObject.SetActive(false);
             PM.SetNewPlayerState(States.STATE_NORMAL);
-        }
+        }*/
 
-        if (isDashing)
+        if (PM.IsPlayerState(States.STATE_DASHING))
         {
             dashingTime += Time.deltaTime;
-            stoppedDashing = false;
+            //stoppedDashing = false;
             rb.velocity = Vector2.right * dashingSpeed;
+
+            if (dashingTime >= timeToDash)
+            {
+                //isDashing = false;
+                PM.SetPlayerState(States.STATE_NORMAL);
+                rb.velocity = Vector2.right * 20f;
+                dashingTime = 0;
+                //stoppedDashing = true;
+            }
+
         }
 
-        if (dashingTime >= timeToDash && !stoppedDashing)
+        /*if (dashingTime >= timeToDash && PM.IsPlayerState(States.STATE_DASHING))
         {
-            isDashing = false;
+            //isDashing = false;
+            PM.SetPlayerState(States.STATE_NORMAL);
             rb.velocity = Vector2.right * 20f;
-            stoppedDashing = true;
-        }
+            //stoppedDashing = true;
+        }*/
 
         /*if (rb.velocity.magnitude < previousVelocity && alreadySpinned)
         {
@@ -179,47 +242,12 @@ public class ThrowHook : MonoBehaviour
     {
         canTap = true;
         tappingTimer = 0;
-        switch (PM.playerPower)
+       
+        if (timerRope > timeToNextRope)
         {
-            case Power.POWER_ROPE:
-                if (timerRope > timeToNextRope)
-                {
-                    CreateNewHook();
-                }
-
-                break;
-
-            case Power.POWER_SPRING:
-                if (timerSpring > timeToNextSpring)
-                {
-                    CreateNewHook();
-                }
-                break;
-
-            case Power.POWER_TELEPORT:
-                if (timerTeleport > timeToNextTeleport)
-                {
-                    CreateNewHook();
-                }
-                break;
-
-            case Power.POWER_GRAPPLE:
-                if (timerGrapple > timeToNextGrapple)
-                {
-                    CreateNewHook();
-                }
-                break;
-            case Power.POWER_MAGNET:
-                if (timerMagnet > timeToNextMagnet)
-                {
-                    CreateNewHook();
-                }
-                break;
-
-            default:
-                Debug.Log("No power selected to create");
-                break;
+          CreateNewHook();
         }
+
     }
 
     public void UnhookHook()
@@ -227,54 +255,56 @@ public class ThrowHook : MonoBehaviour
         rb.gravityScale = PM.gravityUnhooked;
         isPressingButton = false;
         currentHook = null;
+        
 
         if(canTap && tappingTimer <= tappingTimerOffset)
         {
-            DoHability();
+            DoAirPower();
             canTap = false;
         }
 
-        switch (PM.playerPower)
+        if (PM.IsPlayerState(States.STATE_SPRING))
         {
-            case Power.POWER_ROPE:
-                DestroyRope();
-                break;
-
-            case Power.POWER_SPRING:
-                DestroySpring();
-                break;
-
-            case Power.POWER_TELEPORT:
-                DestroyTeleporter();
-                break;
-
-            case Power.POWER_GRAPPLE:
-                DestroyGrapple();
-                break;
-            case Power.POWER_MAGNET:
-                PM.SetNewPlayerState(States.STATE_NORMAL);
-                magnetTarget = null;
-                break;
-            default:
-                Debug.Log("No power selected to destroy");
-                break;
+            DestroySpring();
         }
-
-        if (rb.velocity.y > 0 && !alreadySpinned)
+        else
+        {
+            PM.SetPlayerState(States.STATE_NORMAL);
+            DestroyRope();
+        }
+        /*if (rb.velocity.y > 0 && !alreadySpinned)
         {
             alreadySpinned = true;
             playerFire.gameObject.SetActive(true);
             PM.SetNewPlayerState(States.STATE_ON_FIRE);
             //PM.SetColor(Color.red);
             //StartCoroutine(PM.ChangeColor(2f));
-        }
+        }*/
     }
 
-    public void DoHability()
+    public void DoAirPower()
     {
-        if (currentAirJumps >= 2)
+        if (currentPowerAmmo >= currentAirPower.maxPowerUses || !PM.CanAirPower())
             return;
-        if (currentAirJumps == 0)
+
+        switch (currentAirPower.id)
+        {
+            case Power.POWER_JUMP:
+                AirJump();
+                break;
+            case Power.POWER_DASH:
+                AirDash();
+                break;
+            case Power.POWER_TELEPORT:
+                AirTeleport();
+                break;
+            case Power.POWER_SPRING:
+                AirSpring();
+                break;
+        }
+        currentPowerAmmo++;
+        RemoveLastAirPowerImage();
+        /*if (currentAirJumps == 0)
         {
             //AirJump();
             SelectPower();
@@ -288,64 +318,80 @@ public class ThrowHook : MonoBehaviour
             currentAirJumps++;
             EM.CreateAirJump(transform.position);
             GM.AirBoostImage(true, false);
+        }*/
+    }
+
+    private void CreateNewAirPower()
+    {
+        currentAirPower = GetNewAirPowerRandom();
+        currentPowerAmmo = 0;
+        
+        for (int i = 0; i < currentAirPower.maxPowerUses; i++)
+        {
+            AddAirPowerImage();
+        }
+
+    }
+
+    private void CreateNewAirPower(int power)
+    {
+        currentAirPower = airPowers[power];
+        currentPowerAmmo = 0;
+
+        for (int i = 0; i < currentAirPower.maxPowerUses; i++)
+        {
+            AddAirPowerImage();
         }
     }
 
-    private void SelectPower()
+    private AirPower GetNewAirPowerRandom()
     {
-        switch (PM.playerHability)
+        return airPowers[Random.Range(0, airPowers.Length)];
+    }
+
+    public void GetNewAirPower()
+    {
+        ResetAirPower();
+        CreateNewAirPower();
+    }
+
+    private void AddAirPowerImage()
+    {
+        GameObject ammo = airPowerImagePool.GetPooledObject();
+        ammo.SetActive(true);
+        ammo.transform.SetParent(airPowerPanel.transform, false);
+        ammo.GetComponent<Image>().sprite = currentAirPower.powerSprite;
+        airPowerList.Add(ammo);
+    }
+
+    private void RemoveLastAirPowerImage()
+    {
+        if(airPowerList.Count >= 1)
         {
-            case Hability.HABILITY_JUMP:
+            GameObject obj = airPowerList[airPowerList.Count - 1];
+            obj.gameObject.SetActive(false);
+            airPowerList.Remove(obj);
+        }
+        
+    }
+
+    private void SelectAirPower()
+    {
+        switch (currentAirPower.id)
+        {
+            case Power.POWER_JUMP:
                 AirJump();
                 break;
-            case Hability.HABILITY_DASH:
+            case Power.POWER_DASH:
                 AirDash();
                 break;
-            case Hability.HABILITY_TELEPORT:
-
-                break;
-            case Hability.HABILITY_TORNADO:
-
-                break;
-            case Hability.HABILITY_SHOOTING:
-
-                break;
-        }
-    }
-
-    private void CreateHookOnTarget(GameObject target)
-    {
-        switch (PM.playerPower)
-        {
-            case Power.POWER_ROPE:
-                
-                CreateRope(target);
-                break;
-
-            case Power.POWER_SPRING:
-                CreateSpring(target);
-                break;
-
             case Power.POWER_TELEPORT:
-                CreateTeleporter(target);
+                AirTeleport();
                 break;
-
-            case Power.POWER_GRAPPLE:
-                CreateGrapple(target);
+            case Power.POWER_EXPLOSION:
+                AirExplosion();
                 break;
-            case Power.POWER_MAGNET:
-                PM.SetNewPlayerState(States.STATE_MAGNET);
-                /*Vector3 vel = rb.velocity;
-                rb.velocity = vel /2;*/
-                magnetTarget = target;
-                //rb.velocity = Vector2
-                /*Vector3 dir = target.transform.position - transform.position;
-                dir.Normalize();
-                rb.AddForce(dir * 50f, ForceMode2D.Impulse);*/
-                break;
-            default:
-                Debug.Log("No power selected to create on target");
-                break;
+            
         }
     }
 
@@ -359,23 +405,41 @@ public class ThrowHook : MonoBehaviour
         alreadySpinned = false;
         if (currentTarget != null)
         {
-            CreateHookOnTarget(currentTarget);
+            if (PM.IsPlayerState(States.STATE_SPRING))
+            {
+                CreateSpring(currentTarget);
+            }
+            else
+            {
+                CreateRope(currentTarget);
+            }
+            
+
+
             EM.CreateCameraShake(0.05f);
         }
-        else
+        /*else
         {
-            DoHability();
-        }
+            DoAirPower();
+        }*/
+        /*PM.SetNewPlayerState(States.STATE_MAGNET);
+          magnetTarget = target;*/
     }
 
     public void ResetAirPower()
     {
-        currentAirJumps = 0;
+        foreach(GameObject obj in airPowerList)
+        {
+            obj.SetActive(false);
+        }
+        airPowerList.Clear();
+        currentPowerAmmo = 0;
+        /*currentAirJumps = 0;
         if (currentAirJumps == 0)
         {
             GM.AirBoostImage(true, true);
             GM.AirBoostImage(false, true);
-        }
+        }*/
     }
 
     public void CreateRope(GameObject target)
@@ -395,74 +459,6 @@ public class ThrowHook : MonoBehaviour
         EM.CreateCameraShake(0.05f);
         rb.AddForce(new Vector3(0.3f, 1f, 0) * PM.forceRopeLeave, ForceMode2D.Force);
         rb.AddTorque(PM.torqueAddedRopeLeave);
-    }
-
-    private void CreateSpring(GameObject target)
-    {
-        currentHook = springPool.GetPooledObject();
-        currentHook.transform.position = transform.position;
-        currentHook.transform.rotation = Quaternion.identity;
-        currentHook.SetActive(true);
-        springScript = currentHook.GetComponent<SpringScript>();
-        springScript.CreateSpring(target);
-    }
-
-    private void DestroySpring()
-    {
-        isPressingButton = false;
-        if (springScript != null)
-            springScript.DestroySpring();
-        currentHook = null;
-        EM.CreateCameraShake(0.05f);
-    }
-
-    private void CreateTeleporter(GameObject target)
-    {
-        currentHook = teleporterPool.GetPooledObject();
-        currentHook.transform.position = transform.position;
-        currentHook.transform.rotation = Quaternion.identity;
-        currentHook.SetActive(true);
-        teleporterScript = currentHook.GetComponent<TeleporterScript>();
-        teleporterScript.CreateTeleporterDestiny(target);
-    }
-
-    private void DestroyTeleporter()
-    {
-        if (teleporterScript != null)
-            teleporterScript.DestroyTeleporter();
-    }
-
-    private void CreateGrapple(GameObject target)
-    {
-        if(grappleScript == null)
-        {
-            currentHook = grapplePool.GetPooledObject();
-            currentHook.transform.position = transform.position;
-            currentHook.transform.rotation = Quaternion.identity;
-            currentHook.SetActive(true);
-            grappleScript = currentHook.GetComponent<GrappleScript>();
-        }
-        
-        grappleScript.CreateGrapple(target, disJoint);
-    }
-
-    private void DestroyGrapple()
-    {
-        if (grappleScript != null)
-            grappleScript.DestroyGrapple();
-    }
-
-    private void MoveMagnet(GameObject target)
-    {
-        if(target != null)
-        {
-            Vector3 dir = target.transform.position - transform.position;
-            //dir.Normalize();
-            
-            rb.AddForce(dir * 5f);
-            //Debug.DrawRay(transform.position, dir * 20f);
-        }
-        
     }
 
     public void AirJump()
@@ -488,8 +484,102 @@ public class ThrowHook : MonoBehaviour
 
     public void AirDash()
     {
-        isDashing = true;
+        PM.SetPlayerState(States.STATE_DASHING);
+        //isDashing = true;
         dashingTime = 0;
+
+    }
+
+    public void AirSpring()
+    {
+        DestroyRope();
+        PM.SetPlayerState(States.STATE_SPRING);
+        StartCoroutine(AirSpringTimer(SpringDuration));
+    }
+
+    public void AirTeleport()
+    {
+        if(!Physics2D.OverlapPoint(transform.position+Vector3.right * distanceToTeleport))
+        {
+            transform.position += Vector3.right * distanceToTeleport;
+        }
+        else if(!nearestPoint)
+        {
+            hits = Physics2D.RaycastAll(transform.position, Vector3.right * distanceToTeleport);
+            bestPosToTeleport = hits[0].point;
+            foreach(RaycastHit2D h in hits)
+            {
+                if (h.distance < Vector2.Distance(bestPosToTeleport, transform.position) &&
+                    !Physics2D.OverlapPoint(h.point + h.normal * 0.3f))
+                {
+                    bestPosToTeleport = h.point;
+                }
+            }
+
+            transform.position = bestPosToTeleport;
+
+        }
+        else
+        {
+            Vector2 aux = bestPosToTeleport;
+            while (Physics2D.OverlapPoint(aux))
+            {
+                aux += step * Vector2.right;
+            }
+            if(Vector2.Distance(aux, transform.position + Vector3.right * distanceToTeleport) < Vector2.Distance(bestPosToTeleport, transform.position))
+            {
+                bestPosToTeleport = aux;
+            }
+
+            transform.position = bestPosToTeleport;
+        }
+
+        rb.velocity = Vector2.zero;
+    }
+
+    public void AirExplosion()
+    {
+
+    }
+
+
+    private void CreateSpring(GameObject target)
+    {
+        currentHook = springPool.GetPooledObject();
+        currentHook.transform.position = transform.position;
+        currentHook.transform.rotation = Quaternion.identity;
+        currentHook.SetActive(true);
+        springScript = currentHook.GetComponent<SpringScript>();
+        springScript.CreateSpring(target);
+    }
+
+    private void DestroySpring()
+    {
+        isPressingButton = false;
+        if (springScript != null)
+            springScript.DestroySpring();
+        currentHook = null;
+        EM.CreateCameraShake(0.05f);
+    }
+
+    IEnumerator AirSpringTimer(float seconds)
+    {
+        airPowerTimerSlider.gameObject.SetActive(true);
+        float animationTime = 0f;
+        while (animationTime < seconds)
+        {
+            Vector3 topOfPlayer = new Vector3(transform.position.x, transform.position.y + 1f);
+            airPowerTimerSlider.gameObject.transform.position = aux.WorldToUISpace(aux.inGameCanvas, topOfPlayer);
+            animationTime += Time.deltaTime;
+            float lerpValue = animationTime / seconds;
+            airPowerTimerSlider.value = Mathf.Lerp(100f, 0f, lerpValue);
+            yield return null;
+        }
+        airPowerTimerSlider.gameObject.SetActive(false);
+        PM.SetPlayerState(States.STATE_NORMAL);
+        DestroySpring();
+        //comboCount = 0;
+        //DeathMenu();
 
     }
 
@@ -565,6 +655,57 @@ public class ThrowHook : MonoBehaviour
                 Debug.Log("No power selected to create on target");
                 break;
         }
+    }*/
+
+    /*
+
+    private void CreateTeleporter(GameObject target)
+    {
+        currentHook = teleporterPool.GetPooledObject();
+        currentHook.transform.position = transform.position;
+        currentHook.transform.rotation = Quaternion.identity;
+        currentHook.SetActive(true);
+        teleporterScript = currentHook.GetComponent<TeleporterScript>();
+        teleporterScript.CreateTeleporterDestiny(target);
+    }
+
+    private void DestroyTeleporter()
+    {
+        if (teleporterScript != null)
+            teleporterScript.DestroyTeleporter();
+    }
+
+    private void CreateGrapple(GameObject target)
+    {
+        if(grappleScript == null)
+        {
+            currentHook = grapplePool.GetPooledObject();
+            currentHook.transform.position = transform.position;
+            currentHook.transform.rotation = Quaternion.identity;
+            currentHook.SetActive(true);
+            grappleScript = currentHook.GetComponent<GrappleScript>();
+        }
+        
+        grappleScript.CreateGrapple(target, disJoint);
+    }
+
+    private void DestroyGrapple()
+    {
+        if (grappleScript != null)
+            grappleScript.DestroyGrapple();
+    }
+
+    private void MoveMagnet(GameObject target)
+    {
+        if(target != null)
+        {
+            Vector3 dir = target.transform.position - transform.position;
+            //dir.Normalize();
+            
+            rb.AddForce(dir * 5f);
+            //Debug.DrawRay(transform.position, dir * 20f);
+        }
+        
     }*/
 
     #endregion
