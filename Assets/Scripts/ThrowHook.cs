@@ -189,7 +189,7 @@ public class ThrowHook : MonoBehaviour
 
         else if (Input.GetMouseButtonDown(1) && GM.isPlaying())
         {
-            AirSpring();
+            AirDash();
         }
 
         /*if (PM.IsState(States.STATE_MAGNET))
@@ -235,7 +235,16 @@ public class ThrowHook : MonoBehaviour
             alreadySpinned = false;
             PM.SetColor(Color.white);
         }*/
-        playerFire.transform.position = transform.position;
+        if(PM.IsPlayerState(States.STATE_GRAPPLE) || PM.IsPlayerState(States.STATE_DASHING) || PM.playerHooks == Hooks.HOOK_SPRING)
+        {
+            playerFire.transform.position = transform.position;
+            playerFire.gameObject.SetActive(true);
+        }
+        else
+        {
+            playerFire.gameObject.SetActive(false);
+        }
+        
     }
 
     public void Hook()
@@ -255,21 +264,20 @@ public class ThrowHook : MonoBehaviour
         rb.gravityScale = PM.gravityUnhooked;
         isPressingButton = false;
         currentHook = null;
-        
+        PM.SetPlayerState(States.STATE_NORMAL);
 
-        if(canTap && tappingTimer <= tappingTimerOffset)
+        if (canTap && tappingTimer <= tappingTimerOffset)
         {
             DoAirPower();
             canTap = false;
         }
 
-        if (PM.IsPlayerState(States.STATE_SPRING))
+        if (PM.playerHooks == Hooks.HOOK_SPRING)
         {
             DestroySpring();
         }
         else
         {
-            PM.SetPlayerState(States.STATE_NORMAL);
             DestroyRope();
         }
         /*if (rb.velocity.y > 0 && !alreadySpinned)
@@ -405,7 +413,7 @@ public class ThrowHook : MonoBehaviour
         alreadySpinned = false;
         if (currentTarget != null)
         {
-            if (PM.IsPlayerState(States.STATE_SPRING))
+            if (PM.playerHooks == Hooks.HOOK_SPRING)
             {
                 CreateSpring(currentTarget);
             }
@@ -493,7 +501,8 @@ public class ThrowHook : MonoBehaviour
     public void AirSpring()
     {
         DestroyRope();
-        PM.SetPlayerState(States.STATE_SPRING);
+        PM.playerHooks = Hooks.HOOK_SPRING;
+        //PM.SetPlayerState(States.STATE_SPRING);
         StartCoroutine(AirSpringTimer(SpringDuration));
     }
 
@@ -535,6 +544,7 @@ public class ThrowHook : MonoBehaviour
         }
 
         rb.velocity = Vector2.zero;
+         
     }
 
     public void AirExplosion()
@@ -542,6 +552,11 @@ public class ThrowHook : MonoBehaviour
 
     }
 
+    public void AirGrapple()
+    {
+        //PM.SetPlayerState(States.STATE_GRAPPLE);
+        CreateGrapple(PM.GetFarthestGrabbableWithoutRadius());
+    }
 
     private void CreateSpring(GameObject target)
     {
@@ -577,11 +592,32 @@ public class ThrowHook : MonoBehaviour
         }
         airPowerTimerSlider.gameObject.SetActive(false);
         PM.SetPlayerState(States.STATE_NORMAL);
+        PM.playerHooks = Hooks.HOOK_ROPE;
         DestroySpring();
         //comboCount = 0;
         //DeathMenu();
 
     }
+
+    private void CreateGrapple(GameObject target)
+    {
+        if (grappleScript == null)
+        {
+            currentHook = grapplePool.GetPooledObject();
+            currentHook.transform.position = transform.position;
+            currentHook.transform.rotation = Quaternion.identity;
+            currentHook.SetActive(true);
+            grappleScript = currentHook.GetComponent<GrappleScript>();
+        }
+
+        grappleScript.CreateGrapple(target, disJoint);
+    }
+
+   /* private void DestroyGrapple()
+    {
+        if (grappleScript != null)
+            grappleScript.DestroyGrapple();
+    }*/
 
     #region ExtraFunctions
     /*private void DestroyMagnet()
@@ -675,25 +711,7 @@ public class ThrowHook : MonoBehaviour
             teleporterScript.DestroyTeleporter();
     }
 
-    private void CreateGrapple(GameObject target)
-    {
-        if(grappleScript == null)
-        {
-            currentHook = grapplePool.GetPooledObject();
-            currentHook.transform.position = transform.position;
-            currentHook.transform.rotation = Quaternion.identity;
-            currentHook.SetActive(true);
-            grappleScript = currentHook.GetComponent<GrappleScript>();
-        }
-        
-        grappleScript.CreateGrapple(target, disJoint);
-    }
-
-    private void DestroyGrapple()
-    {
-        if (grappleScript != null)
-            grappleScript.DestroyGrapple();
-    }
+   
 
     private void MoveMagnet(GameObject target)
     {

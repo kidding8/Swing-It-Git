@@ -29,15 +29,12 @@ public class Power
     public const int POWER_SHOOTING = 6;
 }
 
-/*public class Hability
+public class Hooks
 {
     //Jump, Dash, Teleport, Tornado, Shooting, Barrel, Decoy
-    public const int HABILITY_JUMP = 0;
-    public const int HABILITY_DASH = 1;
-    public const int HABILITY_TELEPORT = 2;
-    public const int HABILITY_TORNADO = 3;
-    public const int HABILITY_SHOOTING = 4;
-}*/
+    public const int HOOK_ROPE = 0;
+    public const int HOOK_SPRING = 1;
+}
 
 public class AuxManager : MonoBehaviour {
 

@@ -39,7 +39,7 @@ public class GrappleScript : MonoBehaviour
     {
         if (isAttachedToPlayer && !isDone)
         {
-            transform.position = Vector2.MoveTowards(transform.position, destiny, PM.ropeSpeed);
+            transform.position = Vector2.MoveTowards(transform.position, destiny, 5f);
 
             if ((Vector2)transform.position == destiny)
             {
@@ -48,21 +48,30 @@ public class GrappleScript : MonoBehaviour
 
             }
         }
-        else if ((Vector2)transform.position != destiny && !alreadyJumped && !isDone)
+        /*else if ((Vector2)transform.position != destiny && !alreadyJumped && !isDone)
         {
             LeftHookBeforeDestination();
 
-        }else if(isAttachedToPlayer && isDone)
+        }*/
+        else if(isAttachedToPlayer && isDone)
         {
-            if(disJoint.distance >= 1f)
+            if(disJoint.distance >= 0.2f)
             {
                 disJoint.distance -= step * Time.deltaTime;
             }
+            else
+            {
+                DestroyGrapple();
+            }
 
-        }else if(Vector2.Distance(transform.position, player.transform.position) > 0.5f )
+           /* if(Vector2.Distance(destiny, player.transform.position) < 0.2f)
+            {
+                DestroyGrapple();
+            }*/
+        }/*else if(Vector2.Distance(transform.position, player.transform.position) > 0.5f )
         {
             transform.position = Vector2.MoveTowards(transform.position, player.transform.position, PM.ropeSpeed * 2);
-        }
+        }*/
         else
         {
             renderDisJoint = false;
@@ -122,6 +131,7 @@ public class GrappleScript : MonoBehaviour
             destiny = grabber.transform.position;
             renderDisJoint = true;
             disJoint = dist;
+            transform.position = player.transform.position;
         }
     }
 

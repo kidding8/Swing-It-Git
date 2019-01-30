@@ -217,9 +217,8 @@ public class GameManager : MonoBehaviour
 
     public void RemoveLife()
     {
-        if (PM.invincible)
+        if (PM.invincible || !PM.CanDie())
         {
-           
             return;
         }
 

@@ -16,6 +16,7 @@ public class PlayerManager : MonoBehaviour
     }*/
 
     public int playerState = States.STATE_HIDDEN;
+    public int playerHooks = Hooks.HOOK_ROPE;
     //public int playerPower = Power.POWER_JUMP;
     //public int playerHability = Hability.HABILITY_JUMP;
 
@@ -593,6 +594,26 @@ public class PlayerManager : MonoBehaviour
         return bestTarget;
     }
 
+    public GameObject GetFarthestGrabbableWithoutRadius()
+    {
+        GameObject farthest = null;
+        float distance = 0;
+        Vector3 currentPosition = transform.position;
+        foreach (GameObject obj in grabbableObjectsList)
+        {
+            Vector3 diff = obj.transform.position - currentPosition;
+            float curDistance = diff.sqrMagnitude;
+            float dirNum = AngleDir(Vector3.forward, diff, Vector3.up);
+            if (curDistance > distance && dirNum == 1)
+            {
+                farthest = obj;
+                distance = curDistance;
+            }
+        }
+        return farthest;
+
+    }
+
     float AngleDir(Vector3 fwd, Vector3 targetDir, Vector3 up)
     {
         Vector3 perp = Vector3.Cross(fwd, targetDir);
@@ -633,7 +654,7 @@ public class PlayerManager : MonoBehaviour
 
     public bool CanDie()
     {
-        return true; 
+        return !(playerState == States.STATE_DASHING || playerState == States.STATE_GRAPPLE || playerHooks == Hooks.HOOK_SPRING) ; 
     }
 
     public bool CanAirPower()
