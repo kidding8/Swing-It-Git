@@ -30,7 +30,7 @@ Transform:
   m_GameObject: {fileID: 86}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 1.46, y: 0.66, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalScale: {x: 1.3, y: 1.3, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
   m_RootOrder: 0
@@ -72,12 +72,12 @@ SpriteRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
-  m_Sprite: {fileID: 21300000, guid: d3aeb4401b555d6459288a8891ee5e7c, type: 3}
-  m_Color: {r: 0.17254902, g: 0.16078432, b: 0.14117648, a: 1}
+  m_Sprite: {fileID: 21300000, guid: e30f402edb0ced54fbbd809f17c7dcc8, type: 3}
+  m_Color: {r: 0.78823537, g: 0.18823531, b: 0.41176474, a: 1}
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
-  m_Size: {x: 0.72, y: 0.71}
+  m_Size: {x: 2.1411111, y: 2.15}
   m_AdaptiveModeThreshold: 0.5
   m_SpriteTileMode: 0
   m_WasSpriteAssigned: 1
@@ -126,6 +126,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   isTeleport: 0
+  randomSprite: 0
 --- !u!50 &242
 Rigidbody2D:
   serializedVersion: 4

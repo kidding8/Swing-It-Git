@@ -141,7 +141,7 @@ public class PlayerManager : MonoBehaviour
             if (hookTemp != null)
             {
                 grabObjectIndicator.SetActive(true);
-                grabObjectIndicator.GetComponent<SpriteRenderer>().color = Color.red;
+                //grabObjectIndicator.GetComponent<SpriteRenderer>().color = Color.red;
                 grabObjectIndicator.transform.position = hookTemp.transform.position;
                 //AddTargetHookToCamera(hookTemp);
             }

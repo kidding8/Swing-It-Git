@@ -29,8 +29,6 @@ public class SpawnHookManager : MonoBehaviour
     public ObjectPooler guidedMissiles;
     public float timeBetweenGuidedMissiles = 8f;
 
-    public bool shootMissiles = true;
-    public bool shootGuidedMissiles = true;
     public float timeBetweenMissiles = 2f;
 
     public Transform spawnPoint;

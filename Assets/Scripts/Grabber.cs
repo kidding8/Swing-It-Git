@@ -11,6 +11,7 @@ public class Grabber : MonoBehaviour
     private List<RopeScript> attachedRopes;
 
     public bool isTeleport = false;
+    public bool randomSprite = false;
     private GameObject player;
     
     private SpriteRenderer sRenderer;
@@ -25,7 +26,8 @@ public class Grabber : MonoBehaviour
         attachedRopes = new List<RopeScript>();
         sRenderer = GetComponent<SpriteRenderer>();
         sRenderer.color = aux.foreGroundColor;
-        sRenderer.sprite = aux.GetGrabberSprite();
+        if(randomSprite)
+         sRenderer.sprite = aux.GetGrabberSprite();
     }
 
     private void OnTriggerEnter2D(Collider2D other)
@@ -44,12 +46,13 @@ public class Grabber : MonoBehaviour
 
     public void OnDeath() 
     {
-        EM.SetCoinPickUpParticles(transform.position);
-        EM.CreateDisappearingCircle(transform.position);
+        //EM.SetCoinPickUpParticles(transform.position);
+        //EM.CreateDisappearingCircle(transform.position);
         
         gameObject.SetActive(false);
         // isAttached = false;
-        sRenderer.sprite = AuxManager.instance.GetGrabberSprite();
+        if (randomSprite)
+            sRenderer.sprite = AuxManager.instance.GetGrabberSprite();
         PM.RemoveGrabbableObject(gameObject);
         /*foreach(RopeScript rope in attachedRopes)
         {

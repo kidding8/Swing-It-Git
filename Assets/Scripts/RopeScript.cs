@@ -93,8 +93,9 @@ public class RopeScript : MonoBehaviour
         if (!particlesDone)
         {
             particlesDone = true;
-            EM.CreateHookGrabParticle(destiny);
+            //EM.CreateHookGrabParticle(destiny);
             //GM.AddCombo();
+            
         }
 
         while (Vector2.Distance(player.transform.position, lastNode.transform.position) > PM.ropeDistance)
@@ -103,8 +104,8 @@ public class RopeScript : MonoBehaviour
         }
 
         isDone = true;
-
-        camFollow.AddTarget(transform);
+        EM.CreateStarGrabber(transform.position);
+       // camFollow.AddTarget(transform);
 
         /*GameObject node = nodePool.GetPooledObject();
         node.transform.position = player.transform.position;
@@ -134,7 +135,7 @@ public class RopeScript : MonoBehaviour
 
         PM.SetNewHook(gameObject);
 
-        PM.ResetAirJump();
+        //PM.ResetAirJump();
         //PM.currentAirJumps = PM.maxRopeJumps;
         /*if (targetGrabber != null)
             targetGrabber.CheckIfTeleporter();*/

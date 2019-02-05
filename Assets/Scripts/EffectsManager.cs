@@ -10,7 +10,10 @@ public class EffectsManager : MonoBehaviour {
     public ObjectPooler CloseCallTxtPooler;
     public ObjectPooler DisappearingCirclePool;
     public ObjectPooler HookGrabParticles;
-    public ObjectPooler ExplosionPool;
+    public ObjectPooler simpleGeoParticlesPool;
+    public ObjectPooler simpleBrokenPiecesParticlesPool;
+    public ObjectPooler circleStrokePool;
+    public ObjectPooler starGrabberPool;
     private Camera cam;
     //public Canvas inGameCanvas;
     private float shakeDuration = 0f;
@@ -89,13 +92,33 @@ public class EffectsManager : MonoBehaviour {
         //main.startColor = color;
     }
 
-    public void CreateExplosion(Vector3 pos)
+    public void CreateSimpleGeoParticles(Vector3 pos)
     {
-        GameObject explosion = ExplosionPool.GetPooledObject();
+        GameObject explosion = simpleGeoParticlesPool.GetPooledObject();
         explosion.transform.position = pos;
         explosion.SetActive(true);
     }
 
+    public void CreateBrokenPiecesParticles(Vector3 pos)
+    {
+        GameObject explosion = simpleBrokenPiecesParticlesPool.GetPooledObject();
+        explosion.transform.position = pos;
+        explosion.SetActive(true);
+    }
+
+    public void CreateCircleStroke(Vector3 pos)
+    {
+        GameObject explosion = circleStrokePool.GetPooledObject();
+        explosion.transform.position = pos;
+        explosion.SetActive(true);
+    }
+
+    public void CreateStarGrabber(Vector3 pos)
+    {
+        GameObject explosion = starGrabberPool.GetPooledObject();
+        explosion.transform.position = pos;
+        explosion.SetActive(true);
+    }
     public void GenerateText(string text, Vector3 otherPos)
     {
         GameObject newTransform = CloseCallTxtPooler.GetPooledObject();
@@ -158,13 +181,16 @@ public class EffectsManager : MonoBehaviour {
     public void CreateEnemyEffects(Vector3 pos)
     {
         GenerateText("50", pos);
-        CreateExplosion(pos);
+        //CreateExplosion(pos);
+        CreateBrokenPiecesParticles(pos);
+        CreateCircleStroke(pos);
+        CreateSimpleGeoParticles(pos);
         CreateCameraShake(0.5f);
     }
 
     public void CreateAirJump(Vector3 pos)
     {
-        CreateExplosion(pos);
+        //CreateExplosion(pos);
         CreateCameraShake(0.5f);
     }
 }
