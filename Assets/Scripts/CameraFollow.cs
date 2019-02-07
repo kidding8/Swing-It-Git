@@ -67,14 +67,15 @@ public class CameraFollow : MonoBehaviour
     private void Move()
     {
         Vector3 centerPoint = GetCenterPoint();
-        newOffset.z = 0;
+        
         if (targets.Count <= 1)
         {
            newOffset.y = GetOffsetVertical();
         }
         newOffset.x = offset.x;
-        centerPoint.z = transform.position.z;
+        //centerPoint.z = transform.position.z;
         Vector3 newCenter = centerPoint + newOffset;
+        //newCenter.z = 0;
         Vector3 newPos;
         if(targets.Count <= 1)
         {
@@ -85,10 +86,11 @@ public class CameraFollow : MonoBehaviour
             newPos = Vector3.SmoothDamp(transform.position, newCenter, ref refVelocity, dampTime);
         }
         
-
+        //newPos.z = transform.position.z;
         float maxY = limitCameraTop - cam.orthographicSize;
         float minY = limitCameraBottom + cam.orthographicSize;
-        transform.position = new Vector3(newPos.x, Mathf.Clamp(newPos.y, -minY, maxY), newPos.z);
+        transform.position = new Vector3(newPos.x, Mathf.Clamp(newPos.y, -minY, maxY), transform.position.z);
+        transform.position = new Vector3(transform.position.x, transform.position.y, -20);
     }
 
     private float GetGreatestDistance()

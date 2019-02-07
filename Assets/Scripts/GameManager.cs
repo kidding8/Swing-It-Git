@@ -217,11 +217,10 @@ public class GameManager : MonoBehaviour
 
     public void RemoveLife()
     {
-        if (PM.invincible || !PM.CanDie())
+        if (invincible || !PM.CanDie())
         {
             return;
         }
-
         if (lifes <= 1)
         {
             Debug.Log("DEAD");

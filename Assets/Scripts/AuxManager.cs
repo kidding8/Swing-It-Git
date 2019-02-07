@@ -27,6 +27,7 @@ public class Power
     public const int POWER_SPRING = 4;
     public const int POWER_EXPLOSION = 5;
     public const int POWER_SHOOTING = 6;
+    public const int POWER_BALL = 7;
 }
 
 public class Hooks

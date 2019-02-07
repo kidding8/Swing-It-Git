@@ -12,6 +12,7 @@ TagManager:
   - Rocks
   - Grabber
   - Skull
+  - Destroyer
   layers:
   - Default
   - TransparentFX

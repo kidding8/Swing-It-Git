@@ -21,7 +21,6 @@ public class Missile : MonoBehaviour {
         camFollow = aux.GetCamera().GetComponent<CameraFollow>();
     }
 	
-
 	void FixedUpdate () {
 
         SlowRotateTowardsPlayer();
@@ -43,8 +42,6 @@ public class Missile : MonoBehaviour {
             RemoveCamTarget();
         }    
     }
-
-
 
     private void SlowRotateTowardsPlayer()
     {
@@ -79,14 +76,14 @@ public class Missile : MonoBehaviour {
         GameManager.instance.AddCombo(50);
         EM.CreateEnemyEffects(transform.position);
         gameObject.SetActive(false);
+        
     }
 
     private void OnTriggerEnter2D(Collider2D other)
     {
         
-        if(other.CompareTag("Player") || other.CompareTag("Enemy") || other.CompareTag("Grabber") || other.CompareTag("Rocks") || other.CompareTag("Skull"))
+        if(other.CompareTag("Player") || other.CompareTag("Enemy") || other.CompareTag("Grabber") || other.CompareTag("Rocks") || other.CompareTag("Skull") || other.CompareTag("Destroyer"))
         {
-
             OnDeath();
         }
     }

@@ -119,6 +119,7 @@ public class EffectsManager : MonoBehaviour {
         explosion.transform.position = pos;
         explosion.SetActive(true);
     }
+
     public void GenerateText(string text, Vector3 otherPos)
     {
         GameObject newTransform = CloseCallTxtPooler.GetPooledObject();

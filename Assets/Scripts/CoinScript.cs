@@ -18,8 +18,6 @@ public class CoinScript : MonoBehaviour {
         if (other.CompareTag("Player") && PM.CanCollectCoins())
         {
             GM.IncrementCoins(1);
-            EM.SetCoinPickUpParticles(transform.position);
-            EM.CreateDisappearingCircle(transform.position);
             EM.GenerateText("+1", transform.position);
             gameObject.SetActive(false);
         }else if (other.CompareTag("Wall"))

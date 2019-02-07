@@ -17,6 +17,7 @@ public class EnemyAi : MonoBehaviour
     private bool isWandering = true;
     private Transform playerPos;
     private SpriteRenderer sRenderer;
+    private float previousPosX;
     // Start is called before the first frame update
     void Start()
     {
@@ -29,6 +30,7 @@ public class EnemyAi : MonoBehaviour
         newPos = GetPosInsideCircle();
         timerToDirection = timeToChangeDirection;
         currentPos = transform.position;
+        previousPosX = transform.position.x;
         playerPos = aux.player.transform;
     }
 
@@ -56,6 +58,16 @@ public class EnemyAi : MonoBehaviour
             newPos = GetPosInsideCircle();
         }
 
+        transform.localScale = new Vector3(transform.position.x > previousPosX ? - 1 : 1, 1, 1);
+       /* if (transform.position.x > previousPosX)
+        {
+            transform.localScale = new Vector3(-1, 1, 1);
+        }
+        else
+        {
+            transform.localScale = Vector3.right;
+        }*/
+        previousPosX = transform.position.x;
         /*if (timerToDirection <= 0)
         {
             //ChangeDirection();
@@ -97,7 +109,7 @@ public class EnemyAi : MonoBehaviour
 
     private void OnTriggerEnter2D(Collider2D other)
     {
-        if (other.CompareTag("Enemy"))
+        if (other.CompareTag("Enemy") || other.CompareTag("Destroyer"))
         {
             OnDeath();
         }
@@ -118,6 +130,8 @@ public class EnemyAi : MonoBehaviour
             else
             {
                 EM.CreateEnemyEffects(transform.position);
+                OnDeath();
+                GM.RemoveLife();
                 /*if(PlayerManager.instance.playerState == States.STATE_ON_FIRE)
                 {
                     OnDeath();

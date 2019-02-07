@@ -24,10 +24,10 @@ public class SimpleEnemyScript : MonoBehaviour
     }
     private void OnTriggerEnter2D(Collider2D other)
     {
-        if (other.CompareTag("Wall"))
+        if (other.CompareTag("Wall") || other.CompareTag("Destroyer"))
         {
             onDeath();
-        }else if (other.CompareTag("Player") && isHook)
+        }else if (other.CompareTag("Player") && !PM.CanDie())
         {
             onDeath();
 
@@ -36,12 +36,12 @@ public class SimpleEnemyScript : MonoBehaviour
 
     private void onDeath()
     {
-        EM.SetCoinPickUpParticles(transform.position);
-        EM.CreateDisappearingCircle(transform.position);
-        gameObject.SetActive(false);
-        if(isHook)
+        if (isHook)
         {
             PM.RemoveGrabbableObject(gameObject);
         }
+        EM.CreateEnemyEffects(transform.position);
+        gameObject.SetActive(false);
+       
     }
 }

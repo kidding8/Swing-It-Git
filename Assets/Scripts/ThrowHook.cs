@@ -6,6 +6,7 @@ using UnityEngine.UI;
 [System.Serializable]
 public struct AirPower
 {
+    public string name;
     public int id;
     public int maxPowerUses;
     public Sprite powerSprite;
@@ -76,8 +77,10 @@ public class ThrowHook : MonoBehaviour
     private float timerRope;
 
 
+    [Header("BallDestroyer")]
+    [Space(4)]
+    public ObjectPooler ballDestroyerPool;
 
-    
 
     [Header("Teleporter")]
     [Space(4)]
@@ -149,7 +152,7 @@ public class ThrowHook : MonoBehaviour
         canvas = aux.GetCanvas();
         airPowerList = new List<GameObject>();
         //currentAirPower = airPowers[0];
-        CreateNewAirPower(3);
+        CreateNewAirPower(1);
     }
     private void Update()
     {
@@ -189,7 +192,7 @@ public class ThrowHook : MonoBehaviour
 
         else if (Input.GetMouseButtonDown(1) && GM.isPlaying())
         {
-            AirDash();
+            AirBallDestroyer();
         }
 
         /*if (PM.IsState(States.STATE_MAGNET))
@@ -506,6 +509,13 @@ public class ThrowHook : MonoBehaviour
         StartCoroutine(AirSpringTimer(SpringDuration));
     }
 
+    public void AirBallDestroyer()
+    {
+        GameObject ball = ballDestroyerPool.GetPooledObject();
+        ball.SetActive(true);
+        ball.transform.position = transform.position;
+    }
+
     public void AirTeleport()
     {
         if(!Physics2D.OverlapPoint(transform.position+Vector3.right * distanceToTeleport))
@@ -549,7 +559,7 @@ public class ThrowHook : MonoBehaviour
 
     public void AirExplosion()
     {
-
+        
     }
 
     public void AirGrapple()

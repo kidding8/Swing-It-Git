@@ -322,7 +322,7 @@ public class PlayerManager : MonoBehaviour
         {
             //EM.GenerateText("Bounce 500", transform.position);
             EM.CreateEnemyEffects(transform.position);
-            GM.AddCombo(50);
+            //GM.AddCombo(50);
             //ResetAirJump();
         }
     }
