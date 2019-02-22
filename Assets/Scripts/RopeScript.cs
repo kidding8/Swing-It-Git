@@ -29,12 +29,13 @@ public class RopeScript : MonoBehaviour
 
     private bool alreadyJumped = false;
     private bool particlesDone = false;
-    //private ThrowHook playerThrowHook;
+    private ThrowHook playerThrowHook;
     private CameraFollow camFollow;
     private Rigidbody2D rb;
     private bool useLine = false;
     private Transform firstNode = null;
-    //private Grabber targetGrabber = null;
+    private Grabber targetGrabber = null;
+
     void Start()
     {
         GM = GameManager.instance;
@@ -43,7 +44,7 @@ public class RopeScript : MonoBehaviour
         PM = PlayerManager.instance;
         cam = aux.GetCamera();
         player = aux.GetPlayer();
-        //playerThrowHook = player.GetComponent<ThrowHook>();
+        playerThrowHook = player.GetComponent<ThrowHook>();
         lastNode = gameObject;
         nodePool = aux.GetNodePool();
         nodeList = new List<GameObject>();
@@ -113,10 +114,15 @@ public class RopeScript : MonoBehaviour
         if (!particlesDone)
         {
             particlesDone = true;
-            EM.CreateStarGrabber(attachedHook.transform.position);
+            EM.CreateGrabberFriendlyEffect(attachedHook.transform.position);
         }
 
-
+        if(targetGrabber != null)
+        {
+            targetGrabber.TurnFriendly();
+        }
+        PM.ResetAirJump();
+        //aux.CreateSmallFriendlyCircle(attachedHook.transform.position);
         // camFollow.AddTarget(transform);
 
         /*GameObject node = nodePool.GetPooledObject();
@@ -164,7 +170,7 @@ public class RopeScript : MonoBehaviour
         isDone = false;
         useLine = false;
         particlesDone = false;
-        //targetGrabber = attachedHook.GetComponent<Grabber>();
+        targetGrabber = attachedHook.GetComponent<Grabber>();
         /*if (targetGrabber != null)
             targetGrabber.AddRope(this);*/
         destiny = target.transform.position;
@@ -218,6 +224,7 @@ public class RopeScript : MonoBehaviour
     {
         if (isAttachedToPlayer)
         {
+            PM.SetPlayerState(States.STATE_NORMAL);
             UnhookRope();
         }
     }
@@ -227,7 +234,10 @@ public class RopeScript : MonoBehaviour
 
         if (PM != null)
             PM.RemoveHook();
-       if (camFollow != null)
+        /* if (playerThrowHook != null)
+             playerThrowHook.UnhookHook();*/
+        
+        if (camFollow != null)
             camFollow.RemoveTarget(transform);
         if (lastNode != null)
             lastNode.GetComponent<HingeJoint2D>().enabled = false;

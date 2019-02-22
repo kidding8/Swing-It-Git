@@ -81,6 +81,9 @@ public class ThrowHook : MonoBehaviour
     [Space(4)]
     public ObjectPooler ballDestroyerPool;
 
+    [Header("BouncyBall")]
+    [Space(4)]
+    public ObjectPooler bouncyBallPool;
 
     [Header("Teleporter")]
     [Space(4)]
@@ -152,7 +155,7 @@ public class ThrowHook : MonoBehaviour
         canvas = aux.GetCanvas();
         airPowerList = new List<GameObject>();
         //currentAirPower = airPowers[0];
-        CreateNewAirPower(1);
+        CreateNewAirPower(0);
     }
     private void Update()
     {
@@ -192,7 +195,7 @@ public class ThrowHook : MonoBehaviour
 
         else if (Input.GetMouseButtonDown(1) && GM.isPlaying())
         {
-            AirBallDestroyer();
+            AirJump();
         }
 
         /*if (PM.IsState(States.STATE_MAGNET))
@@ -267,14 +270,14 @@ public class ThrowHook : MonoBehaviour
         rb.gravityScale = PM.gravityUnhooked;
         isPressingButton = false;
         currentHook = null;
-        PM.SetPlayerState(States.STATE_NORMAL);
 
+        PM.SetPlayerState(States.STATE_NORMAL);
         if (canTap && tappingTimer <= tappingTimerOffset)
         {
             DoAirPower();
             canTap = false;
         }
-
+        
         if (PM.playerHooks == Hooks.HOOK_SPRING)
         {
             DestroySpring();
@@ -295,6 +298,13 @@ public class ThrowHook : MonoBehaviour
 
     public void DoAirPower()
     {
+        if(PM.CheckIfGrounded())
+        {
+            Debug.Log("ground jump");
+            AirJump();
+            return;
+        }
+
         if (currentPowerAmmo >= currentAirPower.maxPowerUses || !PM.CanAirPower())
             return;
 
@@ -306,15 +316,22 @@ public class ThrowHook : MonoBehaviour
             case Power.POWER_DASH:
                 AirDash();
                 break;
-            case Power.POWER_TELEPORT:
-                AirTeleport();
-                break;
             case Power.POWER_SPRING:
                 AirSpring();
+                break;
+            case Power.POWER_DESTROYER_BALL:
+                AirBallDestroyer();
+                break;
+            case Power.POWER_BOUNCY_BALL:
+                AirBouncyBall();
+                break;
+            case Power.POWER_GRAPPLE:
+                AirGrapple();
                 break;
         }
         currentPowerAmmo++;
         RemoveLastAirPowerImage();
+        
         /*if (currentAirJumps == 0)
         {
             //AirJump();
@@ -330,6 +347,17 @@ public class ThrowHook : MonoBehaviour
             EM.CreateAirJump(transform.position);
             GM.AirBoostImage(true, false);
         }*/
+
+    }
+
+    public void AddPowerAmmo()
+    {
+        if(currentPowerAmmo-1 <= 0)
+        {
+            return;
+        }
+        currentPowerAmmo--;
+        AddAirPowerImage();
     }
 
     private void CreateNewAirPower()
@@ -386,25 +414,7 @@ public class ThrowHook : MonoBehaviour
         
     }
 
-    private void SelectAirPower()
-    {
-        switch (currentAirPower.id)
-        {
-            case Power.POWER_JUMP:
-                AirJump();
-                break;
-            case Power.POWER_DASH:
-                AirDash();
-                break;
-            case Power.POWER_TELEPORT:
-                AirTeleport();
-                break;
-            case Power.POWER_EXPLOSION:
-                AirExplosion();
-                break;
-            
-        }
-    }
+   
 
     private void CreateNewHook()
     {
@@ -461,6 +471,7 @@ public class ThrowHook : MonoBehaviour
         currentHook.SetActive(true);
         ropeScript = currentHook.GetComponent<RopeScript>();
         ropeScript.AddRope(target);
+        PM.SetPlayerState(States.STATE_HOOKED);
     }
 
     private void DestroyRope()
@@ -476,7 +487,9 @@ public class ThrowHook : MonoBehaviour
     {
         Vector2 velocityVector = rb.velocity;
         //velocityVector.y = jumpForce;
-        if (velocityVector.y < PM.jumpForce - 5)
+        velocityVector.y = PM.jumpForce;
+        velocityVector.x = PM.jumpForce / 2;
+        /*if (velocityVector.y < PM.jumpForce - 5)
         {
             velocityVector.y = PM.jumpForce;
         }
@@ -488,10 +501,14 @@ public class ThrowHook : MonoBehaviour
         if (velocityVector.x <= PM.jumpForce / 2)
         {
             velocityVector.x = PM.jumpForce / 2;
-        }
+        }*/
         //  velocityVector.y += 0.5f;
         rb.velocity = velocityVector;
+        aux.CreateBigFriendlyCircle(transform.position);
+        EM.CreateEnemyEffects(transform.position);
     }
+
+    
 
     public void AirDash()
     {
@@ -514,6 +531,17 @@ public class ThrowHook : MonoBehaviour
         GameObject ball = ballDestroyerPool.GetPooledObject();
         ball.SetActive(true);
         ball.transform.position = transform.position;
+    }
+
+    public void AirBouncyBall()
+    {
+        GameObject ball = bouncyBallPool.GetPooledObject();
+        ball.SetActive(true);
+        ball.transform.position = transform.position;
+        Vector2 dir = rb.velocity.normalized;
+        Rigidbody2D ballRb = ball.GetComponent<Rigidbody2D>();
+        ballRb.velocity = dir * 40;
+        
     }
 
     public void AirTeleport()
@@ -623,11 +651,11 @@ public class ThrowHook : MonoBehaviour
         grappleScript.CreateGrapple(target, disJoint);
     }
 
-   /* private void DestroyGrapple()
-    {
-        if (grappleScript != null)
-            grappleScript.DestroyGrapple();
-    }*/
+    /* private void DestroyGrapple()
+     {
+         if (grappleScript != null)
+             grappleScript.DestroyGrapple();
+     }*/
 
     #region ExtraFunctions
     /*private void DestroyMagnet()
@@ -736,6 +764,25 @@ public class ThrowHook : MonoBehaviour
         
     }*/
 
+   /* private void SelectAirPower()
+    {
+        switch (currentAirPower.id)
+        {
+            case Power.POWER_JUMP:
+                AirJump();
+                break;
+            case Power.POWER_DASH:
+                AirDash();
+                break;
+            case Power.POWER_TELEPORT:
+                AirTeleport();
+                break;
+            case Power.POWER_EXPLOSION:
+                AirExplosion();
+                break;
+
+        }
+    }*/
     #endregion
 }
 

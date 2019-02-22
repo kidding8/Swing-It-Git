@@ -10,24 +10,31 @@ public class Missile : MonoBehaviour {
     private Rigidbody2D rb;
     public float speed = 5f;
     public float rotateSpeed = 200f;
+    public ColorType currentColorType = ColorType.deadly;
     private CameraFollow camFollow;
     private float maxDistanceDetectPlayer = 20f;
     private bool isAlreadyATarget = false;
+    private SpriteRenderer sRenderer;
+    private Color currentColor;
+    private bool alreadyStarted = false;
 	void Start () {
         aux = AuxManager.instance;
         EM = EffectsManager.instance;
         player = aux.GetPlayer().transform;
+        sRenderer = GetComponent<SpriteRenderer>();
         rb = GetComponent<Rigidbody2D>();
         camFollow = aux.GetCamera().GetComponent<CameraFollow>();
+        ChangeColor();
+        alreadyStarted = true;
     }
 	
 	void FixedUpdate () {
-
+        
         SlowRotateTowardsPlayer();
         rb.velocity = -transform.right * speed;
     }
 
-    private void Update()
+    /*private void Update()
     {
         if(Vector3.Distance(transform.position, player.position) < maxDistanceDetectPlayer)
         {
@@ -41,6 +48,17 @@ public class Missile : MonoBehaviour {
         {
             RemoveCamTarget();
         }    
+    }*/
+    private void OnEnable()
+    {
+        if (alreadyStarted)
+        {
+            if (!aux.IsColor(currentColor, currentColorType))
+            {
+                ChangeColor();
+            }
+        }
+        
     }
 
     private void SlowRotateTowardsPlayer()
@@ -48,8 +66,21 @@ public class Missile : MonoBehaviour {
         Vector2 direction = (Vector2)player.position - rb.position;
         direction.Normalize();
         float rotateAmount = Vector3.Cross(direction, -transform.right).z;
+        float distance = Vector3.Distance(transform.position, player.position);
 
-        rb.angularVelocity = -rotateAmount * rotateSpeed;
+        if (distance > 500)
+        {
+            OnDeath();
+        }
+        else if(distance > 100)
+        {
+            rb.angularVelocity = -rotateAmount * (rotateSpeed * 30);
+        }
+        else
+        {
+            rb.angularVelocity = -rotateAmount * rotateSpeed;
+        }
+        
     }
 
     private void FastRotateTowardsPlayer()
@@ -82,9 +113,15 @@ public class Missile : MonoBehaviour {
     private void OnTriggerEnter2D(Collider2D other)
     {
         
-        if(other.CompareTag("Player") || other.CompareTag("Enemy") || other.CompareTag("Grabber") || other.CompareTag("Rocks") || other.CompareTag("Skull") || other.CompareTag("Destroyer"))
+        if(other.CompareTag("Player") || other.CompareTag("Enemy") || other.CompareTag("Grabber") || other.CompareTag("Rocks") || other.CompareTag("Skull") || other.CompareTag("Destroyer") || other.CompareTag("Friendly"))
         {
             OnDeath();
         }
+    }
+
+    private void ChangeColor()
+    {
+        currentColor = aux.GetColor(currentColorType);
+        sRenderer.color = currentColor;
     }
 }

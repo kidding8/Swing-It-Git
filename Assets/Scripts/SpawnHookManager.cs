@@ -36,7 +36,7 @@ public class SpawnHookManager : MonoBehaviour
     public Vector2 yOffset;
     public ObjectPooler coinObject;
     private GameObject player;
-    
+    private int countGrabbers = 0;
 
     //public GameObject hookIndicator;
     //private GameObject currentFarthestHook;
@@ -115,6 +115,10 @@ public class SpawnHookManager : MonoBehaviour
 
     private int GetGrabberObstacle()
     {
+        if(countGrabbers <= 4)
+        {
+            return 1;
+        }
 
         int itemWeight = 0;
 
@@ -168,16 +172,17 @@ public class SpawnHookManager : MonoBehaviour
         hook.transform.position = newPos;
         PM.AddGrabbableObject(hook);
         transform.position = new Vector3(newPos.x, transform.position.y, transform.position.z);
-
+        countGrabbers++;
     }
 
     void CreateFirstHook()
     {
-        GameObject hook = hookPool[0].GetPooledObject();
+        GameObject hook = grabberPool[1].grabberPool.GetPooledObject();
         hook.SetActive(true);
         Vector3 newPos = new Vector3(transform.position.x, transform.position.y + GetRandomHookY(), transform.position.z);
         hook.transform.position = newPos;
         PM.AddGrabbableObject(hook);
+        countGrabbers++;
         //transform.position = new Vector3(newPos.x, transform.position.y, transform.position.z);
 
     }
@@ -213,20 +218,45 @@ public class SpawnHookManager : MonoBehaviour
 
     private Vector3 RandomGuidedMissilePos()
     {
-        int rand = Random.Range(0, 2);
+      /*  int rand = Random.Range(0, 2);
         bool top = rand == 0 ? true : false;
         Vector3 topLeft = aux.GetUpperLeftCorner();
         Vector3 topRight = aux.GetUpperRightCorner();
         Vector3 downRight = aux.GetLowerRightCorner();
+        Vector3 downLeft = aux.GetLowerLeftCorner();*/
         /*if (top)
         {*/
-        return new Vector3(Random.Range(topLeft.x + 10, topRight.x), topRight.y + 7);
+        //return new Vector3(Random.Range(topLeft.x + 10, topRight.x), topRight.y + 7);
         /*}
         else
         {
           return new Vector3(topRight.x + 3, Random.Range(topRight.y, downRight.y + 10));
         }*/
 
+        int option = Random.Range(0,3);
+        switch (option)
+        {
+            //top
+            case 0:
+                Vector3 topLeft = aux.GetUpperLeftCorner();
+                Vector3 topRight = aux.GetUpperRightCorner();
+                return new Vector3(Random.Range(topLeft.x+10, topRight.x), topRight.y + 10);
+            //down
+            case 1:
+                Vector3 downRight = aux.GetLowerRightCorner();
+                Vector3 downLeft = aux.GetLowerLeftCorner();
+                return new Vector3(Random.Range(downLeft.x, downRight.x), downRight.y - 10);
+            //right
+            case 2:
+                Vector3 topRight1 = aux.GetUpperRightCorner();
+                Vector3 downRight1 = aux.GetLowerRightCorner();
+
+                return new Vector3(topRight1.x + 10, Random.Range(topRight1.y, downRight1.y));
+            default:
+                Vector3 topLeft2 = aux.GetUpperLeftCorner();
+                Vector3 topRight2 = aux.GetUpperRightCorner();
+                return new Vector3(Random.Range(topLeft2.x+10, topRight2.x), topRight2.y + 10);
+        }
     }
 
     private void SpawnGuidedMissile()

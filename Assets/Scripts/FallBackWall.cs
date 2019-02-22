@@ -11,6 +11,7 @@ public class FallBackWall : MonoBehaviour {
 	void Start () {
         aux = AuxManager.instance;
         player = aux.GetPlayer();
+        
     }
 	
 	// Update is called once per frame
@@ -21,6 +22,10 @@ public class FallBackWall : MonoBehaviour {
         else
         {
             transform.Translate(Vector3.right * speed * Time.deltaTime);
+            transform.position = new Vector3(transform.position.x, player.transform.position.y, transform.position.z);
         }
-	}
+
+        
+
+    }
 }

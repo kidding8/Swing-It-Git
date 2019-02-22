@@ -25,17 +25,20 @@ public class MoveRightScript: MonoBehaviour {
             currentSpeed *= 1+speedMultiplier;
         }
         transform.Translate(-transform.right * currentSpeed * Time.smoothDeltaTime);
-        if(timer > timeAlive)
+        /*if(timer > timeAlive)
         {
             OnDeath();
-        }
+        }*/
     }
 
     private void OnTriggerEnter2D(Collider2D other)
     {
-        /*if (other.CompareTag("Wall")){
-            onDeath();
-        }*/
+        
+        if (other.CompareTag("Wall") || other.CompareTag("Friendly")){
+            Debug.Log("Entrou");
+            OnDeath();
+
+        }
     }
 
     private void OnDeath()

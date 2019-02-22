@@ -14,6 +14,7 @@ public class EffectsManager : MonoBehaviour {
     public ObjectPooler simpleBrokenPiecesParticlesPool;
     public ObjectPooler circleStrokePool;
     public ObjectPooler starGrabberPool;
+    public ObjectPooler attachedGrabberParticlePool;
     private Camera cam;
     //public Canvas inGameCanvas;
     private float shakeDuration = 0f;
@@ -116,6 +117,13 @@ public class EffectsManager : MonoBehaviour {
     public void CreateStarGrabber(Vector3 pos)
     {
         GameObject explosion = starGrabberPool.GetPooledObject();
+        explosion.transform.position = pos;
+        explosion.SetActive(true);
+    }
+
+    public void CreateGrabberFriendlyEffect(Vector3 pos)
+    {
+        GameObject explosion = attachedGrabberParticlePool.GetPooledObject();
         explosion.transform.position = pos;
         explosion.SetActive(true);
     }

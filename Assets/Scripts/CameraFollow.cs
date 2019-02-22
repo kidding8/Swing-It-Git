@@ -5,7 +5,11 @@ using UnityEngine;
 public class CameraFollow : MonoBehaviour
 {
 
-   
+
+
+    public float newOffsetDistance = 6f;
+    public float newDampTime = 0.1f;
+    public float newZoomMultiplier = 30f;
 
     public float limitCameraTop = 30f;
     public float limitCameraBottom = 30f;
@@ -53,8 +57,11 @@ public class CameraFollow : MonoBehaviour
     {
         if (playerTrans == null)
             return;
-        Move();
-        Zoom();
+        SimpleFollowPlayer();
+        transform.position = new Vector3(transform.position.x, transform.position.y, -20);
+        SimpleZoomPlayer();
+        //Move();
+        //Zoom();
     }
 
     void Zoom()
@@ -122,7 +129,6 @@ public class CameraFollow : MonoBehaviour
 
         return Vector3.Distance(playerTrans.position, farthestObject.position);
     }
-
 
     private float GetOffsetVertical()
     {
@@ -204,5 +210,36 @@ public class CameraFollow : MonoBehaviour
     public int GetTargetsNum()
     {
         return targets.Count;
+    }
+
+    private void SimpleFollowPlayer()
+    {
+        Vector2 playerDirection = playerRb.velocity.normalized;
+        Vector3 offset = playerDirection * newOffsetDistance;
+        float yoffset = playerRb.velocity.normalized.y * newOffsetDistance; 
+
+        Vector3 newPosition = Vector3.zero;
+        
+        if (PlayerManager.instance.IsPlayerState(States.STATE_HOOKED))
+        {
+            newPosition.x = playerTrans.position.x;
+            newPosition.y = playerTrans.position.y;
+
+        }
+        else
+        {
+            newPosition.x = playerTrans.position.x + offset.x;
+            newPosition.y = playerTrans.position.y + playerDirection.y * 7;
+        }
+        
+        newPosition.z = -20;
+        transform.position = Vector3.SmoothDamp(transform.position, newPosition, ref refVelocity, newDampTime);
+
+    }
+
+    private void SimpleZoomPlayer()
+    {
+        float newZoom = Mathf.Lerp(minZoom, maxZoom, playerRb.velocity.magnitude / newZoomMultiplier);
+        cam.orthographicSize = Mathf.Lerp(cam.orthographicSize, newZoom, Time.deltaTime);
     }
 }

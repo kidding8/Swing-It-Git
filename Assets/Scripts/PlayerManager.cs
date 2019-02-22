@@ -35,6 +35,7 @@ public class PlayerManager : MonoBehaviour
     public float fallMultiplier = 1.4f;
     public float maxYVelocity = -20;
     public bool invincible = false;
+    
     //public powers powerss;
     [Header("Rope")]
     [Space(3)]
@@ -69,8 +70,18 @@ public class PlayerManager : MonoBehaviour
     public float distanceToGround = 3f;
     public float dragGrounded = 0.8f;
     public LayerMask whatIsGround;
+    public float timeToDieGrounded = 1f;
+    private bool isGrounded = false;
+    private float groundedTimer = 0;
 
-    
+    [Header("Line")]
+    [Space(3)]
+    public float startWidth = 1.0f;
+    public float endWidth = 1.0f;
+    public float threshold = 0.1f;
+    List<Vector3> linePoints = new List<Vector3>();
+    int lineCount = 0;
+    Vector3 lastLinePos = Vector3.one;
 
     //components
     private LineRenderer line;
@@ -133,7 +144,7 @@ public class PlayerManager : MonoBehaviour
     private void Update()
     {
         timerHookIndicator += Time.deltaTime;
-        GameObject hookTemp = GetFarthestGrabbableObjectInRadius();
+        GameObject hookTemp = GetFarthestGrabbableObjectInRadiusNewTest();
         
         if (timerHookIndicator >= timerForNextHookIndicator && CanHook())
         {
@@ -182,31 +193,73 @@ public class PlayerManager : MonoBehaviour
             line.SetPosition(1, lastNode.transform.position);
         }
 
-        if (CheckIfGrounded())
+        isGrounded = CheckIfGrounded();
+        if (isGrounded)
         {
             rb.drag = dragGrounded;
             rb.angularDrag = dragGrounded;
-            if(playerState == States.STATE_NORMAL)
+            if(rb.velocity.magnitude < 5)
+            {
+                groundedTimer += Time.deltaTime;
+
+                if(groundedTimer > timeToDieGrounded)
+                {
+                    GM.OnDeath();
+                }
+            }
+            else
+            {
+                groundedTimer = 0;
+            }
+           /* if(playerState == States.STATE_NORMAL)
             {
                 playerState = States.STATE_CLOSE_TO_GROUND;
-            }
-            if (rb.velocity.x >= -0.7f && rb.velocity.x <= 0.7f && playerState == States.STATE_GROUNDED)
+            }*/
+            /*if (rb.velocity.x >= -0.7f && rb.velocity.x <= 0.7f && playerState == States.STATE_GROUNDED)
             {
                 GM.OnDeath();
-            }
+            }*/
         }
 
         else
         {
-            if (playerState == States.STATE_CLOSE_TO_GROUND || playerState == States.STATE_GROUNDED)
+           /* if (playerState == States.STATE_CLOSE_TO_GROUND || playerState == States.STATE_GROUNDED)
             {
                 playerState = States.STATE_NORMAL;
-            }
+            }*/
             rb.drag = 0f;
             rb.angularDrag = 0f;
         }
 
+        /*Vector3 thisPos = transform.position;
+        float dist = Vector3.Distance(lastLinePos, thisPos);
+        if (dist >= threshold)
+        {
+            lastLinePos = thisPos;
+            if (linePoints == null)
+                linePoints = new List<Vector3>();
+            linePoints.Add(thisPos);
+            line.positionCount = linePoints.Count;
+            line.SetPosition(linePoints.Count - 1, thisPos);
+        }*/
+            
+
+        
+
+        //UpdateLine();
         //Debug.Log(playerState.ToString());
+    }
+
+    void UpdateLine()
+    {
+        /*line.SetWidth(startWidth, endWidth);*/
+        line.positionCount = linePoints.Count;
+
+        for (int i = lineCount; i < linePoints.Count; i++)
+        {
+            line.SetPosition(i, linePoints[i]);
+        }
+        lineCount = linePoints.Count;
     }
 
     private void FixedUpdate()
@@ -314,14 +367,15 @@ public class PlayerManager : MonoBehaviour
     {
         if(other.gameObject.tag == "Ground")
         {
-            if (playerState == States.STATE_CLOSE_TO_GROUND)
+            /*if (playerState == States.STATE_CLOSE_TO_GROUND)
             {
                     playerState = States.STATE_GROUNDED;
-            }
+            }*/
         }else if (other.gameObject.CompareTag("Rocks"))
         {
             //EM.GenerateText("Bounce 500", transform.position);
-            EM.CreateEnemyEffects(transform.position);
+            if(rb.velocity.magnitude > 5)
+                EM.CreateEnemyEffects(transform.position);
             //GM.AddCombo(50);
             //ResetAirJump();
         }
@@ -339,6 +393,7 @@ public class PlayerManager : MonoBehaviour
 
     public void ResetAirJump()
     {
+        throwHook.AddPowerAmmo();
         //throwHook.ResetAirPower();
        /*else if(currentAirJumps == 1)
         {
@@ -352,7 +407,7 @@ public class PlayerManager : MonoBehaviour
 
     }
 
-    private bool CheckIfGrounded()
+    public bool CheckIfGrounded()
     {
         return Physics2D.Raycast(transform.position, -Vector2.up, distanceToGround, whatIsGround);
     }
@@ -495,8 +550,10 @@ public class PlayerManager : MonoBehaviour
     public void RemoveHook()
     {
         //SetPlayerState(States.STATE_NORMAL);
-        RemoveLineTarget();
+        // rb.gravityScale = gravityUnhooked;
+        //RemoveLineTarget();
         currentHook = null;
+        
     }
 
     public GameObject GetCurrentHook()
@@ -530,6 +587,36 @@ public class PlayerManager : MonoBehaviour
         if(obj != null)
             grabbableObjectsList.Add(obj);
     }
+
+    public GameObject GetFarthestGrabbableObjectInRadiusNewTest()
+    {
+        GameObject farthest = null;
+        //float distance = 0;
+        float maxX = float.NegativeInfinity;
+        Vector3 currentPosition = transform.position;
+        foreach (GameObject obj in grabbableObjectsList)
+        {
+            float x = obj.transform.position.x;
+            Vector3 diff = obj.transform.position - currentPosition;
+            float curDistance = diff.sqrMagnitude;
+            //float dirNum = AngleDir(Vector3.forward, diff, Vector3.up);
+
+            if (x > maxX && curDistance < radiusToGrab)
+            {
+                farthest = obj;
+                maxX = x;
+                //distance = curDistance;
+            }
+        }
+
+        if (farthest != null)
+        {
+            return farthest;
+        }
+        return null;
+
+    }
+
 
     public GameObject GetFarthestGrabbableObjectInRadius()
     {
@@ -654,7 +741,7 @@ public class PlayerManager : MonoBehaviour
 
     public bool CanDie()
     {
-        return !(playerState == States.STATE_DASHING || playerState == States.STATE_GRAPPLE || playerHooks == Hooks.HOOK_SPRING) ; 
+        return !(playerState == States.STATE_DASHING || playerState == States.STATE_GRAPPLE || playerHooks == Hooks.HOOK_SPRING) || playerHooks == States.STATE_HOOKED; 
     }
 
     public bool CanAirPower()

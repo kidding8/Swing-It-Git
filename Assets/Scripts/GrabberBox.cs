@@ -35,6 +35,8 @@ public class GrabberBox : MonoBehaviour
 
     private void OnDisable()
     {
+        if(lastNodeJoint != null)
+            lastNodeJoint.enabled = true;
         canSpawnIt = true;
     }
 
@@ -62,13 +64,24 @@ public class GrabberBox : MonoBehaviour
     public void CreateNewBox()
     {
 
-        box = aux.GetBoxPool().GetPooledObject();
+        box = aux.bouncyBallPool.GetPooledObject();
         box.SetActive(true);
         box.transform.position = childTrans[childTrans.Length - 1].position;
         if (lastNodeJoint != null)
         {
             lastNodeJoint.enabled = true;
-            lastNodeJoint.connectedBody = box.GetComponent<Rigidbody2D>();
+            Rigidbody2D rbbox = box.GetComponent<Rigidbody2D>();
+            rbbox.velocity = Vector2.zero;
+            lastNodeJoint.connectedBody = rbbox;
+        }
+        else
+        {
+            lastNodeJoint = childTrans[childTrans.Length - 1].gameObject.AddComponent<HingeJoint2D>();
+            Rigidbody2D rbbox = box.GetComponent<Rigidbody2D>();
+            lastNodeJoint.breakForce = 100;
+            lastNodeJoint.breakTorque = 100;
+            rbbox.velocity = Vector2.zero;
+            lastNodeJoint.connectedBody = rbbox;
         }
     }
 

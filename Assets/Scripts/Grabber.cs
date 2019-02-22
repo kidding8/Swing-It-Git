@@ -10,8 +10,8 @@ public class Grabber : MonoBehaviour
     private EffectsManager EM;
     private List<RopeScript> attachedRopes;
 
-    public bool isTeleport = false;
     public bool randomSprite = false;
+    public bool isFriendly = false;
     private GameObject player;
     
     private SpriteRenderer sRenderer;
@@ -25,23 +25,45 @@ public class Grabber : MonoBehaviour
         player = aux.GetPlayer();
         attachedRopes = new List<RopeScript>();
         sRenderer = GetComponent<SpriteRenderer>();
-        sRenderer.color = aux.foreGroundColor;
+
+        if (isFriendly)
+        {
+            TurnFriendly();
+        }
+            
+        else{
+            TurnDeadly();
+        }
+           
+
         if(randomSprite)
-         sRenderer.sprite = aux.GetGrabberSprite();
+            sRenderer.sprite = aux.GetGrabberSprite();
     }
 
-    private void OnTriggerEnter2D(Collider2D other)
+   private void OnTriggerEnter2D(Collider2D other)
     {
         if (other.CompareTag("Wall"))
         {
             OnDeath();
         }
-        else if (other.CompareTag("Player") && PM.CanCollectObjects() && PM.useGrabberJump)
+        /*else if (other.CompareTag("Player") && PM.CanCollectObjects() && PM.useGrabberJump)
         {
             OnDeath();
             
             OnExplosive();
-        }
+        }*/
+    }
+
+    public void TurnFriendly()
+    {
+        sRenderer.color = aux.friendlyColor;
+        gameObject.tag = "Grabber";
+    }
+
+    public void TurnDeadly()
+    {
+        sRenderer.color = aux.deadlyColor;
+        gameObject.tag = "Enemy";
     }
 
     public void OnDeath() 
@@ -50,6 +72,10 @@ public class Grabber : MonoBehaviour
         //EM.CreateDisappearingCircle(transform.position);
         
         gameObject.SetActive(false);
+        if (isFriendly)
+            TurnFriendly();
+        else
+            TurnDeadly();
         // isAttached = false;
         if (randomSprite)
             sRenderer.sprite = AuxManager.instance.GetGrabberSprite();
@@ -68,28 +94,4 @@ public class Grabber : MonoBehaviour
     {
         PM.Jump(PM.grabberJumpForce);
     }
-
-    public void AddRope(RopeScript rope)
-    {
-        //isAttached = true;
-        attachedRopes.Add(rope);
-    }
-
-    public void RemoveRope(RopeScript rope)
-    {
-        //isAttached = false;
-        attachedRopes.Remove(rope);
-    }
-
-    
-
-
-    public void CheckIfTeleporter()
-    {
-        if (isTeleport)
-        {
-            PM.TeleportToPoint(transform);
-        }
-    }
-
 }

@@ -131,7 +131,8 @@ public class GrappleScript : MonoBehaviour
             destiny = grabber.transform.position;
             renderDisJoint = true;
             disJoint = dist;
-            transform.position = player.transform.position;
+            if(player != null)
+                transform.position = player.transform.position;
         }
     }
 

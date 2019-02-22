@@ -146,7 +146,7 @@ HingeJoint2D:
   m_UseLimits: 0
   m_AngleLimits:
     m_LowerAngle: 0
-    m_UpperAngle: 359
+    m_UpperAngle: 20
 --- !u!114 &114248033743815474
 MonoBehaviour:
   m_ObjectHideFlags: 0

@@ -14,7 +14,8 @@ public class EnemyAi : MonoBehaviour
     private Rigidbody2D rb;
     private Vector2 newPos;
     private Vector2 currentPos;
-    private bool isWandering = true;
+    public bool isWandering = true;
+    public bool rotate = true;
     private Transform playerPos;
     private SpriteRenderer sRenderer;
     private float previousPosX;
@@ -58,7 +59,8 @@ public class EnemyAi : MonoBehaviour
             newPos = GetPosInsideCircle();
         }
 
-        transform.localScale = new Vector3(transform.position.x > previousPosX ? - 1 : 1, 1, 1);
+        if(rotate)
+            transform.localScale = new Vector3(transform.position.x > previousPosX ? 1 : -1, 1, 1);
        /* if (transform.position.x > previousPosX)
         {
             transform.localScale = new Vector3(-1, 1, 1);

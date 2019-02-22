@@ -106,7 +106,7 @@ public class NodeScript : MonoBehaviour {
         {
            if(PM.destroyRope) {
                 RemoveLineTarget();
-
+                
                 RopeScript ropeScript = GetComponentInParent<RopeScript>();
                 if (ropeScript != null)
                     ropeScript.RopeIsDestroyed();

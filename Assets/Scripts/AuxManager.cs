@@ -23,11 +23,13 @@ public class Power
     public const int POWER_NONE = 0;
     public const int POWER_JUMP = 1;
     public const int POWER_DASH = 2;
-    public const int POWER_TELEPORT = 3;
+    public const int POWER_DESTROYER_BALL = 3;
     public const int POWER_SPRING = 4;
-    public const int POWER_EXPLOSION = 5;
-    public const int POWER_SHOOTING = 6;
-    public const int POWER_BALL = 7;
+    public const int POWER_BOUNCY_BALL = 5;
+    public const int POWER_GRAPPLE = 6;
+    public const int POWER_EXPLOSION = 99;
+    public const int POWER_SHOOTING = 99;
+    public const int POWER_TELEPORT = 99;
 }
 
 public class Hooks
@@ -37,6 +39,8 @@ public class Hooks
     public const int HOOK_SPRING = 1;
 }
 
+public enum ColorType { friendly, deadly, shadow, background, collectables}
+
 public class AuxManager : MonoBehaviour {
 
     public static AuxManager instance;
@@ -45,7 +49,6 @@ public class AuxManager : MonoBehaviour {
     public Canvas canvas;
     public Camera mainCamera;
     public GameObject player;
-
     public Transform SpawnnedObjectsTransform;
     public ObjectPooler nodePool;
     public ObjectPooler indicatorPool;
@@ -54,12 +57,18 @@ public class AuxManager : MonoBehaviour {
     public ObjectPooler boxPool;
     public ObjectPooler groundBulletPool;
     public ObjectPooler emptyRbPool;
+    public ObjectPooler bouncyBallPool;
+    public ObjectPooler spinnerPool;
+    public ObjectPooler bigFriendlyCircle;
+    public ObjectPooler smallFriendlyCircle;
     public Sprite[] backgroundSprites;
     public Sprite[] grabberSprites;
     public Material shadowMaterial;
     public Color shadowColor;
-    public Color foreGroundColor;
-    public Color enemyColor;
+    public Color deadlyColor;
+    public Color friendlyColor;
+    public Color backgroundColor;
+    public Color collectablesColor;
     public Sprite availableHook;
     public Sprite unavailableHook;
     public GameObject grabObjectIndicator;
@@ -73,6 +82,7 @@ public class AuxManager : MonoBehaviour {
     
     private void Awake()
     {
+        
         if (instance == null)
         {
             instance = this;
@@ -264,5 +274,90 @@ public class AuxManager : MonoBehaviour {
         RectTransformUtility.ScreenPointToLocalPointInRectangle(parentCanvas.transform as RectTransform, screenPos, parentCanvas.worldCamera, out movePos);
         //Convert the local point to world point
         return parentCanvas.transform.TransformPoint(movePos);
+    }
+
+    public void CreateBigFriendlyCircle(Vector3 pos)
+    {
+        GameObject circle = bigFriendlyCircle.GetPooledObject();
+        circle.transform.position = pos;
+        circle.SetActive(true);
+    }
+
+    public void CreateSmallFriendlyCircle(Vector3 pos)
+    {
+        GameObject circle = smallFriendlyCircle.GetPooledObject();
+        circle.transform.position = pos;
+        circle.SetActive(true);
+    }
+
+    public Color GetColor(ColorType colorType)
+    {
+        switch (colorType)
+        {
+            case ColorType.background:
+                return backgroundColor;
+            case ColorType.collectables:
+                return collectablesColor;
+            case ColorType.deadly:
+                return deadlyColor;
+            case ColorType.friendly:
+                return friendlyColor;
+            case ColorType.shadow:
+                return shadowColor;
+        }
+        return Color.white;
+    }
+
+    public bool IsColor(Color currentColor, ColorType colorType)
+    {
+        switch (colorType)
+        {
+            case ColorType.background:
+                if(currentColor == backgroundColor)
+                {
+                    return true;
+                }
+                else
+                {
+                    return false;
+                }
+            case ColorType.collectables:
+                if (currentColor == collectablesColor)
+                {
+                    return true;
+                }
+                else
+                {
+                    return false;
+                }
+            case ColorType.deadly:
+                if (currentColor == deadlyColor)
+                {
+                    return true;
+                }
+                else
+                {
+                    return false;
+                }
+            case ColorType.friendly:
+                if (currentColor == friendlyColor)
+                {
+                    return true;
+                }
+                else
+                {
+                    return false;
+                }
+            case ColorType.shadow:
+                if (currentColor == shadowColor)
+                {
+                    return true;
+                }
+                else
+                {
+                    return false;
+                }
+        }
+        return false;
     }
 }

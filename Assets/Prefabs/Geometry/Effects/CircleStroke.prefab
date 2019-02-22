@@ -12,9 +12,10 @@ GameObject:
   - component: {fileID: 2290312073440372060}
   - component: {fileID: 355045829089574142}
   - component: {fileID: 4258558805632313290}
+  - component: {fileID: 6532841101202230696}
   m_Layer: 0
   m_Name: CircleStroke
-  m_TagString: Untagged
+  m_TagString: Destroyer
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -112,3 +113,19 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c95d9d4e078935948b27ce69e9610693, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!58 &6532841101202230696
+CircleCollider2D:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6696342536389087789}
+  m_Enabled: 1
+  m_Density: 1
+  m_Material: {fileID: 0}
+  m_IsTrigger: 1
+  m_UsedByEffector: 0
+  m_UsedByComposite: 0
+  m_Offset: {x: 0, y: 0}
+  serializedVersion: 2
+  m_Radius: 0.56

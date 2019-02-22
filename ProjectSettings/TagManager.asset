@@ -13,6 +13,7 @@ TagManager:
   - Grabber
   - Skull
   - Destroyer
+  - Friendly
   layers:
   - Default
   - TransparentFX
