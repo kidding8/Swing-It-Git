@@ -38,7 +38,6 @@ public class RopeScript : MonoBehaviour
 
     private int nodeCount = 0;
     private int maxNode = 11;
-    private bool alreadyAttached = false;
     private bool canRetract = false;
     void Start()
     {
@@ -112,9 +111,14 @@ public class RopeScript : MonoBehaviour
     {
 
         nodeList.Remove(lastNode);
-        lastNode.gameObject.SetActive(false);
+        NodeScript oldNodeScript = lastNode.GetComponent<NodeScript>();
+        if(oldNodeScript != null)
+        {
+            oldNodeScript.RemoveLineTarget();
+            oldNodeScript.DestroyNode();
+        }
         lastNode = nodeList[nodeList.Count - 1];
-        lastNode.GetComponent<SpriteRenderer>().color = Color.white;
+        //lastNode.GetComponent<SpriteRenderer>().color = Color.white;
 
         HingeJoint2D hingeLastNode = lastNode.GetComponent<HingeJoint2D>();
         hingeLastNode.enabled = true;
@@ -134,34 +138,20 @@ public class RopeScript : MonoBehaviour
     {
         isDone = true;
 
-        if (!alreadyAttached)
-            AttachRope();
+        
+        AttachRope();
 
         /*while (Vector2.Distance(player.transform.position, lastNode.transform.position) > PM.ropeDistance)
         {
             CreateNode();
         }*/
 
-        /*HingeJoint2D hingeLastNode = lastNode.GetComponent<HingeJoint2D>();
-        hingeLastNode.enabled = true;
-
-        Rigidbody2D playerRb = player.GetComponent<Rigidbody2D>();
-        lastNode.GetComponent<HingeJoint2D>().connectedBody = playerRb;
-
-        NodeScript nodeScript = lastNode.GetComponent<NodeScript>();
+       /* NodeScript nodeScript = lastNode.GetComponent<NodeScript>();
 
         if (nodeScript != null)
         {
             nodeScript.SetNewLineTarget(player.transform);
         }*/
-
-
-        NodeScript nodeScript = lastNode.GetComponent<NodeScript>();
-
-        if (nodeScript != null)
-        {
-            nodeScript.SetNewLineTarget(player.transform);
-        }
 
         PM.SetNewHook(gameObject);
 
@@ -176,10 +166,11 @@ public class RopeScript : MonoBehaviour
             targetGrabber.TurnFriendly();
         }
         PM.ResetAirJump();
-        //aux.CreateSmallFriendlyCircle(attachedHook.transform.position);
-        // camFollow.AddTarget(transform);
 
-        /*GameObject node = nodePool.GetPooledObject();
+        //aux.CreateSmallFriendlyCircle(attachedHook.transform.position);
+       
+
+        GameObject node = nodePool.GetPooledObject();
         node.transform.position = player.transform.position;
         node.transform.rotation = Quaternion.identity;
         node.transform.SetParent(transform);
@@ -190,7 +181,7 @@ public class RopeScript : MonoBehaviour
         if (nodeScript != null)
         {
             nodeScript.SetNewLineTarget(player.transform);
-        }*/
+        }
 
 
 
@@ -205,8 +196,6 @@ public class RopeScript : MonoBehaviour
 
     private void AttachRope()
     {
-        if (alreadyAttached)
-            return;
 
         /*Vector2 pos2Create = player.transform.position - lastNode.transform.position;
         pos2Create.Normalize();
@@ -224,7 +213,6 @@ public class RopeScript : MonoBehaviour
         //hingeLastNode.connectedAnchor = pos2Create;
         //hingeLastNode.useLimits = false;
 
-        alreadyAttached = true;
     }
 
 
@@ -313,14 +301,8 @@ public class RopeScript : MonoBehaviour
 
     public void UnhookRope()
     {
-        //player.transform.parent = null;
         if (PM != null)
             PM.RemoveHook();
-        /* if (playerThrowHook != null)
-             playerThrowHook.UnhookHook();*/
-
-        if (camFollow != null)
-            camFollow.RemoveTarget(transform);
         if (lastNode != null)
             lastNode.GetComponent<HingeJoint2D>().enabled = false;
         NodeScript nodeScript = lastNode.GetComponent<NodeScript>();
@@ -331,7 +313,16 @@ public class RopeScript : MonoBehaviour
         isAttachedToPlayer = false;
         isDone = true;
         canRetract = false;
-        // transform.DetachChildren();
+        transform.DetachChildren();
+
+
+        /* if (playerThrowHook != null)
+             playerThrowHook.UnhookHook();*/
+
+        /* if (camFollow != null)
+             camFollow.RemoveTarget(transform);*/
+         
+
     }
 
     public void DisableRope()
@@ -340,8 +331,20 @@ public class RopeScript : MonoBehaviour
         rb.isKinematic = true;
         gameObject.SetActive(false);
         transform.DetachChildren();
-        alreadyAttached = false;
         nodeCount = 0;
+
+        /*foreach (Transform child in transform)
+        {
+
+            NodeScript node = child.GetComponent<NodeScript>();
+            if (node != null)
+            {
+                node.RemoveLineTarget();
+            }
+            child.transform.parent = null;
+            child.gameObject.SetActive(false);
+        }*/
+
         nodeList.Clear();
         /*for (int i = 1; i < nodeList.Count; i++)
         {

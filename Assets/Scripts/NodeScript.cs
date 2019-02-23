@@ -51,7 +51,7 @@ public class NodeScript : MonoBehaviour {
     public void RemoveLineTarget()
     {
         
-        //line.positionCount = 0;
+        line.positionCount = 0;
         line.enabled = false;
         useLine = false;
         targetNode = null;
@@ -68,15 +68,25 @@ public class NodeScript : MonoBehaviour {
         
         transform.parent = null;
         gameObject.SetActive(false);
-        alreadyUsed = true;
+        //alreadyUsed = true;
     }
 
     private void Update()
     {
-        if(useLine && targetNode != null)
+        if(useLine && targetNode != null )
         {
-            line.SetPosition(0, transform.position);
-            line.SetPosition(1, targetNode.transform.position);
+
+            if (!targetNode.gameObject.activeInHierarchy)
+            {
+                RemoveLineTarget();
+                targetNode = null;
+            }
+            else
+            {
+                line.SetPosition(0, transform.position);
+                line.SetPosition(1, targetNode.transform.position);
+            }
+            
             /*if (alreadyUsed)
             {
                 line.startColor = Color.green;
@@ -110,14 +120,15 @@ public class NodeScript : MonoBehaviour {
                 RopeScript ropeScript = GetComponentInParent<RopeScript>();
                 if (ropeScript != null)
                     ropeScript.RopeIsDestroyed();
-                //DestroyNode();
+                DestroyNode();
             }
             
         }else if (other.CompareTag("Wall"))
         {
-            
-           // RemoveLineTarget();
-            //DestroyNode();
+            RemoveLineTarget();
+            DestroyNode();
+            // RemoveLineTarget();
+
             //transform.parent = null;
             /* RemoveLineTarget();
              gameObject.SetActive(false);*/
