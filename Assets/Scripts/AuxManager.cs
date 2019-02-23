@@ -39,7 +39,7 @@ public class Hooks
     public const int HOOK_SPRING = 1;
 }
 
-public enum ColorType { friendly, deadly, shadow, background, collectables}
+public enum ColorType { friendly, deadly, shadow, background, collectables, neutral}
 
 public class AuxManager : MonoBehaviour {
 
@@ -69,6 +69,7 @@ public class AuxManager : MonoBehaviour {
     public Color friendlyColor;
     public Color backgroundColor;
     public Color collectablesColor;
+    public Color neutralColor;
     public Sprite availableHook;
     public Sprite unavailableHook;
     public GameObject grabObjectIndicator;
@@ -304,6 +305,8 @@ public class AuxManager : MonoBehaviour {
                 return friendlyColor;
             case ColorType.shadow:
                 return shadowColor;
+            case ColorType.neutral:
+                return neutralColor;
         }
         return Color.white;
     }
@@ -350,6 +353,15 @@ public class AuxManager : MonoBehaviour {
                 }
             case ColorType.shadow:
                 if (currentColor == shadowColor)
+                {
+                    return true;
+                }
+                else
+                {
+                    return false;
+                }
+            case ColorType.neutral:
+                if (currentColor == neutralColor)
                 {
                     return true;
                 }

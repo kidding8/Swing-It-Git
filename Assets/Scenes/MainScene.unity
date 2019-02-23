@@ -2624,6 +2624,7 @@ MonoBehaviour:
   friendlyColor: {r: 0.54901963, g: 0.82745105, b: 0.5921569, a: 1}
   backgroundColor: {r: 0.28235295, g: 0.1254902, b: 0.21960786, a: 1}
   collectablesColor: {r: 1, g: 0.8078432, b: 0.33333334, a: 1}
+  neutralColor: {r: 0.9607844, g: 0.9607844, b: 0.9607844, a: 1}
   availableHook: {fileID: 21300000, guid: 7b0ac90520b7e6946ac232f38ab297d8, type: 3}
   unavailableHook: {fileID: 21300000, guid: 260361ad6a87f994cb151f08ffc46568, type: 3}
   grabObjectIndicator: {fileID: 1679589561}
@@ -19414,26 +19415,6 @@ MonoBehaviour:
   pooledObject: {fileID: 86, guid: 2d3443d329841394ea4ea36e91304cb1, type: 3}
   SpawnnedObjectsTransform: {fileID: 2125252527}
   pooledAmount: 10
---- !u!1 &1385254290 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 3471666439601925343, guid: bef236887dc7e4343b63c17cfd425c39,
-    type: 3}
-  m_PrefabInstance: {fileID: 1393543479}
-  m_PrefabAsset: {fileID: 0}
---- !u!114 &1385254295
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1385254290}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 9790102f0c884ff4198a4dd047152556, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  offset: {x: -0.2, y: -0.2}
-  updateEveryFrame: 0
 --- !u!1 &1387857908
 GameObject:
   m_ObjectHideFlags: 0
@@ -19583,21 +19564,6 @@ PrefabInstance:
         type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: -32.54
-      objectReference: {fileID: 0}
-    - target: {fileID: 3124706426274678416, guid: bef236887dc7e4343b63c17cfd425c39,
-        type: 3}
-      propertyPath: m_Color.r
-      value: 0.54901963
-      objectReference: {fileID: 0}
-    - target: {fileID: 3124706426274678416, guid: bef236887dc7e4343b63c17cfd425c39,
-        type: 3}
-      propertyPath: m_Color.g
-      value: 0.82745105
-      objectReference: {fileID: 0}
-    - target: {fileID: 3124706426274678416, guid: bef236887dc7e4343b63c17cfd425c39,
-        type: 3}
-      propertyPath: m_Color.b
-      value: 0.5921569
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: bef236887dc7e4343b63c17cfd425c39, type: 3}
@@ -20792,6 +20758,7 @@ GameObject:
   - component: {fileID: 1699162015}
   - component: {fileID: 1699162016}
   - component: {fileID: 1699162017}
+  - component: {fileID: 1699162018}
   m_Layer: 0
   m_Name: Wall
   m_TagString: Wall
@@ -20948,6 +20915,22 @@ Rigidbody2D:
   m_SleepingMode: 1
   m_CollisionDetection: 0
   m_Constraints: 0
+--- !u!114 &1699162018
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1699162011}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7612f2a74e07f9548bae4c7ba3ea3ed6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  changeColor: 1
+  isTrail: 0
+  currentColorType: 1
+  destroyWall: 0
 --- !u!1 &1702966815
 GameObject:
   m_ObjectHideFlags: 0
