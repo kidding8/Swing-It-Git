@@ -192,7 +192,7 @@ HingeJoint2D:
   m_UseLimits: 1
   m_AngleLimits:
     m_LowerAngle: 0
-    m_UpperAngle: 40
+    m_UpperAngle: 90
 --- !u!232 &7740438307630426166
 DistanceJoint2D:
   m_ObjectHideFlags: 0

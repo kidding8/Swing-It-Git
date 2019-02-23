@@ -4489,7 +4489,7 @@ MonoBehaviour:
   destroyRope: 1
   useGrabberJump: 0
   grabberJumpForce: 10
-  radiusToGrab: 260
+  radiusToGrab: 16
   canSpawnEnemies: 1
   canShootMissiles: 0
   canShootGuidedMissiles: 1

@@ -64,6 +64,7 @@ public class GrappleScript : MonoBehaviour
                 DestroyGrapple();
             }
 
+            
            /* if(Vector2.Distance(destiny, player.transform.position) < 0.2f)
             {
                 DestroyGrapple();

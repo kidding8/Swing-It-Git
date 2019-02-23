@@ -99,6 +99,7 @@ public class PlayerManager : MonoBehaviour
 
     private GameObject grabObjectIndicator;
     private GameObject previousTargetHook;
+    private DistanceJoint2D disJoint;
     //private GameObject currentFlyingPlane;
 
 
@@ -137,7 +138,7 @@ public class PlayerManager : MonoBehaviour
         camFollow = aux.GetCamera().GetComponent<CameraFollow>();
         throwHook = GetComponent<ThrowHook>();
         hinge = GetComponent<HingeJoint2D>();
-       
+        disJoint = GetComponent<DistanceJoint2D>();
 
     }
 
@@ -598,7 +599,7 @@ public class PlayerManager : MonoBehaviour
         {
             float x = obj.transform.position.x;
             Vector3 diff = obj.transform.position - currentPosition;
-            float curDistance = diff.sqrMagnitude;
+            float curDistance = diff.magnitude;
             //float dirNum = AngleDir(Vector3.forward, diff, Vector3.up);
 
             if (x > maxX && curDistance < radiusToGrab)
@@ -770,6 +771,10 @@ public class PlayerManager : MonoBehaviour
         GetComponent<SpriteRenderer>().color = color;
     }
 
+    public DistanceJoint2D GetDistanceJoint()
+    {
+        return disJoint;
+    }
     /*public IEnumerator ChangeColor(float waitTime)
     {
         SetColor(Color.red);
