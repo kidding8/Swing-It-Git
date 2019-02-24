@@ -54,6 +54,13 @@ public class NodeScript : MonoBehaviour {
         line.positionCount = 0;
         line.enabled = false;
         useLine = false;
+        /*if(targetNode != null)
+        {
+            NodeScript nodeScript = targetNode.GetComponent<NodeScript>();
+            if (nodeScript != null)
+                nodeScript.RemoveLineTarget();
+        }*/
+       
         targetNode = null;
         hinge2D.connectedBody = null;
         hinge2D.enabled = false;
@@ -61,7 +68,6 @@ public class NodeScript : MonoBehaviour {
         //gameObject.SetActive(false);
         
     }
-
 
     public void DestroyNode()
     {
@@ -76,7 +82,7 @@ public class NodeScript : MonoBehaviour {
         if(useLine && targetNode != null )
         {
 
-            if (!targetNode.gameObject.activeInHierarchy)
+           if (!targetNode.gameObject.activeInHierarchy)
             {
                 RemoveLineTarget();
                 targetNode = null;

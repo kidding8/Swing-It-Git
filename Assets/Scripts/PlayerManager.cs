@@ -742,7 +742,7 @@ public class PlayerManager : MonoBehaviour
 
     public bool CanDie()
     {
-        return !(playerState == States.STATE_DASHING || playerState == States.STATE_GRAPPLE || playerHooks == Hooks.HOOK_SPRING) || playerHooks == States.STATE_HOOKED; 
+        return true; 
     }
 
     public bool CanAirPower()

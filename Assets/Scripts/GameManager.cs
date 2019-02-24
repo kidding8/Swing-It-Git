@@ -255,11 +255,15 @@ public class GameManager : MonoBehaviour
         PM.playerHability = Hability.HABILITY_JUMP;*/
     }
 
-    /*public void StartSpringGame()
+    public void StartSpringGame()
     {
         StartNormalGame();
-        PM.playerPower = Power.POWER_SPRING;
+        PM.playerHooks = Hooks.HOOK_SPRING;
+        PM.radiusToGrab = 20;
+
     }
+
+        /*
     public void StartGrappleGame()
     {
         StartNormalGame();

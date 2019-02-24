@@ -87,10 +87,20 @@ public class RopeScript : MonoBehaviour
         {
             player.transform.position = Vector2.MoveTowards(player.transform.position, lastNode.transform.position, PM.ropeSpeed);
         }*/
+        
         if (useLine && firstNode != null)
         {
-            line.SetPosition(0, transform.position);
-            line.SetPosition(1, firstNode.transform.position);
+            if (!firstNode.gameObject.activeInHierarchy)
+            {
+                useLine = false;
+                firstNode = null;
+            }
+            else
+            {
+                line.SetPosition(0, transform.position);
+                line.SetPosition(1, firstNode.transform.position);
+            }
+            
         }
 
         if (isAttachedToPlayer && isDone && nodeCount > maxNode)
@@ -137,7 +147,10 @@ public class RopeScript : MonoBehaviour
     private void GrabbedHook()
     {
         isDone = true;
-
+        if(nodeCount == 0)
+        {
+            CreateNode();
+        }
         
         AttachRope();
 
@@ -332,20 +345,21 @@ public class RopeScript : MonoBehaviour
         gameObject.SetActive(false);
         transform.DetachChildren();
         nodeCount = 0;
-
-        /*foreach (Transform child in transform)
+        nodeList.Clear();
+        /*foreach (GameObject child in nodeList)
         {
 
             NodeScript node = child.GetComponent<NodeScript>();
             if (node != null)
             {
                 node.RemoveLineTarget();
+                node.DestroyNode();
             }
             child.transform.parent = null;
             child.gameObject.SetActive(false);
         }*/
 
-        nodeList.Clear();
+
         /*for (int i = 1; i < nodeList.Count; i++)
         {
 

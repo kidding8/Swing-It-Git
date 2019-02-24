@@ -241,7 +241,7 @@ public class ThrowHook : MonoBehaviour
             alreadySpinned = false;
             PM.SetColor(Color.white);
         }*/
-        if(PM.IsPlayerState(States.STATE_GRAPPLE) || PM.IsPlayerState(States.STATE_DASHING) || PM.playerHooks == Hooks.HOOK_SPRING)
+        /*if(PM.IsPlayerState(States.STATE_GRAPPLE) || PM.IsPlayerState(States.STATE_DASHING) || PM.playerHooks == Hooks.HOOK_SPRING)
         {
             playerFire.transform.position = transform.position;
             playerFire.gameObject.SetActive(true);
@@ -249,7 +249,7 @@ public class ThrowHook : MonoBehaviour
         else
         {
             playerFire.gameObject.SetActive(false);
-        }
+        }*/
         
     }
 
